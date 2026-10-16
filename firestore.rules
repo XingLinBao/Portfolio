@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     // Замініть на UID власниці (Authentication → Users)
-    function owner() { return request.auth != null && request.auth.uid == 'ВСТАВТЕ_UID'; }
+    function owner() { return request.auth != null && request.auth.uid == 'x3HxqzCj41cdDOy2aTF2MUaBeGH2'; }
     function str(d, k, n) { return !(k in d) || (d[k] is string && d[k].size() <= n); }
     function num(d, k) { return !(k in d) || (d[k] is number && d[k] >= 0 && d[k] < 100000); }
     function photos(d) { return !('photos' in d) || (d.photos is list && d.photos.size() <= 6); }

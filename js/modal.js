@@ -1,5 +1,5 @@
 import {h,ic} from "./render.js";
-import {SCHEMA,MONTHS,saveRec,saveProfile,cache} from "./data.js";
+import {SCHEMA,MONTHS,saveRec,saveProfile,cache,getSched} from "./data.js";
 import {photoField} from "./images.js";
 const stack=[];let uid=0;
 const FOC='a[href],button:not([disabled]),input:not([disabled]):not(.sr),select,textarea,[tabindex="0"]';
@@ -43,7 +43,8 @@ export function buildForm(fields,v={}){
  for(const f of fields){
   const id="f"+(++uid);let ctl,get,fin;
   if(f.t==="textarea"){ctl=h("textarea",{id,rows:5,maxlength:3000,placeholder:f.ph||""});ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value.trim()});}
-  else if(f.t==="select"){ctl=h("select",{id},h("option",{value:""},"— оберіть —"),...f.opts.map(o=>h("option",{value:o},o)));ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value});}
+  else if(f.t==="select"){ctl=h("select",{id},h("option",{value:""},"— оберіть —"),...f.opts.map(o=>Array.isArray(o)?h("option",{value:o[0]},o[1]):h("option",{value:o},o)));ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value});}
+  else if(f.t==="check"){const i=h("input",{id,type:"checkbox"});i.checked=!!v[f.k];ctl=h("label",{class:"chk"},i,f.l);get=()=>({[f.k]:i.checked});}
   else if(f.t==="year"){ctl=ysel(id,v[f.k]);get=()=>({[f.k]:+ctl.value||0});}
   else if(f.t==="my"){const dd=h("select",{id,"aria-label":"Число"},h("option",{value:""},"Число"),...Array.from({length:31},(_,i)=>h("option",{value:i+1},i+1))),m=h("select",{"aria-label":"Місяць"},h("option",{value:""},"Місяць"),...MONTHS.map((n,i)=>h("option",{value:i+1},n))),y=ysel(id+"y",v.year);dd.value=v.day||"";m.value=v.month||"";
    ctl=h("div",{class:"row3"},dd,m,y);get=()=>({day:+dd.value||0,month:+m.value||0,year:+y.value||0});}
@@ -64,7 +65,7 @@ export function buildForm(fields,v={}){
    ctl=pf.el;get=()=>({[f.k]:pf.get()});fin=async()=>({[f.k]:await pf.finalize()});}
   else{ctl=h("input",{id,type:f.t||"text",maxlength:300,placeholder:f.ph||""});ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value.trim()});}
   G.push({f,get,fin,ctl});
-  el.append(h("div",{class:"fld"},h("label",{for:id},f.l,f.req?h("span",{class:"rq",title:"Обов’язкове"}," *"):null),ctl,f.hint?h("small",{},f.hint):null));
+  el.append(h("div",{class:"fld"},f.t==="check"?null:h("label",{for:id},f.l,f.req?h("span",{class:"rq",title:"Обов’язкове"}," *"):null),ctl,f.hint?h("small",{},f.hint):null));
  }
  const get=()=>Object.assign({},...G.map(g=>g.get()));
  const ini=JSON.stringify(get());
@@ -91,10 +92,11 @@ function saveFlow({title,form,save,onSaved,again}){
   ok.onclick=()=>go(true);if(more)more.onclick=()=>go("again");
  });
 }
+function mkForm(S,rec){const f=buildForm(typeof S.f==="function"?S.f():S.f,rec||{});if(S.check){const v0=f.validate;f.validate=()=>v0()||S.check(f.get());}return f;}
 export async function recordModal(col,rec,onSaved){
  const S=SCHEMA[col],again=!rec&&col==="studentArticles"?"Зберегти й додати ще одну групу":null;
  let r;
- do{r=await saveFlow({title:(rec?"Змінити: ":"Додати: ")+S.label,form:buildForm(S.f,rec||{}),save:d=>saveRec(col,rec&&rec.id,d),onSaved,again});}while(r==="again");
+ do{r=await saveFlow({title:(rec?"Змінити: ":"Додати: ")+S.label,form:mkForm(S,rec),save:d=>saveRec(col,rec&&rec.id,d),onSaved,again});}while(r==="again");
  return !!r;
 }
 export const PROFILE_FIELDS=[{k:"fullName",l:"ПІБ",req:1,ph:"Іванова Олена Петрівна"},{k:"position",l:"Посада",req:1,ph:"Викладач педагогічних дисциплін"},{k:"institution",l:"Назва закладу",req:1,ph:"Коледж"},
@@ -102,4 +104,16 @@ export const PROFILE_FIELDS=[{k:"fullName",l:"ПІБ",req:1,ph:"Іванова �
  {k:"about",l:"Про мене",t:"textarea"},{k:"photo",l:"Фото профілю",t:"photo"}];
 export function profileModal(onSaved){
  return saveFlow({title:"Профіль",form:buildForm(PROFILE_FIELDS,cache.profile||{}),save:d=>saveProfile(d),onSaved});
+}
+
+const PAIR_RE=/^(\d{1,2})[:.](\d{2})\s*[-–—]\s*(\d{1,2})[:.](\d{2})$/;
+function parsePairs(t){const out=[];for(const raw of t.split("\n")){const s=raw.trim();if(!s)continue;const m=s.match(PAIR_RE);if(!m)return null;const p=n=>String(n).padStart(2,"0");out.push(`${p(m[1])}:${m[2]}-${p(m[3])}:${m[4]}`);}return out.length?out:null;}
+export function schedModal(onSaved){
+ const sc=getSched();
+ const f=[{k:"g1",l:"Назва першої групи",req:1},{k:"g2",l:"Назва другої групи",req:1},
+  {k:"start",l:"Перший день семестру",t:"date",hint:"Потрібен для нумерації навчальних тижнів і парних/непарних тижнів. Можна не вказувати."},
+  {k:"pairsText",l:"Час пар",t:"textarea",req:1,hint:"По одному рядку на пару, наприклад: 09:00-10:20"}];
+ const form=buildForm(f,{g1:sc.groups[0],g2:sc.groups[1],start:sc.start,pairsText:sc.pairs.join("\n")});
+ const v0=form.validate;form.validate=()=>v0()||(parsePairs(form.get().pairsText)?null:"Час пар: по одному рядку, наприклад 09:00-10:20");
+ return saveFlow({title:"Налаштування розкладу",form,save:d=>saveProfile({sched:{groups:[d.g1,d.g2],start:d.start||"",pairs:parsePairs(d.pairsText)}}),onSaved});
 }

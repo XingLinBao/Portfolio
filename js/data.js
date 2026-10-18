@@ -5,7 +5,7 @@ export const app=initializeApp(firebaseConfig);
 export const db=getFirestore(app);
 export const MONTHS=["Січень","Лютий","Березень","Квітень","Травень","Червень","Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"];
 export const MONTHS_GEN=["січня","лютого","березня","квітня","травня","червня","липня","серпня","вересня","жовтня","листопада","грудня"];
-export const COLS=["education","subjects","certificates","publications","studentArticles","events","awards"];
+export const COLS=["education","subjects","certificates","publications","studentArticles","events","awards","lessons"];
 const Y={k:"year",l:"Рік",t:"year",req:1},D={k:"my",t:"my",l:"Дата",req:1,hint:"Число можна не вказувати — тоді буде показано лише місяць і рік."},PH={k:"photos",l:"Фото або PDF (до 6, перше — обкладинка)",t:"photos",hint:"PDF автоматично перетворюється на зображення (кожна сторінка — окреме фото)."},
 LK={k:"link",l:"Посилання",t:"url",hint:"У Google Диску: «Доступ» → «Усі, хто має посилання» → «Читач». Лише https://"};
 const sel=(k,l,opts)=>({k,l,t:"select",opts,req:1});
@@ -17,11 +17,27 @@ export const SCHEMA={
  studentArticles:{label:"роботу групи студентів",f:[{k:"group",l:"Група",req:1,ph:"Наприклад: КН-21"},{k:"students",l:"Студенти",t:"list",req:1,legacy:"student",hint:"Введіть ПІБ студента — після цього з’явиться кнопка для додавання наступного."},{k:"title",l:"Назва роботи",req:1},Y,{k:"venue",l:"Видання"},{k:"award",l:"Нагорода (необов’язково)",ph:"І місце на конференції"},PH,LK]},
  events:{label:"захід",f:[{k:"title",l:"Назва",req:1},sel("type","Тип",["Екскурсія","Конференція","Форум","Олімпіада","Інше"]),D,{k:"count",l:"Кількість учасників",t:"number"},PH,LK]},
  awards:{label:"нагороду",f:[{k:"title",l:"Назва",req:1},{k:"desc",l:"Опис",t:"textarea"},sel("type","Тип",["Почесна грамота","Подяка","Диплом","Сертифікат","Інше"]),D,PH,LK]}
+,
+ lessons:{label:"заняття",f:()=>{const sc=getSched();return[
+  {k:"g",l:"Група",t:"select",opts:[["g1",sc.groups[0]],["g2",sc.groups[1]]],req:1},
+  {k:"subject",l:"Дисципліна",req:1},
+  {k:"type",l:"Вид заняття",t:"select",opts:["Лекція","Практичне","Лабораторне","Семінар","Консультація","Інше"],req:1},
+  {k:"rep",l:"Повторення",t:"select",opts:[["all","Щотижня"],["odd","Лише непарні тижні"],["even","Лише парні тижні"],["once","Одноразове (за датою)"]],req:1},
+  {k:"day",l:"День тижня",t:"select",opts:[["1","Понеділок"],["2","Вівторок"],["3","Середа"],["4","Четвер"],["5","П’ятниця"]],hint:"Для одноразового заняття не потрібен."},
+  {k:"date",l:"Дата (лише для одноразового заняття)",t:"date"},
+  {k:"pair",l:"Пара",t:"select",opts:sc.pairs.map((p,i)=>[String(i+1),`${i+1} пара (${p.replace("-"," — ")})`]),req:1},
+  {k:"mode",l:"Формат",t:"select",opts:[["online","Онлайн"],["offline","Офлайн"]],req:1},
+  {k:"link",l:"Посилання на заняття (для онлайн)",t:"url",hint:"Лише https://, наприклад Google Meet або Zoom."},
+  {k:"building",l:"Корпус (для офлайн)"},{k:"room",l:"Аудиторія (для офлайн)"},
+  {k:"changed",l:"Позначити як «Нещодавно змінено»",t:"check"}];},
+  check:d=>{if(d.rep==="once"&&!d.date)return "Вкажіть дату одноразового заняття";if(d.rep!=="once"&&!d.day)return "Оберіть день тижня";if(d.mode==="offline"&&!d.room&&!d.building)return "Вкажіть корпус або аудиторію";return null;}}
 };
+export const DEF_SCHED={groups:["ІДП-31","БТ-31"],start:"",pairs:["09:00-10:20","10:30-11:50","12:10-13:30","13:40-15:00","15:10-16:30"]};
+export function getSched(){const s=(cache.profile&&cache.profile.sched)||{},g=s.groups||[];return{groups:[g[0]||DEF_SCHED.groups[0],g[1]||DEF_SCHED.groups[1]],start:s.start||"",pairs:s.pairs&&s.pairs.length?s.pairs:DEF_SCHED.pairs};}
 export const cache={loaded:false,profile:{}};
 export async function load(force){
  if(cache.loaded&&!force)return cache;
- const [p,...r]=await Promise.all([getDoc(doc(db,"profile","main")),...COLS.map(c=>getDocs(collection(db,c)))]);
+ const [p,...r]=await Promise.all([getDoc(doc(db,"profile","main")),...COLS.map(c=>getDocs(collection(db,c)).catch(e=>{if(c==="lessons")return{docs:[]};throw e;}))]);
  cache.profile=p.exists()?p.data():{};
  COLS.forEach((c,i)=>cache[c]=r[i].docs.map(d=>({id:d.id,...d.data()})));
  cache.loaded=true;return cache;

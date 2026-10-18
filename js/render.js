@@ -1,4 +1,4 @@
-import {load,cache,MONTHS,MONTHS_GEN} from "./data.js";
+import {load,cache,MONTHS,MONTHS_GEN,getSched} from "./data.js";
 export const h=(t,a={},...c)=>{const e=document.createElement(t);
  for(const[k,v]of Object.entries(a)){if(v==null||v===false)continue;if(k==="class")e.className=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?"":v);}
  c.flat().forEach(x=>{if(x!=null&&x!==false)e.append(x.nodeType?x:document.createTextNode(x));});return e;};
@@ -21,7 +21,7 @@ x:'<path d="M18 6 6 18M6 6l12 12"/>',l:'<path d="m15 18-6-6 6-6"/>',r:'<path d="
 plus:'<path d="M12 5v14M5 12h14"/>',edit:'<path d="M12 20h9M16.500 3.500a2.100 2.100 0 0 1 3 3L7 19l-4 1 1-4z"/>',
 trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/>',
 img:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.500" cy="8.500" r="1.500"/><path d="m21 15-5-5L5 21"/>',
-medal:'<circle cx="12" cy="15" r="6"/><path d="M8.500 2h7L12 9z"/>',code:'<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',play:'<path d="m6 4 14 8-14 8z"/>',home:'<path d="m3 11 9-8 9 8M5 10v10h14V10"/>',eye:'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>'};
+medal:'<circle cx="12" cy="15" r="6"/><path d="M8.500 2h7L12 9z"/>',clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',video:'<path d="m22 8-6 4 6 4z"/><rect x="2" y="6" width="14" height="12" rx="2"/>',code:'<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',play:'<path d="m6 4 14 8-14 8z"/>',home:'<path d="m3 11 9-8 9 8M5 10v10h14V10"/>',eye:'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>'};
 export const ic=n=>{const s=h("span",{class:"ic","aria-hidden":"true"});s.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${P[n]||""}</svg>`;return s;};
 const SEC={about:{t:"Головна",i:"home"},lessons:{t:"Інтерактивні заняття",i:"code",g:"Навчання"},schedule:{t:"Розклад",i:"cal",g:"Навчання"},
 cert:{t:"Підвищення кваліфікації",i:"award",g:"Портфоліо викладача",cols:["certificates"]},pub:{t:"Інноваційна робота",i:"bulb",g:"Портфоліо викладача",cols:["publications"]},
@@ -67,6 +67,16 @@ function media(ph,alt,tag){
 const stat=(i,c,v,l)=>h("div",{class:"stat"},h("span",{class:"si c-"+c},ic(i)),h("b",{},v),h("span",{},l));
 const lk=(col,r)=>/^https:\/\//.test(r.link||"")?h("a",{class:"lk",href:r.link,target:"_blank",rel:"noopener"},LBL[col],ic("ext")):null;
 
+const DN=["Понеділок","Вівторок","Середа","Четвер","П’ятниця"],MS=["січ.","лют.","бер.","квіт.","трав.","черв.","лип.","серп.","вер.","жовт.","лист.","груд."];
+const pad=n=>String(n).padStart(2,"0");
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const addDays=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
+const mondayOf=d=>addDays(d,-((d.getDay()+6)%7));
+const dm=d=>`${pad(d.getDate())}.${pad(d.getMonth()+1)}`;
+const fd=d=>`${d.getDate()} ${MS[d.getMonth()]}`;
+const fmtPair=s=>String(s).replace(/\s*[-–—]\s*/," — ");
+function isoWeek(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);const y0=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-y0)/864e5+1)/7);}
+function weekNo(mon,sc){if(sc.start){const p=sc.start.split("-").map(Number);return Math.round((mon-mondayOf(new Date(p[0],p[1]-1,p[2])))/604800000)+1;}return isoWeek(mon);}
 const names=r=>r.students&&r.students.length?r.students:(r.student?[r.student]:[]);
 const subjLinks=s=>{const a=[["materials","Матеріали курсу","book"],["program","Робоча програма","file"]].filter(x=>/^https:\/\//.test(s[x[0]]||"")).map(x=>h("a",{href:s[x[0]],target:"_blank",rel:"noopener"},ic(x[2]),x[1]));return a.length?h("div",{class:"sl"},a):null;};
 export function mount(root,opts={}){
@@ -170,8 +180,46 @@ export function mount(root,opts={}){
   a.length?h("div",{class:"hlist"},a.map(r=>h("article",{class:"card hv aw"},media(r.photos||[],r.title),h("div",{class:"cb"},h("div",{class:"awt"},h("span",{class:"si big c-amb"},ic("trophy")),h("span",{class:"chip solid"},fmt(r))),
    h("h3",{},r.title),r.desc?h("p",{class:"mu"},r.desc):null,r.type?h("span",{class:"chip"},ic("medal"),r.type):null,lk("awards",r),ab("awards",r))))):empty("awards")];
  }
+ let grp="g1",sel=mondayOf(new Date()),tabBase=sel;
+ function schedBody(paint){
+  const sc=getSched(),today=iso(new Date()),wn=weekNo(sel,sc);
+  const go=d=>{sel=d;if(d<tabBase)tabBase=d;else if(d>addDays(tabBase,7))tabBase=d;paint();};
+  const all=(st.lessons||[]).filter(l=>l.g===grp);
+  const lab=m=>{const n=weekNo(m,sc);return n>=1?"Тиждень "+n:"Поза семестром";};
+  const top=h("div",{class:"sc-top"},
+   h("div",{class:"seg",role:"tablist","aria-label":"Група"},["g1","g2"].map((g,i)=>h("button",{role:"tab","aria-selected":String(g===grp),class:g===grp?"on":"",onclick:()=>{grp=g;paint();}},ic("users"),sc.groups[i]))),
+   h("div",{class:"wk-n"},h("button",{class:"wk-b","aria-label":"Попередній тиждень",onclick:()=>go(addDays(sel,-7))},ic("l")),
+    h("button",{class:"wk-b txt",onclick:()=>{const c=mondayOf(new Date());sel=c;tabBase=c;paint();}},"Поточний тиждень"),
+    h("button",{class:"wk-b","aria-label":"Наступний тиждень",onclick:()=>go(addDays(sel,7))},ic("r")),
+    h("input",{type:"date",class:"wk-d","aria-label":"Перейти до дати",value:iso(sel),onchange:e=>{const v=e.target.value;if(v){const p=v.split("-").map(Number);go(mondayOf(new Date(p[0],p[1]-1,p[2])));}}})));
+  const tabs=h("div",{class:"wk-t",role:"tablist","aria-label":"Тижні"},[tabBase,addDays(tabBase,7)].map(m=>{const on=m.getTime()===sel.getTime();
+   return h("button",{role:"tab","aria-selected":String(on),class:on?"on":"",onclick:()=>go(m)},h("b",{},lab(m)),h("span",{},dm(m)+" — "+dm(addDays(m,4))));}));
+  const days=[0,1,2,3,4].map(i=>addDays(sel,i));
+  const head=h("div",{class:"wk-h"},h("span",{},wn>=1?"Навчальний тиждень "+wn:"Тиждень"),h("b",{},fd(sel)+" — "+fd(days[4])));
+  if(!all.length)return [top,tabs,head,A?empty("lessons","Додати заняття"):h("div",{class:"empty"},ic("cal"),h("p",{},"Для цієї групи розклад ще не додано."))];
+  const on=(l,i,d)=>l.rep==="once"?l.date===iso(d):(+l.day===i+1&&(!l.rep||l.rep==="all"||(l.rep==="odd")===(wn%2!==0)));
+  const lc=l=>h("article",{class:"lc"},h("div",{class:"lc-t"},ic("clock"),fmtPair(sc.pairs[l.pair-1]||"")),
+   h("div",{class:"lc-b"},h("h4",{},l.subject),
+    h("div",{class:"lc-c"},l.type?h("span",{class:"chip"},l.type.toLowerCase()):null,l.changed?h("span",{class:"chip ok"},"Нещодавно змінено"):null),
+    l.mode==="online"?(/^https:\/\//.test(l.link||"")?h("a",{class:"onl",href:l.link,target:"_blank",rel:"noopener"},ic("video"),"Онлайн"):h("span",{class:"onl off"},ic("video"),"Онлайн")):
+     h("div",{class:"loc"},l.building?h("div",{},h("small",{},"Корпус"),h("b",{},l.building)):null,l.room?h("div",{},h("small",{},"Аудиторія"),h("b",{},l.room)):null),
+    ab("lessons",l)));
+  const cell=(pi,i,d)=>all.filter(l=>+l.pair===pi+1&&on(l,i,d));
+  const table=h("div",{class:"g-wrap"},h("div",{class:"g-t"},
+   h("div",{class:"g-h corner"},"Пари"),days.map((d,i)=>h("div",{class:"g-h"+(iso(d)===today?" now":"")},h("b",{},DN[i]),h("span",{},dm(d)))),
+   sc.pairs.flatMap((pr,pi)=>[h("div",{class:"g-p"},h("span",{class:"pn"},pi+1),h("small",{},"Пара"),h("em",{},fmtPair(pr))),
+    ...days.map((d,i)=>{const ls=cell(pi,i,d);return h("div",{class:"g-c"+(iso(d)===today?" now":"")},ls.length?ls.map(lc):h("span",{class:"dash"},"—"));})])));
+  const list=h("div",{class:"g-m"},days.map((d,i)=>{const items=sc.pairs.map((pr,pi)=>({pi,ls:cell(pi,i,d)})).filter(x=>x.ls.length);
+   return h("section",{class:"g-d"+(iso(d)===today?" now":"")},h("h3",{},DN[i],h("span",{},dm(d))),
+    items.length?items.map(x=>h("div",{class:"g-mp"},h("div",{class:"g-mh"},h("span",{class:"pn"},x.pi+1),h("em",{},fmtPair(sc.pairs[x.pi]))),x.ls.map(lc))):h("p",{class:"mu s"},"Занять немає"));}));
+  return [top,tabs,head,table,list];
+ }
+ function schedule(){
+  const box=h("div",{class:"sched"});const paint=()=>box.replaceChildren(...schedBody(paint));paint();
+  return [banner("schedule","Розклад занять","Оберіть групу й тиждень. Онлайн-заняття відкриваються за посиланням, для очних занять вказано корпус і аудиторію.",add("lessons","Додати заняття"),A?h("button",{class:"btn primary sm",onclick:A.sched},ic("edit"),"Налаштування розкладу"):null),box];
+ }
  const B={about,lessons:()=>soon("Інтерактивні заняття","Тут з’являться інтерактивні завдання з HTML, CSS та JavaScript: тести, практика з кодом і миттєва перевірка.","code"),
-  schedule:()=>soon("Розклад","Розклад занять буде доступний у цьому розділі.","cal"),cert,pub,stud,awards};
+  schedule,cert,pub,stud,awards};
  function draw(k){
   view.dataset.t=k;view.classList.remove("in");view.replaceChildren(...B[k]());void view.offsetWidth;view.classList.add("in");
   nav.querySelectorAll("a").forEach(a=>a.setAttribute("aria-current",a.dataset.k===k?"page":"false"));

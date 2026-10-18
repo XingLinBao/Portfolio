@@ -2,7 +2,7 @@ import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut,sendPasswo
 import {app,cache,delRec} from "./data.js";
 import {OWNER_UID} from "./config.js";
 import {mount,h,ic} from "./render.js";
-import {recordModal,profileModal,confirmBox,toast} from "./modal.js";
+import {recordModal,profileModal,schedModal,confirmBox,toast} from "./modal.js";
 import {runWizard} from "./wizard.js";
 const auth=getAuth(app),root=document.getElementById("app");
 let site=null,denied=null;
@@ -34,8 +34,8 @@ function start(){
   h("button",{class:"btn sm",onclick:()=>runWizard(refresh,1)},"Майстер налаштування"),
   h("button",{class:"btn sm",onclick:()=>signOut(auth)},"Вийти")));
  const holder=h("div");root.append(bar,holder);
- const title=r=>r.title||r.degree||r.name||r.student||"запис";
- site=mount(holder,{admin:{add:c=>recordModal(c,null,refresh),edit:(c,r)=>recordModal(c,r,refresh),profile:()=>profileModal(refresh),
+ const title=r=>r.title||r.subject||r.degree||r.name||r.student||"запис";
+ site=mount(holder,{admin:{add:c=>recordModal(c,null,refresh),edit:(c,r)=>recordModal(c,r,refresh),profile:()=>profileModal(refresh),sched:()=>schedModal(refresh),
   async del(c,r){if(!(await confirmBox(`Видалити «${title(r)}»? Цю дію не можна скасувати.`,"Видалити",true,"Видалення")))return;
    try{await delRec(c,r.id);toast("Видалено");await refresh();}catch(e){toast("Не вдалося видалити: "+(e.message||e),"err");}}}});
  site.refresh(true).then(()=>{if(cache.loaded&&!cache.profile.setupDone)runWizard(refresh);});

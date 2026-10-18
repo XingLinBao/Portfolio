@@ -41,7 +41,7 @@ const ysel=(id,v)=>{const s=h("select",{id,"aria-label":"Рік"},h("option",{va
 export function buildForm(fields,v={}){
  const el=h("div",{class:"form"}),G=[];
  for(const f of fields){
-  const id="f"+(++uid);let ctl,get,fin;
+  const id="f"+(++uid);let ctl,get,fin,extra=null;
   if(f.t==="textarea"){ctl=h("textarea",{id,rows:5,maxlength:3000,placeholder:f.ph||""});ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value.trim()});}
   else if(f.t==="select"){ctl=h("select",{id},h("option",{value:""},"— оберіть —"),...f.opts.map(o=>Array.isArray(o)?h("option",{value:o[0]},o[1]):h("option",{value:o},o)));ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value});}
   else if(f.t==="check"){const i=h("input",{id,type:"checkbox"});i.checked=!!v[f.k];ctl=h("label",{class:"chk"},i,f.l);get=()=>({[f.k]:i.checked});}
@@ -63,9 +63,10 @@ export function buildForm(fields,v={}){
    init.forEach(x=>mk(x));ctl=h("div",{},rows,addB);get=()=>({[f.k]:inputs.map(i=>i.value.trim()).filter(Boolean)});}
   else if(f.t==="photos"||f.t==="photo"){const one=f.t==="photo",pf=photoField(one?(v[f.k]?[v[f.k]]:[]):(v[f.k]||[]),{single:one,maxSide:one?800:1200,limit:one?500000:800000});
    ctl=pf.el;get=()=>({[f.k]:pf.get()});fin=async()=>({[f.k]:await pf.finalize()});}
-  else{ctl=h("input",{id,type:f.t||"text",maxlength:300,placeholder:f.ph||""});ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value.trim()});}
+  else{ctl=h("input",{id,type:f.t||"text",maxlength:300,placeholder:f.ph||""});ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value.trim()});
+   if(f.sugg){extra=h("datalist",{id:"dl"+id},...f.sugg().map(x=>h("option",{value:x})));ctl.setAttribute("list","dl"+id);ctl.setAttribute("autocomplete","off");}}
   G.push({f,get,fin,ctl});
-  el.append(h("div",{class:"fld"},f.t==="check"?null:h("label",{for:id},f.l,f.req?h("span",{class:"rq",title:"Обов’язкове"}," *"):null),ctl,f.hint?h("small",{},f.hint):null));
+  el.append(h("div",{class:"fld"},f.t==="check"?null:h("label",{for:id},f.l,f.req?h("span",{class:"rq",title:"Обов’язкове"}," *"):null),ctl,extra,f.hint?h("small",{},f.hint):null));
  }
  const get=()=>Object.assign({},...G.map(g=>g.get()));
  const ini=JSON.stringify(get());

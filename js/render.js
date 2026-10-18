@@ -4,6 +4,7 @@ export const h=(t,a={},...c)=>{const e=document.createElement(t);
  c.flat().forEach(x=>{if(x!=null&&x!==false)e.append(x.nodeType?x:document.createTextNode(x));});return e;};
 const P={user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
 award:'<circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/>',
+globe:'<circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4" ry="10"/><path d="M2 12h20M12 2v20M4 6.500c2.300 1.300 5 2 8 2s5.700-.7 8-2M4 17.500c2.300-1.300 5-2 8-2s5.700.7 8 2"/>',
 bulb:'<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/>',
 users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
 trophy:'<path d="M6 9H4a2 2 0 0 1-2-2V4h4M18 9h2a2 2 0 0 0 2-2V4h-4M6 4h12v6a6 6 0 0 1-12 0zM12 16v3M8 22h8M9 19h6"/>',
@@ -141,7 +142,7 @@ export function mount(root,opts={}){
   return h("section",{class:"blk"},sh("book","blue","Дисципліни","subjects"),
    sb.length?h("div",{class:"dgrid"},sb.map((s,i)=>{const p=PAL[i%PAL.length];
     return h("article",{class:"dcard hv",style:`--a1:${p[0]};--a2:${p[1]};--glow:${p[0]}88`},h("div",{class:"dbar"}),
-     h("div",{class:"dcb"},h("div",{class:"dh"},h("span",{class:"si big c-"+p[2]},ic(p[3])),h("h3",{},s.name)),subjLinks(s),ab("subjects",s)));})):empty("subjects"));
+     h("div",{class:"dcb"},h("div",{class:"dh"},h("span",{class:"si big c-"+p[2]},ic(/інтернет/i.test(s.name)?"globe":p[3])),h("h3",{},s.name)),subjLinks(s),ab("subjects",s)));})):empty("subjects"));
  }
  function about(){
   const p=st.profile||{};

@@ -124,6 +124,16 @@ export function mount(root,opts={}){
     h("div",{class:"hb-tech"},[["html","HTML"],["css","CSS"],["js","JavaScript"]].map(x=>h("span",{class:"tp"},tech(x[0]),x[1])))),
    h("div",{class:"hb-r"},codeWin(),tech("html","fb"),tech("css","fb"),tech("js","fb")));
  }
+ function journalBanner(){
+  const shot=h("img",{src:"img/journal.png",alt:"Електронний журнал: приклад сторінки студента",loading:"lazy",onerror:e=>e.target.closest(".jbanner").classList.add("no-shot")});
+  return h("section",{class:"jbanner"},
+   h("div",{class:"jb-l"},
+    h("span",{class:"jb-tag"},ic("cap"),"Для студентів"),
+    h("h2",{},"Ти студент і хочеш дізнатись свої оцінки?"),
+    h("p",{},"Зареєструйся в електронному журналі — оцінки, відвідуваність і результати завдань завжди під рукою."),
+    h("a",{class:"cta light",href:"https://zhongbaolin.github.io/Journal/index-student.html",target:"_blank",rel:"noopener noreferrer"},ic("ext"),"Перейти до журналу")),
+   h("div",{class:"jb-r","aria-hidden":"true"},h("div",{class:"jb-shot"},shot)));
+ }
  function disciplines(){
   const sb=[...(st.subjects||[])].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
   if(!sb.length&&!A)return null;
@@ -143,7 +153,7 @@ export function mount(root,opts={}){
    h("div",{class:"hero-b"},h("h1",{},p.fullName||"ПІБ не вказано"),p.position?h("p",{class:"pos"},p.position):null,ct,
    p.about?h("div",{class:"about"},h("h2",{},"Про мене"),h("p",{},p.about)):null,
    A?h("button",{class:"btn primary sm",onclick:A.profile},ic("edit"),"Змінити профіль"):null));
-  const out=[homeBanner(),disciplines(),h("section",{class:"blk"},sh("user","pur","Про викладача"),hero)],ed=sorted(st.education);
+  const out=[homeBanner(),disciplines(),journalBanner(),h("section",{class:"blk"},sh("user","pur","Про викладача"),hero)],ed=sorted(st.education);
   if(ed.length||A)out.push(secCard("cap","blue","Освіта","education",ed.length?h("div",{class:"tl"},ed.map(e=>h("div",{class:"tli"},h("div",{class:"tli-r"},h("div",{class:"tli-t"},h("h3",{},e.degree),h("p",{class:"mu"},e.place),h("span",{class:"yr"},e.year)),e.photos&&e.photos.length?h("button",{class:"dipl",type:"button","aria-label":"Переглянути фото диплома",onclick:()=>gallery(e.photos,0)},h("img",{src:e.photos[0],alt:"Диплом: "+e.degree}),e.photos.length>1?h("span",{},"+"+(e.photos.length-1)):null):null),ab("education",e)))):empty("education")));
   return out.filter(Boolean);
  }

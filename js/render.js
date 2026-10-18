@@ -72,11 +72,11 @@ const subjLinks=s=>{const a=[["materials","Матеріали курсу","book"
 export function mount(root,opts={}){
  const A=opts.admin;let st=cache,tab="studentArticles";
  const nav=h("nav",{class:"menu","aria-label":"Розділи"}),sub=h("div",{class:"brand-s"}),
- help=h("div",{class:"help"}),crumb=h("div",{class:"crumb"}),who=h("div",{class:"who-top"}),
+ help=h("div",{class:"help"}),crumb=h("div",{class:"crumb"}),
  side=h("aside",{class:"side",id:"side"},h("a",{class:"brand",href:"#about"},h("div",{class:"logo"},ic("code")),h("div",{},h("div",{class:"brand-t"},"WebLab"),sub)),nav,help),
  burger=h("button",{class:"burger",type:"button","aria-label":"Меню","aria-controls":"side","aria-expanded":"false"},ic("menu")),
  scrim=h("div",{class:"scrim"}),view=h("main",{class:"wrap"}),foot=h("footer",{class:"foot"}),
- top=h("header",{class:"topbar"},burger,h("div",{},h("div",{class:"crumb-s"},"WebLab"),crumb),who),
+ top=h("header",{class:"topbar"},burger,h("div",{},h("div",{class:"crumb-s"},"WebLab"),crumb)),
  shell=h("div",{class:"app"},side,scrim,h("div",{class:"col"},top,view,foot));
  root.append(shell);
  const openNav=o=>{shell.classList.toggle("nav-open",o);burger.setAttribute("aria-expanded",String(o));};
@@ -108,9 +108,8 @@ export function mount(root,opts={}){
   const p=st.profile||{};
   return h("section",{class:"hbanner"},
    h("div",{class:"hb-l"},
-    h("span",{class:"hb-chip"},p.fullName?"Викладач: "+p.fullName:"Ласкаво просимо"),
     h("h1",{},"Вітаємо у ",h("span",{class:"grad"},"WebLab"),"!"),
-    h("p",{},"Інтерактивна лабораторія з веброзробки: вивчай HTML, CSS та JavaScript, виконуй завдання й одразу бачиш результат."),
+    h("p",{},"Освітній простір з веброзробки: інтерактивні заняття, завдання й матеріали з HTML, CSS та JavaScript для студентів і колег-педагогів."),
     h("div",{class:"hb-b"},h("a",{class:"cta light",href:"#lessons"},ic("play"),"Інтерактивні заняття"),h("a",{class:"cta glass",href:"#schedule"},ic("cal"),"Розклад")),
     h("div",{class:"hb-tech"},[["html","HTML"],["css","CSS"],["js","JavaScript"]].map(x=>h("span",{class:"tp"},tech(x[0]),x[1])))),
    h("div",{class:"hb-r"},codeWin(),tech("html","fb"),tech("css","fb"),tech("js","fb")));
@@ -191,7 +190,6 @@ export function mount(root,opts={}){
   nav.replaceChildren(...items);
   help.replaceChildren(...(p.email?[h("b",{},"Є запитання?"),h("p",{},"Напишіть викладачу — відповідь надійде на пошту."),h("a",{class:"cta dark",href:"mailto:"+p.email},ic("mail"),"Написати викладачу")]:[]));
   help.hidden=!p.email;
-  who.replaceChildren(h("div",{class:"who-t"},h("b",{},p.fullName||"Викладач"),p.position?h("span",{},p.position):null),p.photo?h("img",{class:"av",src:p.photo,alt:""}):h("span",{class:"av ph2"},ic("user")));
   foot.textContent=`© ${new Date().getFullYear()} WebLab${p.institution?" · "+p.institution:""}`;
  }
  async function refresh(force){

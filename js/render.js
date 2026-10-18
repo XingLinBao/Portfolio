@@ -198,8 +198,7 @@ export function mount(root,opts={}){
   const head=h("div",{class:"wk-h"},h("span",{},wn>=1?"Навчальний тиждень "+wn:"Тиждень"),h("b",{},fd(sel)+" — "+fd(days[5])));
   if(!all.length)return [top,tabs,head,A?empty("lessons","Додати заняття"):h("div",{class:"empty"},ic("cal"),h("p",{},"Для цієї групи розклад ще не додано."))];
   const on=(l,i,d)=>l.rep==="once"?l.date===iso(d):(+l.day===i+1&&(!l.rep||l.rep==="all"||(l.rep==="odd")===(wn%2!==0)));
-  const lc=l=>h("article",{class:"lc"},h("div",{class:"lc-t"},ic("clock"),fmtPair(sc.pairs[l.pair-1]||"")),
-   h("div",{class:"lc-b"},h("h4",{},l.subject),
+  const lc=l=>h("article",{class:"lc"},   h("div",{class:"lc-b"},h("h4",{},l.subject),
     h("div",{class:"lc-c"},l.type?h("span",{class:"chip"},l.type.toLowerCase()):null,l.changed?h("span",{class:"chip ok"},"Нещодавно змінено"):null),
     l.mode==="online"?(/^https:\/\//.test(l.link||"")?h("a",{class:"onl",href:l.link,target:"_blank",rel:"noopener"},ic("video"),"Онлайн"):h("span",{class:"onl off"},ic("video"),"Онлайн")):
      h("div",{class:"loc"},l.building?h("div",{},h("small",{},"Корпус"),h("b",{},l.building)):null,l.room?h("div",{},h("small",{},"Аудиторія"),h("b",{},l.room)):null),

@@ -67,7 +67,7 @@ function media(ph,alt,tag){
 const stat=(i,c,v,l)=>h("div",{class:"stat"},h("span",{class:"si c-"+c},ic(i)),h("b",{},v),h("span",{},l));
 const lk=(col,r)=>/^https:\/\//.test(r.link||"")?h("a",{class:"lk",href:r.link,target:"_blank",rel:"noopener"},LBL[col],ic("ext")):null;
 
-const DN=["Понеділок","Вівторок","Середа","Четвер","П’ятниця"],MS=["січ.","лют.","бер.","квіт.","трав.","черв.","лип.","серп.","вер.","жовт.","лист.","груд."];
+const DN=["Понеділок","Вівторок","Середа","Четвер","П’ятниця","Субота"],MS=["січ.","лют.","бер.","квіт.","трав.","черв.","лип.","серп.","вер.","жовт.","лист.","груд."];
 const pad=n=>String(n).padStart(2,"0");
 const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const addDays=(d,n)=>new Date(d.getFullYear(),d.getMonth(),d.getDate()+n);
@@ -193,9 +193,9 @@ export function mount(root,opts={}){
     h("button",{class:"wk-b","aria-label":"Наступний тиждень",onclick:()=>go(addDays(sel,7))},ic("r")),
     h("input",{type:"date",class:"wk-d","aria-label":"Перейти до дати",value:iso(sel),onchange:e=>{const v=e.target.value;if(v){const p=v.split("-").map(Number);go(mondayOf(new Date(p[0],p[1]-1,p[2])));}}})));
   const tabs=h("div",{class:"wk-t",role:"tablist","aria-label":"Тижні"},[tabBase,addDays(tabBase,7)].map(m=>{const on=m.getTime()===sel.getTime();
-   return h("button",{role:"tab","aria-selected":String(on),class:on?"on":"",onclick:()=>go(m)},h("b",{},lab(m)),h("span",{},dm(m)+" — "+dm(addDays(m,4))));}));
-  const days=[0,1,2,3,4].map(i=>addDays(sel,i));
-  const head=h("div",{class:"wk-h"},h("span",{},wn>=1?"Навчальний тиждень "+wn:"Тиждень"),h("b",{},fd(sel)+" — "+fd(days[4])));
+   return h("button",{role:"tab","aria-selected":String(on),class:on?"on":"",onclick:()=>go(m)},h("b",{},lab(m)),h("span",{},dm(m)+" — "+dm(addDays(m,5))));}));
+  const days=[0,1,2,3,4,5].map(i=>addDays(sel,i));
+  const head=h("div",{class:"wk-h"},h("span",{},wn>=1?"Навчальний тиждень "+wn:"Тиждень"),h("b",{},fd(sel)+" — "+fd(days[5])));
   if(!all.length)return [top,tabs,head,A?empty("lessons","Додати заняття"):h("div",{class:"empty"},ic("cal"),h("p",{},"Для цієї групи розклад ще не додано."))];
   const on=(l,i,d)=>l.rep==="once"?l.date===iso(d):(+l.day===i+1&&(!l.rep||l.rep==="all"||(l.rep==="odd")===(wn%2!==0)));
   const lc=l=>h("article",{class:"lc"},h("div",{class:"lc-t"},ic("clock"),fmtPair(sc.pairs[l.pair-1]||"")),

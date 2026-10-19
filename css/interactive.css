@@ -25,8 +25,11 @@
 
 /* ---------- Банер ---------- */
 .ilb{position:relative;overflow:hidden;border-radius:30px;color:#fff;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);align-items:center;gap:32px;padding:52px 54px;min-height:290px;
-  background:radial-gradient(440px 280px at 100% 0,rgba(255,255,255,.30),transparent 62%),radial-gradient(380px 240px at 0 100%,rgba(255,255,255,.14),transparent 62%),linear-gradient(120deg,#e8366b,#f4484a 32%,#f97316 68%,#f59e0b);box-shadow:var(--sh)}
-.ilb:before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.10) 1px,transparent 1px);background-size:38px 38px;-webkit-mask-image:radial-gradient(circle at 78% 50%,#000,transparent 66%);mask-image:radial-gradient(circle at 78% 50%,#000,transparent 66%)}
+  background:linear-gradient(120deg,#d97706,#f59e0b 40%,#f97316 75%,#ef4444);box-shadow:var(--sh)}
+/* плаваючі кола — як на банері «Нагороди» */
+.ilb:before,.ilb:after{content:"";position:absolute;border-radius:50%;pointer-events:none}
+.ilb:before{width:440px;height:440px;right:-110px;top:-200px;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.38),transparent 65%);animation:float 10s ease-in-out infinite}
+.ilb:after{width:300px;height:300px;left:30%;bottom:-190px;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 65%);animation:float 13s ease-in-out infinite reverse}
 .ilb>*{position:relative;z-index:1}
 .ilb-l{display:grid;gap:16px;align-content:center}
 .ilb h1{font-family:var(--fh);font-size:clamp(28px,4vw,44px);line-height:1.15;font-weight:600}
@@ -276,3 +279,13 @@ textarea.mono{font:500 13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,mono
   .ws-top .btn{padding:9px 14px}
 }
 @media(max-width:480px){.il-mi{flex-direction:column;gap:4px;font-size:13px;padding:10px 6px;text-align:center}}
+
+/* ---------- Плавна поява при перемиканні ---------- */
+@keyframes ilIn{from{opacity:0;transform:translateY(14px)}}
+.il-box>*{animation:ilIn .45s cubic-bezier(.2,.8,.2,1) backwards}
+.ip-grid>*{animation:ilIn .5s cubic-bezier(.2,.8,.2,1) backwards}
+.ip-grid>:nth-child(2){animation-delay:.07s}.ip-grid>:nth-child(3){animation-delay:.14s}.ip-grid>:nth-child(n+4){animation-delay:.2s}
+.ws-main>*{animation:ilIn .5s cubic-bezier(.2,.8,.2,1) backwards}
+.ws-main>:nth-child(2){animation-delay:.08s}.ws-main>:nth-child(3){animation-delay:.16s}
+.ws-res:not([hidden]){animation:ilIn .4s cubic-bezier(.2,.8,.2,1) backwards}
+@media(prefers-reduced-motion:reduce){.il-box>*,.ip-grid>*,.ws-main>*,.ws-res{animation:none!important}}

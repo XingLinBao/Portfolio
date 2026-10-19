@@ -1,17 +1,32 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Замініть на UID власниці (Authentication → Users)
-    function owner() { return request.auth != null && request.auth.uid == 'ВСТАВТЕ_UID'; }
+    function owner() { return request.auth != null && request.auth.uid == 'x3HxqzCj41cdDOy2aTF2MUaBeGH2'; }
     function str(d, k, n) { return !(k in d) || (d[k] is string && d[k].size() <= n); }
     function num(d, k) { return !(k in d) || (d[k] is number && d[k] >= 0 && d[k] < 100000); }
     function students(d) { return !('students' in d) || (d.students is list && d.students.size() <= 60); }
     function photos(d) { return !('photos' in d) || (d.photos is list && d.photos.size() <= 6); }
     function good(d) {
-      return d.keys().size() <= 16 && photos(d)
+      return d.keys().size() <= 24 && photos(d)
         && str(d,'title',300) && str(d,'name',300) && str(d,'degree',300) && str(d,'place',300) && str(d,'org',300)
         && str(d,'publisher',300) && str(d,'student',300) && str(d,'venue',300) && str(d,'award',300) && str(d,'type',100)
         && str(d,'group',100) && students(d) && str(d,'materials',500) && str(d,'program',500) && str(d,'desc',3000) && str(d,'link',500) && num(d,'year') && num(d,'month') && num(d,'day') && num(d,'hours') && num(d,'count');
+    }
+    // Тест тижня: одне запитання = один документ
+    function goodQuiz(d) {
+      return d.keys().hasOnly(['title','topic','type','code','opts','pairs','explain','ord','createdAt'])
+        && d.title is string && d.title.size() > 0 && d.title.size() <= 1000
+        && d.topic in ['html','css','js'] && d.type in ['single','multi','match']
+        && str(d,'code',3000) && str(d,'explain',2000)
+        && (!('opts' in d) || (d.opts is list && d.opts.size() <= 8))
+        && (!('pairs' in d) || (d.pairs is list && d.pairs.size() <= 8));
+    }
+    // Практика: одна тема = один документ, завдання лежать у масиві tasks
+    function goodPractice(d) {
+      return d.keys().hasOnly(['title','lang','desc','tasks','ord','createdAt'])
+        && d.title is string && d.title.size() > 0 && d.title.size() <= 300
+        && d.lang in ['html','css','js'] && str(d,'desc',1000)
+        && d.tasks is list && d.tasks.size() <= 40;
     }
     match /profile/{id} {
       allow read: if true;
@@ -21,6 +36,20 @@ service cloud.firestore {
         && str(request.resource.data,'email',300) && str(request.resource.data,'phone',100)
         && str(request.resource.data,'address',300) && str(request.resource.data,'photo',900000);
     }
+    match /quiz/{id} {
+      allow read: if true;
+      allow create, update: if owner() && goodQuiz(request.resource.data);
+      allow delete: if owner();
+    }
+    match /practice/{id} {
+      allow read: if true;
+      allow create, update: if owner() && goodPractice(request.resource.data);
+      allow delete: if owner();
+    }
+    match /lessons/{id} {
+      allow read: if true;
+      allow create, update, delete: if owner();
+    }
     match /{col}/{id} {
       allow read: if col in ['education','subjects','certificates','publications','studentArticles','events','awards'];
       allow create, update: if owner() && col in ['education','subjects','certificates','publications','studentArticles','events','awards'] && good(request.resource.data);
@@ -28,3 +57,4 @@ service cloud.firestore {
     }
   }
 }
+

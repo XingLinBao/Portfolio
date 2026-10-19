@@ -1,4 +1,5 @@
 import {load,cache,MONTHS,MONTHS_GEN,getSched} from "./data.js";
+import {buildInteractive} from "./interactive.js";
 export const h=(t,a={},...c)=>{const e=document.createElement(t);
  for(const[k,v]of Object.entries(a)){if(v==null||v===false)continue;if(k==="class")e.className=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?"":v);}
  c.flat().forEach(x=>{if(x!=null&&x!==false)e.append(x.nodeType?x:document.createTextNode(x));});return e;};
@@ -22,7 +23,7 @@ x:'<path d="M18 6 6 18M6 6l12 12"/>',l:'<path d="m15 18-6-6 6-6"/>',r:'<path d="
 plus:'<path d="M12 5v14M5 12h14"/>',edit:'<path d="M12 20h9M16.500 3.500a2.100 2.100 0 0 1 3 3L7 19l-4 1 1-4z"/>',
 trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/>',
 img:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.500" cy="8.500" r="1.500"/><path d="m21 15-5-5L5 21"/>',
-medal:'<circle cx="12" cy="15" r="6"/><path d="M8.500 2h7L12 9z"/>',clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',video:'<path d="m22 8-6 4 6 4z"/><rect x="2" y="6" width="14" height="12" rx="2"/>',code:'<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',play:'<path d="m6 4 14 8-14 8z"/>',home:'<path d="m3 11 9-8 9 8M5 10v10h14V10"/>',eye:'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>'};
+medal:'<circle cx="12" cy="15" r="6"/><path d="M8.500 2h7L12 9z"/>',clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',video:'<path d="m22 8-6 4 6 4z"/><rect x="2" y="6" width="14" height="12" rx="2"/>',code:'<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',play:'<path d="m6 4 14 8-14 8z"/>',home:'<path d="m3 11 9-8 9 8M5 10v10h14V10"/>',check:'<path d="m5 13 4 4L19 7"/>',undo:'<path d="M3 7v6h6"/><path d="M3 13a9 9 0 1 0 3-6.700"/>',up:'<path d="m6 15 6-6 6 6"/>',down:'<path d="m6 9 6 6 6-6"/>',lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',copy:'<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',dot:'<circle cx="12" cy="12" r="2"/>',eye:'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>'};
 export const ic=n=>{const s=h("span",{class:"ic","aria-hidden":"true"});s.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${P[n]||""}</svg>`;return s;};
 const SEC={about:{t:"Головна",i:"home"},lessons:{t:"Інтерактивні заняття",i:"code",g:"Навчання"},schedule:{t:"Розклад",i:"cal",g:"Навчання"},
 cert:{t:"Підвищення кваліфікації",i:"award",g:"Портфоліо викладача",cols:["certificates"]},pub:{t:"Інноваційна робота",i:"bulb",g:"Портфоліо викладача",cols:["publications"]},
@@ -228,7 +229,7 @@ export function mount(root,opts={}){
   const box=h("div",{class:"sched"});const paint=()=>box.replaceChildren(...schedBody(paint));paint();
   return [banner("schedule","Розклад занять","Оберіть групу й тиждень. Онлайн-заняття відкриваються за посиланням, для очних занять вказано корпус і аудиторію.",add("lessons","Додати заняття"),A?h("button",{class:"btn primary sm",onclick:A.sched},ic("edit"),"Налаштування розкладу"):null),box];
  }
- const B={about,lessons:()=>soon("Інтерактивні заняття","Тут з’являться інтерактивні завдання з HTML, CSS та JavaScript: тести, практика з кодом і миттєва перевірка.","code"),
+ const B={about,lessons:()=>buildInteractive({h,ic,A,st,banner,soon,stat}),
   schedule,cert,pub,stud,awards};
  function draw(k){
   view.dataset.t=k;view.classList.remove("in");view.replaceChildren(...B[k]());void view.offsetWidth;view.classList.add("in");

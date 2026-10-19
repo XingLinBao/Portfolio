@@ -4,6 +4,7 @@ import {OWNER_UID} from "./config.js";
 import {mount,h,ic} from "./render.js";
 import {recordModal,profileModal,schedModal,confirmBox,toast} from "./modal.js";
 import {runWizard} from "./wizard.js";
+import {isInteractive,interactiveModal,quizMetaModal,clearQuiz,moveRec} from "./admin-interactive.js";
 const auth=getAuth(app),root=document.getElementById("app");
 let site=null,denied=null;
 const ERR={"auth/invalid-credential":"Невірний email або пароль.","auth/wrong-password":"Невірний email або пароль.","auth/user-not-found":"Невірний email або пароль.",
@@ -35,7 +36,8 @@ function start(){
   h("button",{class:"btn sm",onclick:()=>signOut(auth)},"Вийти")));
  const holder=h("div");root.append(bar,holder);
  const title=r=>r.title||r.subject||r.degree||r.name||r.student||"запис";
- site=mount(holder,{admin:{add:c=>recordModal(c,null,refresh),edit:(c,r)=>recordModal(c,r,refresh),profile:()=>profileModal(refresh),sched:()=>schedModal(refresh),
+ site=mount(holder,{admin:{add:c=>isInteractive(c)?interactiveModal(c,null,refresh):recordModal(c,null,refresh),edit:(c,r)=>isInteractive(c)?interactiveModal(c,r,refresh):recordModal(c,r,refresh),
+  quizMeta:()=>quizMetaModal(refresh),clearQuiz:()=>clearQuiz(refresh),move:(c,r,d,l)=>moveRec(c,r,d,l,refresh),profile:()=>profileModal(refresh),sched:()=>schedModal(refresh),
   async del(c,r){if(!(await confirmBox(`Видалити «${title(r)}»? Цю дію не можна скасувати.`,"Видалити",true,"Видалення")))return;
    try{await delRec(c,r.id);toast("Видалено");await refresh();}catch(e){toast("Не вдалося видалити: "+(e.message||e),"err");}}}});
  site.refresh(true).then(()=>{if(cache.loaded&&!cache.profile.setupDone)runWizard(refresh);});

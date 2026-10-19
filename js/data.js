@@ -5,7 +5,7 @@ export const app=initializeApp(firebaseConfig);
 export const db=getFirestore(app);
 export const MONTHS=["Січень","Лютий","Березень","Квітень","Травень","Червень","Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"];
 export const MONTHS_GEN=["січня","лютого","березня","квітня","травня","червня","липня","серпня","вересня","жовтня","листопада","грудня"];
-export const COLS=["education","subjects","certificates","publications","studentArticles","events","awards","lessons"];
+export const COLS=["education","subjects","certificates","publications","studentArticles","events","awards","lessons","quiz","practice"];
 const Y={k:"year",l:"Рік",t:"year",req:1},D={k:"my",t:"my",l:"Дата",req:1,hint:"Число можна не вказувати — тоді буде показано лише місяць і рік."},PH={k:"photos",l:"Фото або PDF (до 6, перше — обкладинка)",t:"photos",hint:"PDF автоматично перетворюється на зображення (кожна сторінка — окреме фото)."},
 LK={k:"link",l:"Посилання",t:"url",hint:"У Google Диску: «Доступ» → «Усі, хто має посилання» → «Читач». Лише https://"};
 const sel=(k,l,opts)=>({k,l,t:"select",opts,req:1});
@@ -35,10 +35,11 @@ export const SCHEMA={
 function subjectSuggestions(){const set=new Set();[...(cache.lessons||[]).map(l=>l.subject),...(cache.subjects||[]).map(s=>s.name)].forEach(x=>{if(x&&String(x).trim())set.add(String(x).trim());});return [...set].sort((a,b)=>a.localeCompare(b,"uk"));}
 export const DEF_SCHED={groups:["ІДП-31","БТ-31"],start:"",pairs:["09:00-10:20","10:30-11:50","12:10-13:30","13:40-15:00","15:10-16:30"]};
 export function getSched(){const s=(cache.profile&&cache.profile.sched)||{},g=s.groups||[];return{groups:[g[0]||DEF_SCHED.groups[0],g[1]||DEF_SCHED.groups[1]],start:s.start||"",pairs:s.pairs&&s.pairs.length?s.pairs:DEF_SCHED.pairs};}
+const SOFT=["lessons","quiz","practice"];
 export const cache={loaded:false,profile:{}};
 export async function load(force){
  if(cache.loaded&&!force)return cache;
- const [p,...r]=await Promise.all([getDoc(doc(db,"profile","main")),...COLS.map(c=>getDocs(collection(db,c)).catch(e=>{if(c==="lessons")return{docs:[]};throw e;}))]);
+ const [p,...r]=await Promise.all([getDoc(doc(db,"profile","main")),...COLS.map(c=>getDocs(collection(db,c)).catch(e=>{if(SOFT.includes(c))return{docs:[]};throw e;}))]);
  cache.profile=p.exists()?p.data():{};
  COLS.forEach((c,i)=>cache[c]=r[i].docs.map(d=>({id:d.id,...d.data()})));
  cache.loaded=true;return cache;

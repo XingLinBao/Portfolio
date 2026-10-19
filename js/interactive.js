@@ -23,6 +23,11 @@ export function rich(text){
     return h("p",{},lines.flatMap((l,i)=>[i?h("br"):null,...inline(l)]));
   });
 }
+const TECH={
+  html:'<svg viewBox="0 0 64 72" aria-hidden="true"><path d="M4 4h56l-5 56-23 8-23-8z" fill="#e34f26"/><path d="M32 8v56l18-6 4-50z" fill="#ef652a"/><text x="32" y="47" text-anchor="middle" font-size="30" font-weight="800" fill="#fff" font-family="Unbounded,Manrope,sans-serif">5</text></svg>',
+  css:'<svg viewBox="0 0 64 72" aria-hidden="true"><path d="M4 4h56l-5 56-23 8-23-8z" fill="#1572b6"/><path d="M32 8v56l18-6 4-50z" fill="#33a9dc"/><text x="32" y="47" text-anchor="middle" font-size="30" font-weight="800" fill="#fff" font-family="Unbounded,Manrope,sans-serif">3</text></svg>',
+  js:'<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="10" fill="#f7df1e"/><text x="58" y="56" text-anchor="end" font-size="28" font-weight="800" fill="#1a1a1a" font-family="Unbounded,Manrope,sans-serif">JS</text></svg>'};
+const tech=k=>{const e=h("span",{class:"tb "+k});e.innerHTML=TECH[k]||"";return e;};
 const lg=k=>h("span",{class:"lg "+k},LANGS[k]||k);
 
 export function buildInteractive(ctx){
@@ -32,14 +37,16 @@ export function buildInteractive(ctx){
   if(!A&&!quiz.length&&!topics.length)return soon("Інтерактивні заняття","Тут з’являться тест тижня та практичні завдання з HTML, CSS і JavaScript з миттєвою перевіркою коду.","code");
   const sig=JSON.stringify([quiz,topics.map(t=>t.id+":"+(t.tasks||[]).length)]);
   if(S.sig!==sig){S.sig=sig;S.qz=null;}
-  const sp=(c,t)=>h("span",{class:"k-"+c},t);
+  const sp=(c,t)=>h("span",{class:"k-"+c},t),ln=(...c)=>h("span",{class:"ln"},...c);
   const ban=h("section",{class:"ilb"},
     h("div",{class:"ilb-l"},h("h1",{},"Інтерактивні заняття"),
-      h("p",{},"Перевірте знання в тесті тижня та практикуйтеся: пишіть код у вбудованому редакторі, одразу бачте результат, а валідатор підкаже, що виправити. Оцінки тут не виставляються — це тренування.")),
+      h("p",{},"Перевірте знання в тесті тижня та практикуйтеся: пишіть код у вбудованому редакторі, одразу бачте результат, а валідатор підкаже, що виправити.")),
     h("div",{class:"ilb-r","aria-hidden":"true"},h("div",{class:"ilb-code"},
-      h("div",{class:"ilb-ch"},h("i"),h("i"),h("i"),h("span",{},"quiz.js")),
-      h("pre",{},h("code",{},sp("c","// Тест тижня"),"\n",sp("k","const")," answer = ",sp("s",'"B"'),";\n\n",
-        sp("k","function")," ",sp("f","check"),"(choice) {\n  ",sp("k","return")," choice === answer\n    ? ",sp("s",'"Правильно!"'),"\n    : ",sp("s",'"Ще раз"'),";\n}")))));
+      h("span",{class:"ilb-tab"},"quiz.js"),
+      h("pre",{},h("code",{},ln(sp("c","// Тест тижня")),ln(sp("k","const")," answer = ",sp("s",'"B"'),";"),ln(),
+        ln(sp("k","function")," ",sp("f","check"),"(choice) {"),ln("  ",sp("k","return")," choice === answer"),
+        ln("    ? ",sp("s",'"Правильно!"')),ln("    : ",sp("s",'"Ще раз"'),";"),ln("}"))),
+      h("span",{class:"ilb-ok"},ic("check")))));
   const menu=h("div",{class:"il-menu",role:"tablist","aria-label":"Розділ","aria-orientation":"vertical"});
   const box=h("div",{class:"il-box"});
   const lay=h("div",{class:"il"},menu,box);
@@ -95,7 +102,7 @@ function quizView(ctx,quiz){
       h("div",{class:"iq-st-b"},h("h2",{},meta.title||"Тест тижня"),
         h("p",{class:"mu"},meta.desc||"Перевірте, як ви засвоїли HTML, CSS та JavaScript. Запитання бувають різних типів: з однією відповіддю, з кількома та на співставлення."),
         quiz.length?h("div",{class:"iq-chips"},h("span",{class:"chip"},ic("list"),`${quiz.length} ${pl(quiz.length,"запитання","запитання","запитань")}`),...Object.keys(LANGS).filter(k=>cnt[k]).map(k=>h("span",{class:"chip"},`${LANGS[k]} · ${cnt[k]}`))):null,
-        h("p",{class:"mu s"},"Це тренування: оцінка не виставляється. Після завершення ви побачите правильні відповіді та пояснення."),
+        h("p",{class:"mu s"},"Після завершення ви побачите правильні відповіді та пояснення."),
         quiz.length?h("button",{class:"cta grad",onclick:begin},ic("play"),"Розпочати тест"):h("p",{class:"mu"},"Запитання ще не додано.")))];
     if(A)out.push(adminList());
     return out;
@@ -174,13 +181,13 @@ function practiceView(ctx,topics,repaint){
   const list=topics.filter(t=>t.lang===S.lang);
   const wrap=h("div",{class:"ip"});
   wrap.append(h("div",{class:"ip-top"},
-    h("div",{class:"tabs ip-langs",role:"tablist","aria-label":"Мова"},langs.map(k=>h("button",{role:"tab","aria-selected":String(S.lang===k),class:S.lang===k?"on":"",onclick:()=>{S.lang=k;repaint();}},LANGS[k],h("span",{class:"ip-n"},topics.filter(t=>t.lang===k).length)))),
+    h("div",{class:"tabs ip-langs",role:"tablist","aria-label":"Мова"},langs.map(k=>h("button",{role:"tab","aria-selected":String(S.lang===k),class:"lt tl-"+k+(S.lang===k?" on":""),onclick:()=>{S.lang=k;repaint();}},tech(k),LANGS[k],h("span",{class:"ip-n"},topics.filter(t=>t.lang===k).length)))),
     A?h("button",{class:"btn primary sm",onclick:()=>A.add("practice")},ic("plus"),"Додати тему"):null));
   if(!list.length){wrap.append(A?h("div",{class:"empty"},ic("plus"),h("p",{},"Тем із "+LANGS[S.lang]+" ще немає"),h("button",{class:"btn primary sm",onclick:()=>A.add("practice")},ic("plus"),"Додати тему")):h("div",{class:"empty"},ic("code"),h("p",{},"Практичні завдання з цієї мови з’являться згодом.")));return wrap;}
   wrap.append(h("div",{class:"ip-grid"},list.map((t,ti)=>{
     const tasks=t.tasks||[],done=tasks.filter(k=>isDone(t,k)).length;
-    return h("article",{class:"card hv ip-topic"},
-      h("div",{class:"ip-th"},h("span",{class:"si big c-"+({html:"amb",css:"blue",js:"pur"}[t.lang]||"blue")},ic({html:"code",css:"star",js:"bulb"}[t.lang]||"code")),
+    return h("article",{class:"card hv ip-topic tl-"+t.lang},h("div",{class:"ip-bar","aria-hidden":"true"}),
+      h("div",{class:"ip-th"},h("span",{class:"ip-badge"},tech(t.lang)),
         h("div",{class:"ip-tt"},h("h3",{},t.title),tasks.length?h("span",{class:"mu s"},`Виконано ${done} із ${tasks.length}`):null)),
       t.desc?h("p",{class:"mu ip-d"},t.desc):null,
       tasks.length?h("div",{class:"ip-pb","aria-hidden":"true"},h("div",{style:`width:${done/tasks.length*100}%`})):null,
@@ -203,7 +210,18 @@ function workspace(ctx,topic,ti,repaint){
     h("button",{class:"btn",onclick:back},ic("l"),"До тем"),
     h("div",{class:"ws-crumb"},lg(topic.lang),h("span",{},topic.title),h("b",{},`Завдання ${ti+1} з ${tasks.length}`)),
     h("div",{class:"ws-pn"},h("button",{class:"btn sm",disabled:ti===0,"aria-label":"Попереднє завдання",onclick:()=>go(ti-1)},ic("l")),h("button",{class:"btn sm",disabled:ti===tasks.length-1,"aria-label":"Наступне завдання",onclick:()=>go(ti+1)},ic("r")))));
-  root.append(h("div",{class:"loading",role:"status"},h("span",{class:"spin"}),"Завантаження редактора…"));
+  const side=h("aside",{class:"card ws-side tl-"+topic.lang,"aria-label":"Заняття теми"}),main=h("div",{class:"ws-main"});
+  const paintSide=()=>{
+    const done=tasks.filter(k=>isDone(topic,k)).length;
+    side.replaceChildren(
+      h("div",{class:"ws-sh"},h("span",{class:"ip-badge sm"},tech(topic.lang)),h("div",{class:"ws-st"},h("b",{},topic.title),h("span",{class:"mu s"},`Виконано ${done} із ${tasks.length}`))),
+      h("div",{class:"ip-pb","aria-hidden":"true"},h("div",{style:`width:${done/tasks.length*100}%`})),
+      h("ol",{class:"ws-nav"},tasks.map((k,i)=>h("li",{},h("button",{class:"ws-si"+(i===ti?" cur":"")+(isDone(topic,k)?" done":""),"aria-current":i===ti?"step":null,onclick:()=>go(i)},
+        h("span",{class:"ip-num"},isDone(topic,k)?ic("check"):i+1),h("span",{class:"ip-tn"},k.title))))));
+  };
+  paintSide();
+  main.append(h("div",{class:"loading",role:"status"},h("span",{class:"spin"}),"Завантаження редактора…"));
+  root.append(h("div",{class:"ws-body"},side,main));
   build();
   return root;
 
@@ -248,7 +266,7 @@ function workspace(ctx,topic,ti,repaint){
         warns.length?h("div",{class:"ws-grp"},h("h4",{},"Зауваження"),h("ul",{class:"ws-list"},warns.map(s=>h("li",{class:"warn"},ic("bulb"),h("button",{class:"ws-link",onclick:()=>jump(s)},`${s.lang}${s.line?`, рядок ${s.line}`:""}`),h("span",{},s.msg))))):null,
         r.items.length?h("div",{class:"ws-grp"},h("h4",{},"Що перевірено"),h("ul",{class:"ws-list"},r.items.map(i=>h("li",{class:i.ok?"ok":"bad"},ic(i.ok?"check":"x"),h("span",{},h("b",{},i.label),i.ok?null:h("div",{class:"ws-hint"},i.hint)))))):null,
         r.pass?h("div",{class:"ws-ra"},nxt?h("button",{class:"cta grad sm",onclick:()=>go(ti+1)},"Наступне завдання",ic("r")):h("button",{class:"cta grad sm",onclick:back},ic("check"),"Тема завершена — до тем"),h("button",{class:"btn",onclick:()=>res.hidden=true},"Залишитись")):null].filter(Boolean));
-      if(r.pass)markDone(topic,task);
+      if(r.pass){markDone(topic,task);paintSide();}
       res.scrollIntoView({block:"nearest",behavior:"smooth"});
     };
     const chk=h("button",{class:"cta grad sm"},ic("check"),"Перевірити");
@@ -285,8 +303,8 @@ function workspace(ctx,topic,ti,repaint){
     const grid=h("div",{class:"ws-grid"},
       h("section",{class:"card ws-ed"},tabBar,stack,h("div",{class:"ws-tb"},chk,runB,reset)),
       h("section",{class:"card ws-pv"},pvTabs,pvRes,pvCon));
-    root.querySelector(".loading").remove();
-    root.append(task_card,grid,res);
+    main.querySelector(".loading").remove();
+    main.append(task_card,grid,res);
     pick(cur);run();
   }
 }

@@ -27,24 +27,30 @@ const lg=k=>h("span",{class:"lg "+k},LANGS[k]||k);
 
 export function buildInteractive(ctx){
   h=ctx.h;ic=ctx.ic;
-  const {A,st,banner,soon,stat}=ctx;
+  const {A,st,soon}=ctx;
   const quiz=byOrd(st.quiz),topics=byOrd(st.practice);
   if(!A&&!quiz.length&&!topics.length)return soon("Інтерактивні заняття","Тут з’являться тест тижня та практичні завдання з HTML, CSS і JavaScript з миттєвою перевіркою коду.","code");
   const sig=JSON.stringify([quiz,topics.map(t=>t.id+":"+(t.tasks||[]).length)]);
   if(S.sig!==sig){S.sig=sig;S.qz=null;}
-  const nTasks=topics.reduce((s,t)=>s+(t.tasks||[]).length,0);
-  const ban=banner("lessons","Інтерактивні заняття","Перевірте знання в тесті тижня та практикуйтеся: пишіть код у вбудованому редакторі, одразу бачте результат, а валідатор підкаже, що виправити. Оцінки тут не виставляються — це тренування.");
-  const stats=h("div",{class:"stats s3"},stat("star","pur",quiz.length,pl(quiz.length,"Запитання в тесті","Запитання в тесті","Запитань у тесті")),stat("book","blue",topics.length,pl(topics.length,"Тема практики","Теми практики","Тем практики")),stat("code","green",nTasks,pl(nTasks,"Практичне завдання","Практичні завдання","Практичних завдань")));
-  const seg=h("div",{class:"seg",role:"tablist","aria-label":"Розділ"});
+  const sp=(c,t)=>h("span",{class:"k-"+c},t);
+  const ban=h("section",{class:"ilb"},
+    h("div",{class:"ilb-l"},h("h1",{},"Інтерактивні заняття"),
+      h("p",{},"Перевірте знання в тесті тижня та практикуйтеся: пишіть код у вбудованому редакторі, одразу бачте результат, а валідатор підкаже, що виправити. Оцінки тут не виставляються — це тренування.")),
+    h("div",{class:"ilb-r","aria-hidden":"true"},h("div",{class:"ilb-code"},
+      h("div",{class:"ilb-ch"},h("i"),h("i"),h("i"),h("span",{},"quiz.js")),
+      h("pre",{},h("code",{},sp("c","// Тест тижня"),"\n",sp("k","const")," answer = ",sp("s",'"B"'),";\n\n",
+        sp("k","function")," ",sp("f","check"),"(choice) {\n  ",sp("k","return")," choice === answer\n    ? ",sp("s",'"Правильно!"'),"\n    : ",sp("s",'"Ще раз"'),";\n}")))));
+  const menu=h("div",{class:"il-menu",role:"tablist","aria-label":"Розділ","aria-orientation":"vertical"});
   const box=h("div",{class:"il-box"});
+  const lay=h("div",{class:"il"},menu,box);
   const paint=()=>{
     const ws=S.tab==="practice"&&S.open;
-    ban.hidden=stats.hidden=seg.hidden=!!ws;
-    seg.replaceChildren(...[["quiz","Тест тижня","star"],["practice","Практичні завдання","code"]].map(([k,l,i])=>h("button",{role:"tab","aria-selected":String(S.tab===k),class:S.tab===k?"on":"",onclick:()=>{S.tab=k;S.open=null;paint();}},ic(i),l)));
+    ban.hidden=menu.hidden=!!ws;lay.classList.toggle("full",!!ws);
+    menu.replaceChildren(...[["quiz","Тест тижня","star"],["practice","Практичні завдання","code"]].map(([k,l,i])=>h("button",{role:"tab","aria-selected":String(S.tab===k),class:"il-mi",onclick:()=>{S.tab=k;S.open=null;paint();}},ic(i),h("span",{},l))));
     box.replaceChildren(S.tab==="quiz"?quizView(ctx,quiz):practiceView(ctx,topics,paint));
   };
   paint();
-  return [ban,stats,seg,box];
+  return [ban,lay];
 }
 
 // =============================== ТЕСТ ===============================
@@ -85,7 +91,7 @@ function quizView(ctx,quiz){
   function startView(){
     const cnt={};quiz.forEach(q=>cnt[q.topic]=(cnt[q.topic]||0)+1);
     const out=[h("section",{class:"card pad iq-start"},
-      h("span",{class:"si big c-pur"},ic("star")),
+      h("span",{class:"si big c-amb"},ic("star")),
       h("div",{class:"iq-st-b"},h("h2",{},meta.title||"Тест тижня"),
         h("p",{class:"mu"},meta.desc||"Перевірте, як ви засвоїли HTML, CSS та JavaScript. Запитання бувають різних типів: з однією відповіддю, з кількома та на співставлення."),
         quiz.length?h("div",{class:"iq-chips"},h("span",{class:"chip"},ic("list"),`${quiz.length} ${pl(quiz.length,"запитання","запитання","запитань")}`),...Object.keys(LANGS).filter(k=>cnt[k]).map(k=>h("span",{class:"chip"},`${LANGS[k]} · ${cnt[k]}`))):null,
@@ -100,31 +106,32 @@ function quizView(ctx,quiz){
       return h("div",{class:"iq-match"},it.pairs.map((p,k)=>{
         const sel=h("select",{"aria-label":"Відповідність для: "+p.l,onchange:e=>{it.ans[k]=e.target.value;dots();}},h("option",{value:""},"— оберіть —"),...it.rights.map(r=>h("option",{value:r},r)));
         sel.value=it.ans[k]||"";
-        return h("div",{class:"iq-mrow"},h("div",{class:"iq-ml"},p.l),h("span",{class:"iq-ar","aria-hidden":"true"},ic("r")),sel);}));
+        return h("div",{class:"iq-mrow c"+(k%4)},h("div",{class:"iq-ml"},p.l),h("span",{class:"iq-ar","aria-hidden":"true"},ic("r")),sel);}));
     }
     const multi=q.type==="multi",name="o"+Math.random().toString(36).slice(2);
     return h("div",{class:"iq-opts",role:multi?"group":"radiogroup"},it.opts.map((o,k)=>{
       const on=multi?it.ans.has(k):it.ans===k;
       const inp=h("input",{type:multi?"checkbox":"radio",name,checked:on||null,onchange:e=>{if(multi){e.target.checked?it.ans.add(k):it.ans.delete(k);}else it.ans=k;[...e.target.closest(".iq-opts").children].forEach((l,n)=>l.classList.toggle("on",multi?it.ans.has(n):it.ans===n));dots();}});
-      return h("label",{class:"iq-opt"+(on?" on":"")},inp,h("span",{class:"iq-mk"},ic("check")),h("span",{},o.t));}));
+      return h("label",{class:"iq-opt c"+(k%4)+(on?" on":"")},inp,h("span",{class:"iq-lt","aria-hidden":"true"},String.fromCharCode(65+k)),h("span",{class:"iq-ot"},o.t),h("span",{class:"iq-mk","aria-hidden":"true"},ic("check")));}));
   }
   let dotsEl;const dots=()=>{if(!dotsEl)return;[...dotsEl.children].forEach((d,n)=>d.classList.toggle("done",answered(S.qz.items[n])));};
   function runView(){
     const z=S.qz,it=z.items[z.i],q=it.q,last=z.i===z.items.length-1;
     dotsEl=h("div",{class:"iq-dots",role:"group","aria-label":"Навігація запитаннями"},z.items.map((x,n)=>h("button",{class:(answered(x)?"done ":"")+(n===z.i?"cur":""),"aria-label":"Запитання "+(n+1),"aria-current":n===z.i?"step":null,onclick:()=>{z.i=n;z.warn=false;paint();}},n+1)));
     const miss=z.items.filter(x=>!answered(x)).length;
-    return [h("section",{class:"card pad iq-q"},
-      h("div",{class:"iq-prog","aria-hidden":"true"},h("div",{style:`width:${(z.i+1)/z.items.length*100}%`})),
-      h("div",{class:"iq-meta"},h("b",{},`Запитання ${z.i+1} з ${z.items.length}`),lg(q.topic),h("span",{class:"chip"},QTYPES[q.type])),
+    return [h("section",{class:"card pad iq-panel"},
+      h("div",{class:"iq-meta"},lg(q.topic),h("span",{class:"chip"},QTYPES[q.type])),
       h("h3",{class:"iq-qt"},q.title),q.code?h("pre",{class:"iq-code"},h("code",{},q.code)):null,
-      q.type==="multi"?h("p",{class:"mu s"},"Оберіть усі правильні відповіді."):q.type==="match"?h("p",{class:"mu s"},"До кожного пункту оберіть відповідний варіант."):null,
+      q.type==="multi"?h("p",{class:"iq-hint"},"Оберіть усі правильні відповіді."):q.type==="match"?h("p",{class:"iq-hint"},"До кожного пункту оберіть відповідний варіант."):null,
       body(it),
       z.warn&&last?h("div",{class:"iq-warn",role:"alert"},`Без відповіді залишилось: ${miss}. Завершити тест?`):null,
+      h("div",{class:"iq-pg",role:"progressbar","aria-label":"Прогрес тесту","aria-valuemin":"1","aria-valuemax":String(z.items.length),"aria-valuenow":String(z.i+1)},
+        h("i",{style:`width:${(z.i+1)/z.items.length*100}%`}),h("span",{},`Запитання ${z.i+1} з ${z.items.length}`))),
       h("div",{class:"iq-nav"},
         h("button",{class:"btn",disabled:z.i===0,onclick:()=>{z.i--;z.warn=false;paint();top();}},ic("l"),"Назад"),
         last?(z.warn?h("div",{class:"iq-nb"},h("button",{class:"btn",onclick:()=>{z.warn=false;paint();}},"Повернутись"),h("button",{class:"cta grad sm",onclick:()=>{z.done=true;paint();top();}},ic("check"),"Завершити все одно")):
           h("button",{class:"cta grad sm",onclick:()=>{if(z.items.some(x=>!answered(x))){z.warn=true;paint();}else{z.done=true;paint();top();}}},ic("check"),"Завершити тест")):
-        h("button",{class:"cta grad sm",onclick:()=>{z.i++;paint();top();}},"Далі",ic("r")))),
+        h("button",{class:"cta grad sm",onclick:()=>{z.i++;paint();top();}},"Далі",ic("r"))),
       dotsEl];
   }
   function show(it){
@@ -172,7 +179,7 @@ function practiceView(ctx,topics,repaint){
   if(!list.length){wrap.append(A?h("div",{class:"empty"},ic("plus"),h("p",{},"Тем із "+LANGS[S.lang]+" ще немає"),h("button",{class:"btn primary sm",onclick:()=>A.add("practice")},ic("plus"),"Додати тему")):h("div",{class:"empty"},ic("code"),h("p",{},"Практичні завдання з цієї мови з’являться згодом.")));return wrap;}
   wrap.append(h("div",{class:"ip-grid"},list.map((t,ti)=>{
     const tasks=t.tasks||[],done=tasks.filter(k=>isDone(t,k)).length;
-    return h("article",{class:"card hv ip-topic",style:"--a1:#2563eb;--a2:#7c3aed;--glow:rgba(79,70,229,.45)"},
+    return h("article",{class:"card hv ip-topic"},
       h("div",{class:"ip-th"},h("span",{class:"si big c-"+({html:"amb",css:"blue",js:"pur"}[t.lang]||"blue")},ic({html:"code",css:"star",js:"bulb"}[t.lang]||"code")),
         h("div",{class:"ip-tt"},h("h3",{},t.title),tasks.length?h("span",{class:"mu s"},`Виконано ${done} із ${tasks.length}`):null)),
       t.desc?h("p",{class:"mu ip-d"},t.desc):null,

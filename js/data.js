@@ -5,7 +5,7 @@ export const app=initializeApp(firebaseConfig);
 export const db=getFirestore(app);
 export const MONTHS=["Січень","Лютий","Березень","Квітень","Травень","Червень","Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"];
 export const MONTHS_GEN=["січня","лютого","березня","квітня","травня","червня","липня","серпня","вересня","жовтня","листопада","грудня"];
-export const COLS=["education","subjects","certificates","publications","studentArticles","events","awards","lessons","quiz","practice"];
+export const COLS=["education","subjects","certificates","publications","studentArticles","events","awards","studentWorks","lessons","quiz","practice"];
 const Y={k:"year",l:"Рік",t:"year",req:1},D={k:"my",t:"my",l:"Дата",req:1,hint:"Число можна не вказувати — тоді буде показано лише місяць і рік."},PH={k:"photos",l:"Фото або PDF (до 6, перше — обкладинка)",t:"photos",hint:"PDF автоматично перетворюється на зображення (кожна сторінка — окреме фото)."},
 LK={k:"link",l:"Посилання",t:"url",hint:"У Google Диску: «Доступ» → «Усі, хто має посилання» → «Читач». Лише https://"};
 const sel=(k,l,opts)=>({k,l,t:"select",opts,req:1});
@@ -16,6 +16,15 @@ export const SCHEMA={
  publications:{label:"публікацію",f:[{k:"title",l:"Назва",req:1},sel("type","Тип",["Стаття","Монографія","Збірник наукових праць","Методична розробка","Посібник","Участь у конференції","Участь у засіданні","Інша діяльність"]),{k:"publisher",l:"Видавництво, збірник або назва заходу"},D,PH,LK]},
  studentArticles:{label:"роботу групи студентів",f:[{k:"group",l:"Група",req:1,ph:"Наприклад: КН-21"},{k:"students",l:"Студенти",t:"list",req:1,legacy:"student",hint:"Введіть ПІБ студента — після цього з’явиться кнопка для додавання наступного."},{k:"title",l:"Назва роботи",req:1},Y,{k:"venue",l:"Видання"},{k:"award",l:"Нагорода (необов’язково)",ph:"І місце на конференції"},PH,LK]},
  events:{label:"захід",f:[{k:"title",l:"Назва",req:1},sel("type","Тип",["Екскурсія","Конференція","Форум","Олімпіада","Інше"]),D,{k:"count",l:"Кількість учасників",t:"number"},PH,LK]},
+ studentWorks:{label:"студентську роботу",f:[
+  {k:"title",l:"Назва проєкту",req:1,ph:"Studio Forma"},
+  sel("category","Категорія",["Лендінг","Інтернет-магазин","Портфоліо","Інформаційний сайт","Інше"]),
+  {k:"desc",l:"Короткий опис",ph:"Сайт творчої студії дизайну"},
+  {k:"tech",l:"Технології",t:"multi",opts:[["html","HTML"],["css","CSS"],["js","JavaScript"],["bootstrap","Bootstrap"],["react","React"]]},
+  {k:"author",l:"Автор",req:1,ph:"Марія К.",hint:"Для конфіденційності достатньо імені та першої літери прізвища."},
+  {k:"year",l:"Рік",t:"year"},
+  {k:"link",l:"Посилання на сайт",t:"url",req:1,hint:"Адреса опублікованого сайту (наприклад, GitHub Pages). Лише https://"},
+  {k:"photo",l:"Скриншот сайту",t:"photo",hint:"Знімок головної сторінки, бажано з пропорціями 16:10."}]},
  awards:{label:"нагороду",f:[{k:"title",l:"Назва",req:1},{k:"desc",l:"Опис",t:"textarea"},sel("type","Тип",["Почесна грамота","Подяка","Диплом","Сертифікат","Інше"]),D,PH,LK]}
 ,
  lessons:{label:"заняття",f:()=>{const sc=getSched();return[
@@ -35,7 +44,7 @@ export const SCHEMA={
 function subjectSuggestions(){const set=new Set();[...(cache.lessons||[]).map(l=>l.subject),...(cache.subjects||[]).map(s=>s.name)].forEach(x=>{if(x&&String(x).trim())set.add(String(x).trim());});return [...set].sort((a,b)=>a.localeCompare(b,"uk"));}
 export const DEF_SCHED={groups:["ІДП-31","БТ-31"],start:"",pairs:["09:00-10:20","10:30-11:50","12:10-13:30","13:40-15:00","15:10-16:30"]};
 export function getSched(){const s=(cache.profile&&cache.profile.sched)||{},g=s.groups||[];return{groups:[g[0]||DEF_SCHED.groups[0],g[1]||DEF_SCHED.groups[1]],start:s.start||"",pairs:s.pairs&&s.pairs.length?s.pairs:DEF_SCHED.pairs};}
-const SOFT=["lessons","quiz","practice"];
+const SOFT=["lessons","quiz","practice","studentWorks"];
 export const cache={loaded:false,profile:{}};
 export async function load(force){
  if(cache.loaded&&!force)return cache;

@@ -52,6 +52,9 @@ export function buildForm(fields,v={}){
   else if(f.t==="url"){const i=h("input",{id,type:"url",placeholder:"https://",maxlength:500});i.value=v[f.k]||"";
    ctl=h("div",{class:"urlrow"},i,h("button",{type:"button",class:"btn sm",onclick:()=>/^https:\/\/\S+$/.test(i.value.trim())?window.open(i.value.trim(),"_blank","noopener"):toast("Вкажіть посилання, що починається з https://","err")},"Перевірити посилання"));
    get=()=>({[f.k]:i.value.trim()});}
+  else if(f.t==="multi"){const on=new Set(v[f.k]||[]);
+   ctl=h("div",{class:"mchk"},f.opts.map(o=>{const i=h("input",{type:"checkbox",value:o[0]});i.checked=on.has(o[0]);return h("label",{class:"chk"},i,o[1]);}));
+   get=()=>({[f.k]:[...ctl.querySelectorAll("input:checked")].map(i=>i.value)});}
   else if(f.t==="list"){
    const inputs=[],rows=h("div",{class:"lrows"}),addB=h("button",{type:"button",class:"btn sm",onclick:()=>mk("",true)},ic("plus"),"Додати студента");
    function sync(){addB.hidden=!inputs.length||!inputs[inputs.length-1].value.trim();}
@@ -95,7 +98,7 @@ function saveFlow({title,form,save,onSaved,again}){
 }
 function mkForm(S,rec){const f=buildForm(typeof S.f==="function"?S.f():S.f,rec||{});if(S.check){const v0=f.validate;f.validate=()=>v0()||S.check(f.get());}return f;}
 export async function recordModal(col,rec,onSaved){
- const S=SCHEMA[col],again=!rec&&col==="studentArticles"?"Зберегти й додати ще одну групу":null;
+ const S=SCHEMA[col],again=!rec&&col==="studentArticles"?"Зберегти й додати ще одну групу":(!rec&&col==="studentWorks"?"Зберегти й додати ще одну роботу":null);
  let r;
  do{r=await saveFlow({title:(rec?"Змінити: ":"Додати: ")+S.label,form:mkForm(S,rec),save:d=>saveRec(col,rec&&rec.id,d),onSaved,again});}while(r==="again");
  return !!r;

@@ -205,14 +205,14 @@ export function mount(root,opts={}){
  }
  function worksBanner(list){
   const ph=list.filter(r=>r.photo),yr=Math.max(0,...list.map(r=>+r.year||0))||new Date().getFullYear();
-  return h("section",{class:"hbanner wb"},
-   h("div",{class:"hb-l"},h("span",{class:"hb-chip"},"Студентське портфоліо • "+yr),
-    h("h1",{},"Ідеї, що стають ",h("span",{class:"grad"},"вебсайтами.")),
+  return h("section",{class:"wbanner"},
+   h("div",{class:"wb-l"},h("span",{class:"wb-chip"},"Студентське портфоліо • "+yr),
+    h("h1",{},"Ідеї, що стають ",h("span",{class:"wb-grad"},"вебсайтами.")),
     h("p",{},"Добірка навчальних проєктів з вебдизайну та розробки — від першого макета до готового сайту."),
-    h("div",{class:"hb-b"},
-     h("button",{class:"cta light",type:"button",onclick:()=>{const t=document.getElementById("wk-list");if(t)t.scrollIntoView({behavior:"smooth",block:"start"});}},"Переглянути проєкти",ic("adown")),
+    h("div",{class:"wb-b"},
+     h("button",{class:"cta pri",type:"button",onclick:()=>{const t=document.getElementById("wk-list");if(t)t.scrollIntoView({behavior:"smooth",block:"start"});}},"Переглянути проєкти",ic("adown")),
      add("studentWorks","Додати роботу"))),
-   h("div",{class:"hb-r"},h("div",{class:"mw-stack"},mockWin(ph[0]||null,"m1"),mockWin(ph[1]||null,"m2"),mockWin(ph[2]||null,"m3")),tech("html","fb"),tech("css","fb"),tech("js","fb")));
+   h("div",{class:"wb-r"},h("div",{class:"mw-stack"},mockWin(ph[0]||null,"m1"),mockWin(ph[1]||null,"m2"),mockWin(ph[2]||null,"m3")),tech("html","fb"),tech("css","fb"),tech("js","fb")));
  }
  function works(){
   const all=sorted(st.studentWorks);

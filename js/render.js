@@ -140,12 +140,6 @@ export function mount(root,opts={}){
  const codeWin=()=>h("div",{class:"cw","aria-hidden":"true"},h("div",{class:"cw-h"},h("i"),h("i"),h("i"),h("span",{},"index.html")),
   h("pre",{},h("code",{},sp("t","<h1"),sp("a"," class"),"=",sp("s",'"hero"'),sp("t",">"),"Hello, WebLab!",sp("t","</h1>"),"\n",
   sp("p",".hero")," {\n  ",sp("a","color"),": ",sp("s","#7c3aed"),";\n}\n\n",sp("k","button"),".onclick = () => ",sp("f","alert"),"(",sp("s",'"Привіт!"'),");")));
- const heroArt=()=>h("div",{class:"hero-art","aria-hidden":"true"},
-  h("div",{class:"art-browser"},h("div",{class:"art-bar"},h("i"),h("i"),h("i"),h("span",{},"weblab.dev")),
-   h("div",{class:"art-page"},h("span",{class:"art-pill"},"HTML · CSS · JS"),h("b",{},"Створюй сучасні вебсайти"),h("span",{},"Навчайся через практику"),h("div",{class:"art-button"},"Почати навчання"),h("div",{class:"art-lines"},h("i"),h("i"),h("i")))),
-  h("div",{class:"art-editor"},h("div",{class:"art-bar"},h("i"),h("i"),h("i"),h("span",{},"script.js")),
-   h("pre",{},h("code",{},h("span",{},"const "), "site = {",h("br"),"  design: ",h("em",{},'"creative"'),",",h("br"),"  interactive: ",h("strong",{},"true"),h("br"),"};"))),
-  h("span",{class:"art-orb orb-one"}),h("span",{class:"art-orb orb-two"}));
  const soon=(t,d,i)=>[h("section",{class:"soon"},h("span",{class:"soon-i"},ic(i)),h("h1",{},t),h("p",{},d),h("span",{class:"chip"},"Незабаром"))];
  const sh=(i,c,t,col)=>h("div",{class:"sch"},h("span",{class:"si big c-"+c},ic(i)),h("h2",{},t),col?add(col):null);
  function homeBanner(){
@@ -156,7 +150,7 @@ export function mount(root,opts={}){
     h("p",{},"Освітній простір з веброзробки: інтерактивні заняття, завдання й матеріали з HTML, CSS та JavaScript для студентів і колег-педагогів."),
     h("div",{class:"hb-b"},h("a",{class:"cta light",href:"#lessons"},ic("play"),"Інтерактивні заняття"),h("a",{class:"cta glass",href:"#schedule"},ic("cal"),"Розклад")),
     h("div",{class:"hb-tech"},[["html","HTML"],["css","CSS"],["js","JavaScript"]].map(x=>h("span",{class:"tp"},tech(x[0]),x[1])))),
-   h("div",{class:"hb-r"},heroArt()));
+   h("div",{class:"hb-r"},codeWin(),tech("html","fb"),tech("css","fb"),tech("js","fb")));
  }
  function journalBanner(){
   const shot=h("img",{src:"img/journal.png",alt:"Електронний журнал: приклад сторінки студента",loading:"lazy",onerror:e=>e.target.closest(".jbanner").classList.add("no-shot")});
@@ -169,26 +163,13 @@ export function mount(root,opts={}){
    h("div",{class:"jb-r","aria-hidden":"true"},h("div",{class:"jb-shot"},shot)));
  }
  function disciplines(){
-  const items=[
-   {k:"html",name:"HTML",desc:"Структура вебсторінок",color:"#e34f26"},
-   {k:"css",name:"CSS",desc:"Стиль та оформлення",color:"#1572b6"},
-   {k:"js",name:"JavaScript",desc:"Інтерактивність сторінок",color:"#f7df1e"}
-  ];
-  return h("section",{class:"blk tech-section"},sh("code","pur","Практикуй вебтехнології"),
-   h("div",{class:"tech-grid"},items.map(x=>h("button",{type:"button",class:"tech-card",onclick:()=>{window.__interactiveStart={tab:"practice",lang:x.k};location.hash="lessons";}},
-    h("span",{class:"tech-logo "+x.k},tech(x.k)),h("h3",{},x.name),h("p",{},x.desc),h("span",{class:"tech-link"},"Діяльнісні завдання ",ic("r"))))));
- }
- function recentStudentWorks(){
-  const all=sorted(st.studentWorks||[]).slice(0,3);
-  const cards=all.map(r=>{
-   const img=r.photo?h("img",{src:r.photo,alt:"Скриншот проєкту «"+r.title+"»",loading:"lazy"}):h("div",{class:"recent-placeholder"},ic("layout"));
-   const shot=h("div",{class:"recent-shot"},img);
-   return h("article",{class:"recent-card"},shot,h("div",{class:"recent-body"},h("h3",{},r.title),r.desc?h("p",{},r.desc):null,
-    h("span",{class:"recent-author"},r.author||"Студентська робота"),
-    /^https:\\/\\//.test(r.link||"")?h("a",{href:r.link,target:"_blank",rel:"noopener noreferrer",class:"recent-link"},"Переглянути проєкт ",ic("ext")):null));
-  });
-  return h("section",{class:"blk recent-section"},h("div",{class:"sch"},h("span",{class:"si big c-pur"},ic("layout")),h("h2",{},"Останні студентські роботи"),h("a",{class:"recent-all",href:"#works"},"Усі роботи ",ic("r"))),
-   all.length?h("div",{class:"recent-grid"},cards):h("p",{class:"recent-empty"},"Студентські роботи з’являться тут після додавання."));
+  const sb=[...(st.subjects||[])].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+  if(!sb.length&&!A)return null;
+  const PAL=[["#2563eb","#06b6d4","blue","book"],["#f59e0b","#f97316","amb","code"],["#10b981","#06b6d4","green","file"],["#a855f7","#ec4899","pur","bulb"],["#f43f5e","#f97316","red","star"],["#6366f1","#8b5cf6","blue","cap"]];
+  return h("section",{class:"blk"},sh("book","blue","Дисципліни","subjects"),
+   sb.length?h("div",{class:"dgrid"},sb.map((s,i)=>{const p=PAL[i%PAL.length];
+    return h("article",{class:"dcard hv",style:`--a1:${p[0]};--a2:${p[1]};--glow:${p[0]}88`},h("div",{class:"dbar"}),
+     h("div",{class:"dcb"},h("div",{class:"dh"},h("span",{class:"si big c-"+p[2]},ic(/інтернет/i.test(s.name)?"globe":p[3])),h("h3",{},s.name)),subjLinks(s),/інтернет/i.test(s.name)||/веб/i.test(s.name)?h("a",{class:"lk dlk",href:/інтернет/i.test(s.name)?"#disc_it":"#disc_web"},"Матеріали дисципліни",ic("r")):null,ab("subjects",s)));})):empty("subjects"));
  }
  function about(){
   const p=st.profile||{};
@@ -196,16 +177,15 @@ export function mount(root,opts={}){
   if(p.email)ct.append(h("li",{},ic("mail"),h("a",{href:"mailto:"+p.email},p.email)));
   if(p.phone)ct.append(h("li",{},ic("phone"),h("a",{href:"tel:"+p.phone.replace(/[^\d+]/g,"")},p.phone)));
   if(p.address)ct.append(h("li",{},ic("pin"),p.address));
-  const hero=h("section",{class:"card hero"},h("div",{class:"hero-b"},p.position?h("p",{class:"pos"},p.position):null,ct,
+  const hero=h("section",{class:"card hero"},h("div",{class:"hero-ph"},p.photo?h("img",{src:p.photo,alt:p.fullName||"Фото викладача"}):h("div",{class:"ph"},ic("user"))),
+   h("div",{class:"hero-b"},h("h1",{},p.fullName||"ПІБ не вказано"),p.position?h("p",{class:"pos"},p.position):null,ct,
    p.about?h("div",{class:"about"},h("h2",{},"Про мене"),h("p",{},p.about)):null,
-   A?h("button",{class:"btn primary sm",onclick:A.profile},ic("edit"),"Змінити профіль"):null),
-   h("div",{class:"hero-person"},h("div",{class:"hero-ph"},p.photo?h("img",{src:p.photo,alt:p.fullName||"Фото викладача"}):h("div",{class:"ph"},ic("user"))),
-   h("h1",{},p.fullName||"ПІБ не вказано")));
+   A?h("button",{class:"btn primary sm",onclick:A.profile},ic("edit"),"Змінити профіль"):null));
   const out=[h("section",{class:"blk"},sh("user","pur","Про викладача"),hero)],ed=sorted(st.education);
   if(ed.length||A)out.push(secCard("cap","blue","Освіта","education",ed.length?h("div",{class:"tl"},ed.map(e=>h("div",{class:"tli"},h("div",{class:"tli-r"},h("div",{class:"tli-t"},h("h3",{},e.degree),h("p",{class:"mu"},e.place),h("span",{class:"yr"},e.year)),e.photos&&e.photos.length?h("button",{class:"dipl",type:"button","aria-label":"Переглянути фото диплома",onclick:()=>gallery(e.photos,0)},h("img",{src:e.photos[0],alt:"Диплом: "+e.degree}),e.photos.length>1?h("span",{},"+"+(e.photos.length-1)):null):null),ab("education",e)))):empty("education")));
   return out.filter(Boolean);
  }
- function home(){return [homeBanner(),disciplines(),journalBanner(),recentStudentWorks()].filter(Boolean);}
+ function home(){return [homeBanner(),disciplines(),journalBanner()].filter(Boolean);}
  function cert(){
   const a=sorted(st.certificates);
   return [banner("cert","Підвищення кваліфікації","Систематично підвищую свою кваліфікацію, беру участь у тренінгах, семінарах та курсах для покращення професійної майстерності.",add("certificates")),

@@ -237,3 +237,11 @@ button.dd-th:hover .dd-zoom,button.dd-th:focus-visible .dd-zoom{opacity:1}
  .dm-x{position:absolute!important;top:8px;right:8px}
 }
 @media(prefers-reduced-motion:reduce){button.dd-th,.dd-zoom,.dm-sp{transition:none;animation:none}}
+
+/* ---------- альбомна орієнтація превью ---------- */
+.dd-card.land{grid-template-columns:176px minmax(0,1fr)}
+.dd-card.land .dd-th{width:176px;aspect-ratio:16/9}
+@media(max-width:700px){
+ .dd-card.land{grid-template-columns:128px minmax(0,1fr)}
+ .dd-card.land .dd-th{width:128px}
+}

@@ -75,3 +75,25 @@ export function resType(r) {
   if (v && v.kind !== "drive") return "video";
   return fileInfo(r.link).dl || (v && v.kind === "drive") ? "book" : "link";
 }
+
+/**
+ * Дані для вбудованого перегляду документа та прев’ю першої сторінки.
+ * Повертає {embed, thumb}: embed — адреса для iframe, thumb — адреса картинки-прев’ю (може бути порожньою).
+ */
+export function docView(url) {
+  let u;
+  try { u = new URL(url); } catch (e) { return { embed: "", thumb: "" }; }
+  let m;
+  if (u.hostname === "drive.google.com") {
+    const id = ((u.pathname.match(/\/file\/d\/([\w-]+)/) || [])[1]) || u.searchParams.get("id");
+    if (id) return { embed: `https://drive.google.com/file/d/${id}/preview`, thumb: `https://drive.google.com/thumbnail?id=${id}&sz=w500` };
+  }
+  if (u.hostname === "docs.google.com" && (m = u.pathname.match(/^\/(document|presentation|spreadsheets)\/d\/([\w-]+)/))) {
+    const id = m[2];
+    return { embed: `https://docs.google.com/${m[1]}/d/${id}/${m[1] === "presentation" ? "embed" : "preview"}`, thumb: `https://drive.google.com/thumbnail?id=${id}&sz=w500` };
+  }
+  const ext = (u.pathname.toLowerCase().match(/\.([a-z0-9]{2,5})$/) || [])[1] || "";
+  if (ext === "pdf") return { embed: url, thumb: "" };
+  if (["doc", "docx", "ppt", "pptx", "xls", "xlsx", "odt"].includes(ext)) return { embed: `https://docs.google.com/viewer?embedded=true&url=${encodeURIComponent(url)}`, thumb: "" };
+  return { embed: "", thumb: "" };
+}

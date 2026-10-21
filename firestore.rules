@@ -31,10 +31,10 @@ service cloud.firestore {
     // Дисципліни: лекції, практичні, самостійне вивчення, додаткова інформація (посилання на файли)
     function ordOk(d) { return !('ord' in d) || d.ord is number; }
     function goodMaterial(d) {
-      return d.keys().hasOnly(['disc','kind','title','desc','link','ftype','quick','ord','createdAt'])
-        && d.disc in ['it','web'] && d.kind in ['lecture','practice','self','info']
+      return d.keys().hasOnly(['disc','kind','title','desc','link','ftype','size','photo','quick','ord','createdAt'])
+        && d.disc in ['it','web'] && d.kind in ['lecture','present','practice','self','info']
         && d.title is string && d.title.size() > 0 && d.title.size() <= 300
-        && str(d,'desc',1000) && str(d,'ftype',40)
+        && str(d,'desc',1000) && str(d,'ftype',40) && str(d,'size',40) && str(d,'photo',900000)
         && d.link is string && d.link.matches('https://.*') && d.link.size() <= 500
         && (!('quick' in d) || d.quick is bool) && ordOk(d);
     }
@@ -51,6 +51,20 @@ service cloud.firestore {
         && str(d,'desc',1000) && str(d,'tag',60) && str(d,'author',200) && str(d,'duration',20) && str(d,'size',40) && str(d,'ftype',40)
         && str(d,'photo',900000)
         && d.link is string && d.link.matches('https://.*') && d.link.size() <= 500 && ordOk(d);
+    }
+    // Студентські роботи: назва, категорія, опис, технології, автор, рік, посилання на сайт, скриншот
+    function goodWork(d) {
+      return d.keys().hasOnly(['title','category','desc','tech','author','year','link','photo','ord','createdAt'])
+        && d.title is string && d.title.size() > 0 && d.title.size() <= 300
+        && str(d,'category',100) && str(d,'desc',1000) && str(d,'author',200) && num(d,'year')
+        && (!('tech' in d) || (d.tech is list && d.tech.size() <= 10))
+        && d.link is string && d.link.matches('https://.*') && d.link.size() <= 500
+        && str(d,'photo',900000) && ordOk(d);
+    }
+    match /studentWorks/{id} {
+      allow read: if true;
+      allow create, update: if owner() && goodWork(request.resource.data);
+      allow delete: if owner();
     }
     match /materials/{id} {
       allow read: if true;
@@ -73,7 +87,8 @@ service cloud.firestore {
         && str(request.resource.data,'about',3000) && str(request.resource.data,'fullName',300)
         && str(request.resource.data,'position',300) && str(request.resource.data,'institution',300)
         && str(request.resource.data,'email',300) && str(request.resource.data,'phone',100)
-        && str(request.resource.data,'address',300) && str(request.resource.data,'photo',900000);
+        && str(request.resource.data,'address',300) && str(request.resource.data,'photo',900000)
+        && (!('banners' in request.resource.data) || request.resource.data.banners is map);
     }
     match /quiz/{id} {
       allow read: if true;

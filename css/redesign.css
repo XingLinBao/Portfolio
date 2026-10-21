@@ -113,3 +113,134 @@ h1,h2,h3,.brand-t,.sch h2,.stat b,.banner h1,.hbanner h1,.wbanner h1,.jbanner h2
 /* ---------- сторінки зі списком карток (до 8 на сторінці) ---------- */
 .pgd{display:grid;gap:30px;scroll-margin-top:90px}.pgd>*{min-width:0}
 .wk-pg .pg-gap{display:grid;place-items:center;width:28px;color:var(--mu);font-weight:800}
+
+
+/* ---------- Узгоджений світлий стиль банерів ---------- */
+.wrap > .hbanner,
+.wrap > .wbanner,
+.wrap > .banner {
+  width:100vw;
+  max-width:none;
+  margin-left:calc(50% - 50vw);
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  background:#fff;
+  color:var(--ink);
+  min-height:320px;
+  height:320px;
+  padding:34px max(28px, calc((100vw - 1300px)/2 + 28px));
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,.9fr);
+  align-items:center;
+  gap:36px;
+  overflow:hidden;
+}
+.wrap > .hbanner:before,
+.wrap > .wbanner:before,
+.wrap > .wbanner:after,
+.wrap > .banner:before,
+.wrap > .banner:after {display:none!important;content:none!important}
+.wrap > .hbanner h1,
+.wrap > .wbanner h1,
+.wrap > .banner h1 {color:#29245c;font-size:clamp(30px,3.5vw,46px);line-height:1.13}
+.wrap > .hbanner p,
+.wrap > .wbanner p,
+.wrap > .banner p {color:#77739a}
+.wrap > .hbanner .grad,
+.wrap > .wbanner .wb-grad {display:inline;color:#704cff;-webkit-text-fill-color:#704cff;background:none}
+.wrap > .hbanner .hb-l,
+.wrap > .wbanner .wb-l {min-width:0}
+.wrap > .hbanner .hb-r,
+.wrap > .wbanner .wb-r {min-width:0;max-height:260px}
+.wrap > .hbanner .cw {box-shadow:0 18px 42px -28px rgba(65,48,160,.42)}
+.wrap > .banner {display:block;padding-top:40px;padding-bottom:40px}
+.wrap > .banner > * {max-width:1244px}
+.wrap > .hbanner.dsb {grid-template-columns:minmax(0,1fr) minmax(0,.9fr)}
+.wrap > .wbanner .wb-r {height:250px}
+.wrap > .hbanner .hb-tech {margin-top:2px}
+.wrap > .hbanner .tp {border:1px solid #ece8ff;background:#fff;color:#30285f}
+.wrap > .hbanner .fb {filter:none}
+.wrap > .hbanner .fb svg {filter:drop-shadow(0 8px 12px rgba(80,61,190,.12))}
+.wrap > .hbanner.dsb .hb-r {display:flex;align-items:center;justify-content:center;gap:18px}
+.wrap > .hbanner.dsb .cw {display:none}
+.wrap > .hbanner.dsb .tb {width:78px;height:88px}
+.wrap > .hbanner.dsb .tb svg {width:100%;height:100%}
+
+/* Технології на головній */
+.tech-section {margin-top:4px}
+.tech-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.tech-card {appearance:none;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:22px 24px;background:#fff;border:1px solid #e8e4f7;border-radius:0;cursor:pointer;color:var(--ink);font:inherit;min-height:190px;transition:border-color .2s,transform .2s,box-shadow .2s}
+.tech-card:hover {border-color:#b9a8ff;transform:translateY(-3px);box-shadow:0 14px 30px -24px #6c47ff}
+.tech-logo {display:grid;place-items:center;width:48px;height:48px}
+.tech-logo .tb {width:46px;height:48px}
+.tech-logo .tb svg {width:100%;height:100%}
+.tech-card h3 {font-size:19px;font-weight:800}
+.tech-card p {color:var(--mu);font-size:14px}
+.tech-link {display:flex;align-items:center;gap:6px;color:var(--v);font-size:13px;font-weight:800;margin-top:auto}
+.tech-card .tb.js svg {border-radius:0}
+.recent-section .sch {margin-bottom:18px}
+.recent-all {margin-left:auto;display:inline-flex;align-items:center;gap:5px;text-decoration:none;font-size:13px;font-weight:800}
+.recent-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.recent-card {min-width:0;border:1px solid #e8e4f7;background:#fff;border-radius:0;overflow:hidden}
+.recent-shot {height:155px;background:#f5f3ff;overflow:hidden}
+.recent-shot img {width:100%;height:100%;object-fit:cover;display:block}
+.recent-placeholder {height:100%;display:grid;place-items:center;color:#8c7bda;font-size:38px}
+.recent-body {padding:16px;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.recent-body h3 {font-size:16px}
+.recent-body p {font-size:13px;color:var(--mu)}
+.recent-author {font-size:12px;color:var(--mu)}
+.recent-link {display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;text-decoration:none;margin-top:4px}
+.recent-empty {padding:20px;background:#fff;border:1px solid #e8e4f7;color:var(--mu)}
+
+/* Сторінка викладача: фото праворуч, ПІБ під фото, прямі кути */
+.hero {grid-template-columns:minmax(0,1fr) minmax(250px,34%);border-radius:0!important;background:#fff!important;box-shadow:none!important;border:1px solid var(--line)!important}
+.hero-person {grid-column:2;grid-row:1;display:flex;flex-direction:column;align-items:stretch;gap:16px;padding:28px 28px 28px 0;min-width:0}
+.hero-ph {min-height:0;height:300px;background:#f4f2ff}
+.hero-ph:after {display:none}
+.hero-person h1 {font-size:clamp(21px,2.4vw,30px);line-height:1.2;color:var(--ink);overflow-wrap:anywhere}
+.hero-b {grid-column:1;grid-row:1;padding:36px;background:#fff}
+.hero-b:after {display:none}
+.hero-b h1 {background:none;color:var(--ink);-webkit-text-fill-color:var(--ink)}
+.hero .ct li {border-radius:0;background:#fff;border:1px solid var(--line)}
+.hero .about {border-radius:0}
+.card,.stat {border-radius:0}
+@media(max-width:760px) {
+ .wrap > .hbanner,.wrap > .wbanner,.wrap > .banner {height:auto;min-height:320px;grid-template-columns:1fr;padding:30px 24px;gap:22px}
+ .wrap > .hbanner .hb-r,.wrap > .wbanner .wb-r {max-height:210px}
+ .tech-grid,.recent-grid {grid-template-columns:1fr}
+ .tech-card {min-height:150px}
+ .hero {grid-template-columns:1fr!important}
+ .hero-person {grid-column:1;grid-row:1;padding:22px 22px 0}
+ .hero-ph {height:280px}
+ .hero-b {grid-column:1;grid-row:2;padding:24px}
+}
+
+.hero-art {position:relative;width:100%;height:250px;isolation:isolate}
+.art-browser,.art-editor {position:absolute;overflow:hidden;background:#fff;border:1px solid #e7e1ff;box-shadow:0 22px 45px -28px rgba(73,54,169,.45)}
+.art-browser {z-index:1;left:2%;top:12%;width:69%;height:78%;transform:rotate(-4deg)}
+.art-editor {z-index:2;right:0;top:5%;width:45%;height:72%;background:#211d42;color:#f3efff;transform:rotate(5deg);border-color:#332c60}
+.art-bar {height:28px;display:flex;align-items:center;gap:5px;padding:0 10px;background:#f7f5ff;border-bottom:1px solid #ebe7fb}
+.art-bar i {width:6px;height:6px;border-radius:50%;background:#c6b8ff}
+.art-bar span {font-size:8px;color:#8c84b4;margin-left:8px}
+.art-page {padding:15px 16px;color:#30285f;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.art-pill {font-size:7px;color:#7657ec;background:#f0ebff;padding:4px 7px;font-weight:800}
+.art-page b {font-size:clamp(10px,1.25vw,16px);line-height:1.3;max-width:190px}
+.art-page>span:not(.art-pill) {font-size:8px;color:#8580a4}
+.art-button {font-size:7px;font-weight:800;background:#704cff;color:white;padding:6px 9px;margin-top:2px}
+.art-lines {display:flex;gap:5px;margin-top:5px;width:100%}
+.art-lines i {height:22px;flex:1;background:#f1edff;border:1px solid #e6e0ff}
+.art-editor .art-bar {background:#2a254d;border-color:#39315f}
+.art-editor .art-bar span {color:#c6baff}
+.art-editor pre {padding:15px 12px;font:10px/1.9 ui-monospace,monospace;white-space:pre-wrap}
+.art-editor pre span {color:#bca7ff}.art-editor em {color:#f4b8dc;font-style:normal}.art-editor strong {color:#8fe5c0;font-weight:500}
+.art-orb {position:absolute;z-index:-1;border-radius:50%;background:#f0ebff}
+.orb-one {width:100px;height:100px;right:4%;bottom:-4%}.orb-two {width:54px;height:54px;left:5%;top:0;background:#f8f4ff}
+@media(max-width:760px){.hero-art{height:190px}.art-page{padding:10px}.art-editor pre{font-size:8px;padding:10px}}
+
+/* Банер інтерактивних занять — спільний розмір і білий фон */
+.wrap > .ilb {width:100vw;max-width:none;margin-left:calc(50% - 50vw);border:0;border-radius:0;box-shadow:none;background:#fff;color:var(--ink);min-height:320px;height:320px;padding:34px max(28px, calc((100vw - 1300px)/2 + 28px));display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);align-items:center;gap:36px}
+.wrap > .ilb .ilb-l p {color:var(--mu)}
+.wrap > .ilb .grad {display:inline;color:#704cff;-webkit-text-fill-color:#704cff;background:none}
+.wrap > .ilb .ilb-r {background:#fff}
+@media(max-width:760px){.wrap > .ilb{height:auto;min-height:320px;grid-template-columns:1fr;padding:30px 24px;gap:22px}}

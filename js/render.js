@@ -323,7 +323,7 @@ export function mount(root,opts={}){
   const nodes=B[k]().filter(Boolean),top=nodes.filter(n=>n.classList&&n.classList.contains("bn")),body=h("div",{class:"wrap"},nodes.filter(n=>!top.includes(n)));
   view.replaceChildren(...top,body);void body.offsetWidth;body.classList.add("in");
   nav.querySelectorAll("a").forEach(a=>a.setAttribute("aria-current",a.dataset.k===k?"page":"false"));nav.querySelectorAll(".dd-b").forEach(b=>b.classList.toggle("on",b.dataset.g===SEC[k].g));nav.querySelectorAll(".dd").forEach(d=>d.classList.remove("open"));
-  crumb.textContent=SEC[k].t;document.title=SEC[k].t+" — WebLab";
+  crumb.textContent=SEC[k].t;document.title=SEC[k].t+" — Learn2Web";
  }
  function route(){
   let k=location.hash.slice(1);

@@ -37,16 +37,8 @@ export function buildInteractive(ctx){
   if(!A&&!quiz.length&&!topics.length)return soon("Інтерактивні заняття","Тут з’являться тест тижня та практичні завдання з HTML, CSS і JavaScript з миттєвою перевіркою коду.","code");
   const sig=JSON.stringify([quiz,topics.map(t=>t.id+":"+(t.tasks||[]).length)]);
   if(S.sig!==sig){S.sig=sig;S.qz=null;}
-  const sp=(c,t)=>h("span",{class:"k-"+c},t),ln=(...c)=>h("span",{class:"ln"},...c);
-  const ban=h("section",{class:"ilb"},
-    h("div",{class:"ilb-l"},h("h1",{},"Інтерактивні заняття"),
-      h("p",{},"Перевірте знання в тесті тижня та практикуйтеся: пишіть код у вбудованому редакторі, одразу бачте результат, а валідатор підкаже, що виправити.")),
-    h("div",{class:"ilb-r","aria-hidden":"true"},h("div",{class:"ilb-code"},
-      h("span",{class:"ilb-tab"},"quiz.js"),
-      h("pre",{},h("code",{},ln(sp("c","// Тест тижня")),ln(sp("k","const")," answer = ",sp("s",'"B"'),";"),ln(),
-        ln(sp("k","function")," ",sp("f","check"),"(choice) {"),ln("  ",sp("k","return")," choice === answer"),
-        ln("    ? ",sp("s",'"Правильно!"')),ln("    : ",sp("s",'"Ще раз"'),";"),ln("}"))),
-      h("span",{class:"ilb-ok"},ic("check")))));
+  const ban=ctx.bn("lessons",{eyebrow:"Практика з кодом",title:["Інтерактивні","заняття"],
+    desc:"Перевірте знання в тесті тижня та практикуйтеся: пишіть код у вбудованому редакторі, одразу бачте результат, а валідатор підкаже, що виправити."},"b");
   const menu=h("div",{class:"il-menu",role:"tablist","aria-label":"Розділ","aria-orientation":"vertical"});
   const box=h("div",{class:"il-box"});
   const lay=h("div",{class:"il"},menu,box);

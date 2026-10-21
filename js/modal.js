@@ -2,7 +2,6 @@ import {h,ic} from "./render.js";
 import {SCHEMA,MONTHS,saveRec,saveProfile,cache,getSched} from "./data.js";
 import {photoField} from "./images.js";
 import {parseVideo,setThumb} from "./media.js";
-import {DISC} from "./disciplines.js";
 const stack=[];let uid=0;
 const FOC='a[href],button:not([disabled]),input:not([disabled]):not(.sr),select,textarea,[tabindex="0"]';
 document.addEventListener("keydown",e=>{
@@ -138,8 +137,23 @@ export function schedModal(onSaved){
  return saveFlow({title:"Налаштування розкладу",form,save:d=>saveProfile({sched:{groups:[d.g1,d.g2],start:d.start||"",pairs:parsePairs(d.pairsText)}}),onSaved});
 }
 
-export function discModal(id,onSaved){
- const cur=(cache.profile.discs&&cache.profile.discs[id])||{};
- return saveFlow({title:"Опис дисципліни: "+DISC[id].title,form:buildForm([{k:"desc",l:"Короткий опис під заголовком",t:"textarea",hint:"Якщо залишити порожнім — буде показано стандартний текст."}],{desc:cur.desc||""}),
-  save:d=>saveProfile({discs:{...(cache.profile.discs||{}),[id]:{desc:d.desc}}}),onSaved});
+/* Тексти на головних банерах сторінок. Порожнє поле = стандартний текст. */
+const BANNER_FIELDS=[
+ {k:"eyebrow",l:"Надзаголовок",ph:"Невеликий напис над заголовком",hint:"Малі літери зверху, як «Навчальний матеріал»."},
+ {k:"title",l:"Заголовок",ph:"Навчаємо створювати"},
+ {k:"accent",l:"Виділена частина заголовка",ph:"сучасні вебрішення",hint:"Показується фіолетовим кольором з нового рядка. Можна не заповнювати."},
+ {k:"desc",l:"Підпис під заголовком",t:"textarea",hint:"До 300 символів. Якщо очистити всі поля — буде показано стандартні тексти."}];
+export function bannerModal(key,cur,onSaved){
+ const form=buildForm(BANNER_FIELDS,cur||{});
+ const v0=form.validate;form.validate=()=>v0()||(form.get().desc.length>300?"Підпис задовгий: до 300 символів":null);
+ let saved=false;
+ const cancel=h("button",{class:"btn",type:"button"},"Скасувати"),reset=h("button",{class:"btn ghost",type:"button"},ic("undo"),"Стандартні тексти"),ok=h("button",{class:"btn primary",type:"button"},"Зберегти");
+ const send=async d=>{ok.disabled=reset.disabled=true;
+  try{await saveProfile({banners:{[key]:d}});saved=true;toast("Збережено");m.close(true);if(onSaved)await onSaved();}
+  catch(e){toast("Не вдалося зберегти: "+(e.message||e),"err");ok.disabled=reset.disabled=false;}};
+ const m=openModal({title:"Змінити текст банера",content:form.el,actions:[reset,cancel,ok],wide:true,
+  beforeClose:async()=>saved||!form.dirty()||confirmBox("Є незбережені зміни. Закрити без збереження?","Закрити",true)});
+ cancel.onclick=()=>m.close();
+ ok.onclick=()=>{const e=form.validate();if(e){toast(e,"err");return;}send(form.get());};
+ reset.onclick=async()=>{if(await confirmBox("Повернути стандартні тексти цього банера?","Повернути",false))send({eyebrow:"",title:"",accent:"",desc:""});};
 }

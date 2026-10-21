@@ -46,9 +46,9 @@ export async function runWizard(onDone,from){
   };
   const nxt=h("button",{class:"btn primary",onclick:()=>go(false)},cur.final?"Перейти в кабінет":"Далі");
   const fin=cur.final?h("a",{class:"btn",href:"index.html",target:"_blank",rel:"noopener"},"Переглянути сайт"):null;
-  wrap.replaceChildren(s.hint?h("p",{class:"hint"},s.hint):null,cur.node,
+  wrap.replaceChildren(...[s.hint?h("p",{class:"hint"},s.hint):null,cur.node,
    h("div",{class:"mf inl"},h("button",{class:"btn ghost",onclick:()=>m.close(true)},"Закрити (прогрес збережено)"),
-    n>0?h("button",{class:"btn",onclick:()=>{n--;show();}},"Назад"):null,fin,!cur.final?h("button",{class:"btn",onclick:()=>go(true)},"Пропустити крок"):null,nxt));
+    n>0?h("button",{class:"btn",onclick:()=>{n--;show();}},"Назад"):null,fin,!cur.final?h("button",{class:"btn",onclick:()=>go(true)},"Пропустити крок"):null,nxt)].filter(Boolean));
   const f1=wrap.querySelector("input,select,textarea");if(f1)f1.focus();
  }
  show();

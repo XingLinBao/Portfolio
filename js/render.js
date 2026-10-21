@@ -113,7 +113,7 @@ export function mount(root,opts={}){
  const nav=h("nav",{class:"menu","aria-label":"Розділи"}),sub=h("div",{class:"brand-s"}),
   help=h("div",{class:"help"}),crumb=h("div",{class:"crumb"}),
   burger=h("button",{class:"burger",type:"button","aria-label":"Меню","aria-controls":"nav","aria-expanded":"false"},ic("menu")),
-  scrim=h("div",{class:"scrim"}),view=h("main",{class:"wrap"}),foot=h("footer",{class:"foot"}),
+  scrim=h("div",{class:"scrim"}),view=h("main",{class:"pg"}),foot=h("footer",{class:"foot"}),
   side=h("header",{class:"side",id:"side"},h("div",{class:"hd-in"},h("a",{class:"brand",href:"#about"},h("span",{class:"logo"},ic("code")),h("span",{class:"brand-t"},"WEB.LAB")),burger,nav,help)),
   shell=h("div",{class:"app"},side,scrim,h("div",{class:"col"},view,foot));
  nav.id="nav";root.append(shell);
@@ -127,7 +127,21 @@ export function mount(root,opts={}){
  const ab=(col,r)=>A?h("div",{class:"ab"},h("button",{class:"btn sm",onclick:()=>A.edit(col,r)},ic("edit"),"Змінити"),h("button",{class:"btn sm danger",onclick:()=>A.del(col,r)},ic("trash"),"Видалити")):null;
  const add=(col,l="Додати",preset)=>A?h("button",{class:"btn primary sm",onclick:()=>A.add(col,preset)},ic("plus"),l):null;
  const empty=(col,l,preset)=>h("div",{class:"empty"},ic("plus"),h("p",{},"Додайте перший запис"),add(col,l,preset));
- const banner=(k,t,d,...btn)=>h("section",{class:"banner"},h("div",{class:"bh"},h("span",{class:"bi"},ic(SEC[k].i)),h("h1",{},t)),h("p",{},d),btn.some(Boolean)?h("div",{class:"bb"},btn):null);
+ /* Єдиний банер сайту. key — ключ тексту в profile.banners; d = {eyebrow,title:[звичайна,виділена частина],desc}; art — "a" | "b" | вузол. */
+ const EYE={cert:"Професійний розвиток",pub:"Наукова та методична робота",stud:"Робота зі студентами",awards:"Визнання та відзнаки",schedule:"Навчальний процес"};
+ const bn=(key,d,art,...btn)=>{
+  const o=(st.profile&&st.profile.banners&&st.profile.banners[key])||{},pair=Array.isArray(d.title)?d.title:[d.title||"",""],own=!!(o.title||o.accent);
+  const eff={eyebrow:o.eyebrow||d.eyebrow||"",title:own?(o.title||""):pair[0],accent:own?(o.accent||""):(pair[1]||""),desc:o.desc||d.desc||""};
+  const edit=A?h("button",{class:"btn sm",type:"button",onclick:()=>A.banner(key,eff)},ic("edit"),"Змінити текст"):null;
+  const pic=typeof art==="string"?h("img",{class:"bn-art",src:`img/banner-${art}.webp`,alt:"",decoding:"async"}):art;
+  return h("section",{class:"bn"},h("div",{class:"bn-in"},
+   h("div",{class:"bn-l"},eff.eyebrow?h("span",{class:"bn-eb"},eff.eyebrow):null,
+    h("h1",{},eff.title,eff.accent?h("span",{class:"bn-ac"},eff.accent):null),
+    eff.desc?h("p",{},eff.desc):null,
+    btn.some(Boolean)||edit?h("div",{class:"bn-b"},btn,edit):null),
+   h("div",{class:"bn-r","aria-hidden":"true"},pic)));
+ };
+ const banner=(k,t,d,...btn)=>bn(k,{eyebrow:EYE[k],title:t,desc:d},"b",...btn);
  const grid=(c,cls="")=>h("div",{class:"grid "+cls},c);
  const secCard=(i,c,t,col,body)=>h("section",{class:"card pad"},h("div",{class:"sch"},h("span",{class:"si big c-"+c},ic(i)),h("h2",{},t),add(col)),body);
 
@@ -136,21 +150,13 @@ export function mount(root,opts={}){
   css:'<svg viewBox="0 0 64 72" aria-hidden="true"><path d="M4 4h56l-5 56-23 8-23-8z" fill="#1572b6"/><path d="M32 8v56l18-6 4-50z" fill="#33a9dc"/><text x="32" y="47" text-anchor="middle" font-size="30" font-weight="800" fill="#fff" font-family="Unbounded,Manrope,sans-serif">3</text></svg>',
   js:'<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="10" fill="#f7df1e"/><text x="58" y="56" text-anchor="end" font-size="28" font-weight="800" fill="#1a1a1a" font-family="Unbounded,Manrope,sans-serif">JS</text></svg>'};
  const tech=(k,cls="")=>{const e=h("span",{class:"tb "+k+" "+cls});e.innerHTML=TECH[k];return e;};
- const sp=(c,t)=>h("span",{class:"k-"+c},t);
- const codeWin=()=>h("div",{class:"cw","aria-hidden":"true"},h("div",{class:"cw-h"},h("i"),h("i"),h("i"),h("span",{},"index.html")),
-  h("pre",{},h("code",{},sp("t","<h1"),sp("a"," class"),"=",sp("s",'"hero"'),sp("t",">"),"Hello, WebLab!",sp("t","</h1>"),"\n",
-  sp("p",".hero")," {\n  ",sp("a","color"),": ",sp("s","#7c3aed"),";\n}\n\n",sp("k","button"),".onclick = () => ",sp("f","alert"),"(",sp("s",'"Привіт!"'),");")));
- const soon=(t,d,i)=>[h("section",{class:"soon"},h("span",{class:"soon-i"},ic(i)),h("h1",{},t),h("p",{},d),h("span",{class:"chip"},"Незабаром"))];
+ const soon=(t,d)=>[bn("lessons",{eyebrow:"Незабаром",title:[t,""],desc:d},"b")];
  const sh=(i,c,t,col)=>h("div",{class:"sch"},h("span",{class:"si big c-"+c},ic(i)),h("h2",{},t),col?add(col):null);
  function homeBanner(){
   const p=st.profile||{};
-  return h("section",{class:"hbanner"},
-   h("div",{class:"hb-l"},
-    h("h1",{},"Навчаємо створювати ",h("span",{class:"grad"},"сучасні вебрішення")),
-    h("p",{},"Освітній простір з веброзробки: інтерактивні заняття, завдання й матеріали з HTML, CSS та JavaScript для студентів і колег-педагогів."),
-    h("div",{class:"hb-b"},h("a",{class:"cta light",href:"#lessons"},ic("play"),"Інтерактивні заняття"),h("a",{class:"cta glass",href:"#schedule"},ic("cal"),"Розклад")),
-    h("div",{class:"hb-tech"},[["html","HTML"],["css","CSS"],["js","JavaScript"]].map(x=>h("span",{class:"tp"},tech(x[0]),x[1])))),
-   h("div",{class:"hb-r"},codeWin(),tech("html","fb"),tech("css","fb"),tech("js","fb")));
+  return bn("about",{eyebrow:"Освітній простір · Веб-технології",title:["Навчаємо створювати","сучасні вебрішення"],
+   desc:"Освітній простір з веброзробки: інтерактивні заняття, завдання й матеріали з HTML, CSS та JavaScript для студентів і колег-педагогів."},"a",
+   h("a",{class:"cta pri",href:"#lessons"},"Інтерактивні заняття",ic("r")),h("a",{class:"cta glass",href:"#schedule"},ic("cal"),"Розклад"));
  }
  function journalBanner(){
   const shot=h("img",{src:"img/journal.png",alt:"Електронний журнал: приклад сторінки студента",loading:"lazy",onerror:e=>e.target.closest(".jbanner").classList.add("no-shot")});
@@ -188,14 +194,14 @@ export function mount(root,opts={}){
  function home(){return [homeBanner(),disciplines(),journalBanner()].filter(Boolean);}
  function cert(){
   const a=sorted(st.certificates);
-  return [banner("cert","Підвищення кваліфікації","Систематично підвищую свою кваліфікацію, беру участь у тренінгах, семінарах та курсах для покращення професійної майстерності.",add("certificates")),
+  return [banner("cert",["Підвищення","кваліфікації"],"Систематично підвищую свою кваліфікацію, беру участь у тренінгах, семінарах та курсах для покращення професійної майстерності.",add("certificates")),
   h("div",{class:"stats s3"},stat("award","blue",a.length,"Сертифікатів отримано"),stat("cal","green",sum(a,"hours"),"Годин навчання"),stat("star","pur",period(a),"Період навчання")),
   a.length?paged("cert",a,l=>grid(l.map(r=>h("article",{class:"card hv"},media(r.photos||[],r.title),h("div",{class:"cb"},h("h3",{},r.title),h("p",{class:"mu"},r.org),
    h("div",{class:"ft"},h("span",{class:"dt"},ic("cal"),fmt(r)),r.hours?h("span",{class:"chip"},r.hours+" год."):null),lk("certificates",r),ab("certificates",r)))))):empty("certificates")];
  }
  function pub(){
   const a=sorted(st.publications);
-  return [banner("pub","Інноваційна робота викладача","Публікації у наукових виданнях і збірниках, методичні розробки, участь у конференціях і засіданнях та інші напрацювання у сфері педагогіки та освіти.",add("publications")),
+  return [banner("pub",["Інноваційна робота","викладача"],"Публікації у наукових виданнях і збірниках, методичні розробки, участь у конференціях і засіданнях та інші напрацювання у сфері педагогіки та освіти.",add("publications")),
   h("div",{class:"stats s5"},stat("file","pur",typ(a,"стаття"),"Статей"),stat("book","blue",typ(a,"монографія"),"Монографій"),stat("edit","green",typ(a,"методична розробка","посібник"),"Методичних"),stat("users","amb",typ(a,"участь у конференції","участь у засіданні","інша діяльність"),"Участь у заходах"),stat("bulb","blue",a.length,"Всього")),
   a.length?paged("pub",a,l=>grid(l.map(r=>h("article",{class:"card hv"},media(r.photos||[],r.title,r.type),h("div",{class:"cb"},h("h3",{},r.title),h("p",{class:"mu"},[r.publisher,fmt(r)].filter(Boolean).join(", ")),lk("publications",r),ab("publications",r)))),"feature")):empty("publications")];
  }
@@ -208,13 +214,13 @@ export function mount(root,opts={}){
    r.award?h("span",{class:"chip amb"},ic("award"),r.award):null,lk("studentArticles",r),ab("studentArticles",r)))))):empty("studentArticles","Додати статтю")):
    (ev.length?paged("ev",ev,l=>grid(l.map(r=>h("article",{class:"card hv"},media(r.photos||[],r.title,r.type),h("div",{class:"cb"},h("h3",{},r.title),
    h("div",{class:"ft"},h("span",{class:"dt"},ic("cal"),fmt(r)),r.count?h("span",{class:"dt g"},ic("users"),r.count):null),lk("events",r),ab("events",r)))))):empty("events","Додати захід"));
-  return [banner("stud","Робота зі студентами","Наукове керівництво студентськими роботами, організація екскурсій, конференцій та інших освітніх заходів.",add("studentArticles","Додати статтю"),add("events","Додати захід")),
+  return [banner("stud",["Робота зі","студентами"],"Наукове керівництво студентськими роботами, організація екскурсій, конференцій та інших освітніх заходів.",add("studentArticles","Додати статтю"),add("events","Додати захід")),
   h("div",{class:"stats s4"},stat("file","green",ar.length,"Статей студентів"),stat("camera","blue",ev.length,"Заходів проведено"),stat("award","amb",ar.filter(r=>r.award).length,"Нагород отримано"),stat("users","pur",sum(ev,"count"),"Учасників")),
   h("div",{class:"tabs",role:"tablist"},tabs.map(t=>h("button",{role:"tab","aria-selected":t[0]===tab,class:t[0]===tab?"on":"",onclick:()=>{tab=t[0];draw("stud");}},ic(t[2]),t[1]))),body];
  }
  function awards(){
   const a=sorted(st.awards);
-  return [banner("awards","Нагороди викладача","Визнання професійних досягнень, нагороди та відзнаки за внесок у розвиток освіти та педагогічної науки.",add("awards")),
+  return [banner("awards",["Нагороди","викладача"],"Визнання професійних досягнень, нагороди та відзнаки за внесок у розвиток освіти та педагогічної науки.",add("awards")),
   h("div",{class:"stats s4"},stat("trophy","amb",a.length,"Всього нагород"),stat("medal","pur",typ(a,"почесна грамота","подяка"),"Грамоти та подяки"),stat("star","blue",typ(a,"диплом","сертифікат"),"Дипломи та сертифікати"),stat("cal","green",period(a),"Період отримання")),
   a.length?paged("aw",a,l=>h("div",{class:"hlist"},l.map(r=>h("article",{class:"card hv aw"},media(r.photos||[],r.title),h("div",{class:"cb"},h("div",{class:"awt"},h("span",{class:"si big c-amb"},ic("trophy")),h("span",{class:"chip solid"},fmt(r))),
    h("h3",{},r.title),r.desc?h("p",{class:"mu"},r.desc):null,r.type?h("span",{class:"chip"},ic("medal"),r.type):null,lk("awards",r),ab("awards",r)))))):empty("awards")];
@@ -231,14 +237,11 @@ export function mount(root,opts={}){
  }
  function worksBanner(list){
   const ph=list.filter(r=>r.photo),yr=Math.max(0,...list.map(r=>+r.year||0))||new Date().getFullYear();
-  return h("section",{class:"wbanner"},
-   h("div",{class:"wb-l"},h("span",{class:"wb-chip"},"Студентське портфоліо • "+yr),
-    h("h1",{},"Ідеї, що стають ",h("span",{class:"wb-grad"},"вебсайтами.")),
-    h("p",{},"Добірка навчальних проєктів з вебдизайну та розробки — від першого макета до готового сайту."),
-    h("div",{class:"wb-b"},
-     h("button",{class:"cta pri",type:"button",onclick:()=>{const t=document.getElementById("wk-list");if(t)t.scrollIntoView({behavior:"smooth",block:"start"});}},"Переглянути проєкти",ic("adown")),
-     add("studentWorks","Додати роботу"))),
-   h("div",{class:"wb-r"},h("div",{class:"mw-stack"},mockWin(ph[0]||null,"m1"),mockWin(ph[1]||null,"m2"),mockWin(ph[2]||null,"m3")),tech("html","fb"),tech("css","fb"),tech("js","fb")));
+  const art=h("div",{class:"mw-stack"},mockWin(ph[0]||null,"m1"),mockWin(ph[1]||null,"m2"),mockWin(ph[2]||null,"m3"),
+   h("span",{class:"bn-pill p1"},"HTML"),h("span",{class:"bn-pill p2"},"CSS"),h("span",{class:"bn-pill p3"},"JS"));
+  return bn("works",{eyebrow:"Студентське портфоліо • "+yr,title:["Ідеї, що стають","вебсайтами."],desc:"Добірка навчальних проєктів з вебдизайну та розробки — від першого макета до готового сайту."},art,
+   h("button",{class:"cta pri",type:"button",onclick:()=>{const t=document.getElementById("wk-list");if(t)t.scrollIntoView({behavior:"smooth",block:"start"});}},"Переглянути проєкти",ic("adown")),
+   add("studentWorks","Додати роботу"));
  }
  function works(){
   const all=sorted(st.studentWorks);
@@ -310,13 +313,15 @@ export function mount(root,opts={}){
  }
  function schedule(){
   const box=h("div",{class:"sched"});const paint=()=>box.replaceChildren(...schedBody(paint));paint();
-  return [banner("schedule","Розклад занять","Оберіть групу й тиждень. Онлайн-заняття відкриваються за посиланням, для очних занять вказано корпус і аудиторію.",add("lessons","Додати заняття"),A?h("button",{class:"btn primary sm",onclick:A.sched},ic("edit"),"Налаштування розкладу"):null),box];
+  return [banner("schedule",["Розклад","занять"],"Оберіть групу й тиждень. Онлайн-заняття відкриваються за посиланням, для очних занять вказано корпус і аудиторію.",add("lessons","Додати заняття"),A?h("button",{class:"btn primary sm",onclick:A.sched},ic("edit"),"Налаштування розкладу"):null),box];
  }
- const dctx=()=>({h,ic,A,st,add,ab,empty,codeWin,tech});
- const B={about:home,disc_it:()=>buildDiscipline(dctx(),"it"),disc_web:()=>buildDiscipline(dctx(),"web"),res:()=>buildResources(dctx()),me:about,lessons:()=>buildInteractive({h,ic,A,st,banner,soon,stat}),
+ const dctx=()=>({h,ic,A,st,add,ab,empty,bn});
+ const B={about:home,disc_it:()=>buildDiscipline(dctx(),"it"),disc_web:()=>buildDiscipline(dctx(),"web"),res:()=>buildResources(dctx()),me:about,lessons:()=>buildInteractive({h,ic,A,st,banner,bn,soon,stat}),
   schedule,works,cert,pub,stud,awards};
  function draw(k){
-  view.dataset.t=k;view.classList.remove("in");view.replaceChildren(...B[k]());void view.offsetWidth;view.classList.add("in");
+  view.dataset.t=k;
+  const nodes=B[k]().filter(Boolean),top=nodes.filter(n=>n.classList&&n.classList.contains("bn")),body=h("div",{class:"wrap"},nodes.filter(n=>!top.includes(n)));
+  view.replaceChildren(...top,body);void body.offsetWidth;body.classList.add("in");
   nav.querySelectorAll("a").forEach(a=>a.setAttribute("aria-current",a.dataset.k===k?"page":"false"));nav.querySelectorAll(".dd-b").forEach(b=>b.classList.toggle("on",b.dataset.g===SEC[k].g));nav.querySelectorAll(".dd").forEach(d=>d.classList.remove("open"));
   crumb.textContent=SEC[k].t;document.title=SEC[k].t+" — WebLab";
  }

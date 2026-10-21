@@ -4,10 +4,12 @@ import {parseVideo, setThumb, fileInfo, okUrl, hostOf, resType, docView} from ".
 export const DISC = {
   it: {
     title: "Інтернет-технології в інформаційній діяльності",
+    head: ["Інтернет-технології", "в інформаційній діяльності"],
     lead: "Усі необхідні матеріали для успішного навчання: лекції, практичні роботи, самостійне вивчення та корисні ресурси в одному місці."
   },
   web: {
     title: "Веб-дизайн та веб-технології",
+    head: ["Веб-дизайн", "та веб-технології"],
     lead: "Усі необхідні матеріали для успішного навчання: лекції, практичні роботи, самостійне вивчення та корисні ресурси в одному місці."
   }
 };
@@ -31,17 +33,11 @@ const DT = {it: "lecture", web: "lecture"};
 
 /* ============================================================ ДИСЦИПЛІНА */
 export function buildDiscipline(ctx, id) {
-  const {h, ic, A, st, add, ab, empty, codeWin, tech} = ctx;
+  const {h, ic, A, st, add, ab, empty, bn} = ctx;
   const D = DISC[id], info = (st.profile && st.profile.discs && st.profile.discs[id]) || {};
   const mats = (st.materials || []).filter(m => m.disc === id);
 
-  const hero = h("section", {class: "hbanner dsb"},
-    h("div", {class: "hb-l"},
-      h("span", {class: "ds-eye"}, "Навчальний матеріал"),
-      h("h1", {}, D.title),
-      h("p", {}, info.desc || D.lead),
-      A ? h("div", {class: "hb-b"}, h("button", {class: "btn sm", type: "button", onclick: () => A.disc(id)}, ic("edit"), "Змінити опис")) : null),
-    h("div", {class: "hb-r"}, codeWin(), tech("html", "fb"), tech("css", "fb"), tech("js", "fb")));
+  const hero = bn("disc_" + id, {eyebrow: "Навчальний матеріал", title: D.head, desc: info.desc || D.lead}, "a");
 
   const box = h("div", {class: "ds-body"});
 
@@ -77,7 +73,7 @@ export function buildDiscipline(ctx, id) {
       h("button", {type: "button", class: "btn sm", "aria-label": "Перемістити нижче", disabled: i === list.length - 1, onclick: () => A.move("materials", r, 1, list)}, ic("down"))) : null;
     const eye = kind.n ? kind.n + (kind.k === "self" ? "" : " " + String(i + 1).padStart(2, "0")) : "";
     const card = h("article", {class: "dd-card" + (isLand(r, kind) ? " land" : "")});
-    card.append(
+    card.append(...[
       thumb(r, i, kind, canView ? dv : null, card),
       h("div", {class: "dd-in"},
         h("div", {class: "dd-top"}, fi.label ? h("span", {class: "dd-ft"}, ic("file"), fi.label) : null),
@@ -86,7 +82,7 @@ export function buildDiscipline(ctx, id) {
         h("div", {class: "dd-bot"},
           r.size ? h("span", {class: "dd-sz"}, ic("file"), r.size) : h("span"),
           ok ? h("a", {class: "dd-btn", href: fi.dl || r.link, target: "_blank", rel: "noopener noreferrer", "aria-label": "Завантажити: " + r.title}, "Завантажити", ic("dl")) : null)),
-      A ? h("div", {class: "ds-adm"}, mv, ab("materials", r)) : null);
+      A ? h("div", {class: "ds-adm"}, mv, ab("materials", r)) : null].filter(Boolean));
     return card;
   }
 
@@ -167,7 +163,7 @@ export function playVideo(h, ic, r) {
 }
 
 export function buildResources(ctx) {
-  const {h, ic, A, st, add, ab, empty, codeWin, tech} = ctx;
+  const {h, ic, A, st, add, ab, empty, bn} = ctx;
   const all = st.resources || [];
   let secs = byOrd(st.resSections);
   if (!A) secs = secs.filter(s => all.some(r => r.section === s.id));
@@ -181,15 +177,10 @@ export function buildResources(ctx) {
     return !t.length ? "book" : c("video") * 2 > t.length ? "play" : c("link") + c("tool") > t.length / 2 ? (c("tool") >= c("link") ? "tool" : "link") : "book";
   };
 
-  const hero = h("section", {class: "hbanner dsb"},
-    h("div", {class: "hb-l"},
-      h("span", {class: "ds-eye"}, "Корисні матеріали"),
-      h("h1", {}, "Підручники, відео та додаткові ресурси"),
-      h("p", {}, "Збираємо для вас найкорисніші матеріали для вивчення веб-технологій: підручники, відеоуроки, корисні посилання та інструменти."),
-      h("div", {class: "hb-b"},
-        h("button", {class: "cta pri", type: "button", onclick: () => {const t = document.getElementById("rs-tabs"); if (t) t.scrollIntoView({behavior: "smooth", block: "start"});}}, "Обрати категорію", ic("adown")),
-        add("resSections", "Додати розділ"))),
-    h("div", {class: "hb-r"}, codeWin(), tech("html", "fb"), tech("css", "fb"), tech("js", "fb")));
+  const hero = bn("res", {eyebrow: "Корисні матеріали", title: ["Підручники, відео", "та додаткові ресурси"],
+      desc: "Збираємо для вас найкорисніші матеріали для вивчення веб-технологій: підручники, відеоуроки, корисні посилання та інструменти."}, "b",
+    h("button", {class: "cta pri", type: "button", onclick: () => {const t = document.getElementById("rs-tabs"); if (t) t.scrollIntoView({behavior: "smooth", block: "start"});}}, "Обрати категорію", ic("adown")),
+    add("resSections", "Додати розділ"));
 
   const content = h("div", {class: "rs-main"}), tiles = h("div", {class: "rs-tabs", id: "rs-tabs", role: "group", "aria-label": "Розділи матеріалів"});
 

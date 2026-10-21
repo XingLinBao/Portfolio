@@ -11,7 +11,7 @@ h1,h2,h3,.brand-t,.sch h2,.stat b,.banner h1,.hbanner h1,.wbanner h1,.jbanner h2
 /* ---------- верхня панель ---------- */
 .app{display:block}.col{min-height:calc(100vh - 68px)}.scrim{display:none!important}
 .side,.side{position:sticky;top:0;height:auto;flex-direction:column;padding:0;background:rgba(255,255,255,.9);backdrop-filter:blur(16px);border:0;border-bottom:1px solid var(--line);overflow:visible;z-index:60;transform:none;width:auto;box-shadow:none}
-.hd-in{max-width:1300px;margin:0 auto;padding:0 28px;height:68px;display:flex;align-items:center;gap:28px}
+.hd-in{width:100%;max-width:1300px;margin:0 auto;padding:0 28px;height:68px;display:flex;align-items:center;gap:28px}
 .brand{display:flex;align-items:center;gap:8px;padding:0;text-decoration:none}
 .brand-t{display:inline-flex;align-items:center;gap:8px;font-size:19px;color:var(--ink);letter-spacing:.02em}
 .logo{display:inline-grid;place-items:center;width:auto;height:auto;background:none;box-shadow:none;color:var(--v);font-size:26px}
@@ -95,3 +95,21 @@ h1,h2,h3,.brand-t,.sch h2,.stat b,.banner h1,.hbanner h1,.wbanner h1,.jbanner h2
  .hbanner,.banner,.wbanner{padding:28px 22px}
  .ft-in{flex-direction:column;text-align:center;gap:10px}
 }
+
+/* ---------- банери: без заокруглень, рамок і тіней; одна палітра ---------- */
+.hbanner,.banner,.wbanner,.soon,.jbanner,.ilb{border-radius:0;border:0;box-shadow:none}
+.hbanner,.banner,.wbanner,.soon{background:linear-gradient(120deg,#f1edff,#fbfaff 65%)}
+.jbanner{background:linear-gradient(120deg,#5b3df5,#8b6cff 70%,#a58bff)}
+
+/* ---------- розклад: поточний день у фірмовому фіолетовому ---------- */
+.g-h{background:linear-gradient(180deg,#faf8ff,var(--tint))}
+.g-h.now{background:var(--v);color:#fff}.g-h.now b{color:#fff}.g-h.now span{color:#e6dfff}
+.g-p{background:#faf8ff}
+.g-c.now{background:rgba(108,71,255,.07)}
+.g-d.now{outline:2px solid var(--v)}.g-d.now h3,.g-d.now h3 span{color:var(--v)}
+.onl{background:var(--v);color:#fff}.onl:hover{background:#5a37ec;filter:none}
+.lc-t{background:#faf8ff}
+
+/* ---------- сторінки зі списком карток (до 8 на сторінці) ---------- */
+.pgd{display:grid;gap:30px;scroll-margin-top:90px}.pgd>*{min-width:0}
+.wk-pg .pg-gap{display:grid;place-items:center;width:28px;color:var(--mu);font-weight:800}

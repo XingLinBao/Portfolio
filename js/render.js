@@ -82,6 +82,23 @@ function isoWeek(d){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.get
 function weekNo(mon,sc){if(sc.start){const p=sc.start.split("-").map(Number);return Math.round((mon-mondayOf(new Date(p[0],p[1]-1,p[2])))/604800000)+1;}return isoWeek(mon);}
 const names=r=>r.students&&r.students.length?r.students:(r.student?[r.student]:[]);
 const subjLinks=s=>{const a=[["materials","Матеріали курсу","book"],["program","Робоча програма","file"]].filter(x=>/^https:\/\//.test(s[x[0]]||"")).map(x=>h("a",{href:s[x[0]],target:"_blank",rel:"noopener"},ic(x[2]),x[1]));return a.length?h("div",{class:"sl"},a):null;};
+const PER=8,PG={};
+/* Список карток: не більше PER на сторінці, внизу — перемикач сторінок. mk(items) повертає вузол зі списком. */
+function paged(key,items,mk){
+ const box=h("div",{class:"pgd"}),pager=h("nav",{class:"wk-pg","aria-label":"Сторінки"}),pages=Math.max(1,Math.ceil(items.length/PER));
+ function paint(){
+  const p=PG[key]=Math.min(Math.max(1,PG[key]||1),pages);
+  const go=n=>{PG[key]=n;paint();box.scrollIntoView({behavior:"smooth",block:"start"});};
+  const nums=[];for(let i=1;i<=pages;i++)if(pages<=7||i===1||i===pages||Math.abs(i-p)<=1)nums.push(i);
+  const mid=[];nums.forEach((n,k)=>{if(k&&n-nums[k-1]>1)mid.push(h("span",{class:"pg-gap","aria-hidden":"true"},"…"));
+   mid.push(h("button",{class:"pgb"+(n===p?" on":""),type:"button","aria-label":"Сторінка "+n,"aria-current":n===p?"page":null,onclick:()=>go(n)},n));});
+  box.replaceChildren(mk(items.slice((p-1)*PER,p*PER)),pager);
+  pager.replaceChildren(...(pages>1?[
+   h("button",{class:"pgb",type:"button","aria-label":"Попередня сторінка",disabled:p===1,onclick:()=>go(p-1)},ic("l")),...mid,
+   h("button",{class:"pgb",type:"button","aria-label":"Наступна сторінка",disabled:p===pages,onclick:()=>go(p+1)},ic("r"))]:[]));
+ }
+ paint();return box;
+}
 export function mount(root,opts={}){
  const A=opts.admin;let st=cache,tab="studentArticles";
  const nav=h("nav",{class:"menu","aria-label":"Розділи"}),sub=h("div",{class:"brand-s"}),
@@ -164,24 +181,24 @@ export function mount(root,opts={}){
   const a=sorted(st.certificates);
   return [banner("cert","Підвищення кваліфікації","Систематично підвищую свою кваліфікацію, беру участь у тренінгах, семінарах та курсах для покращення професійної майстерності.",add("certificates")),
   h("div",{class:"stats s3"},stat("award","blue",a.length,"Сертифікатів отримано"),stat("cal","green",sum(a,"hours"),"Годин навчання"),stat("star","pur",period(a),"Період навчання")),
-  a.length?grid(a.map(r=>h("article",{class:"card hv"},media(r.photos||[],r.title),h("div",{class:"cb"},h("h3",{},r.title),h("p",{class:"mu"},r.org),
-   h("div",{class:"ft"},h("span",{class:"dt"},ic("cal"),fmt(r)),r.hours?h("span",{class:"chip"},r.hours+" год."):null),lk("certificates",r),ab("certificates",r))))):empty("certificates")];
+  a.length?paged("cert",a,l=>grid(l.map(r=>h("article",{class:"card hv"},media(r.photos||[],r.title),h("div",{class:"cb"},h("h3",{},r.title),h("p",{class:"mu"},r.org),
+   h("div",{class:"ft"},h("span",{class:"dt"},ic("cal"),fmt(r)),r.hours?h("span",{class:"chip"},r.hours+" год."):null),lk("certificates",r),ab("certificates",r)))))):empty("certificates")];
  }
  function pub(){
   const a=sorted(st.publications);
   return [banner("pub","Інноваційна робота викладача","Публікації у наукових виданнях і збірниках, методичні розробки, участь у конференціях і засіданнях та інші напрацювання у сфері педагогіки та освіти.",add("publications")),
   h("div",{class:"stats s5"},stat("file","pur",typ(a,"стаття"),"Статей"),stat("book","blue",typ(a,"монографія"),"Монографій"),stat("edit","green",typ(a,"методична розробка","посібник"),"Методичних"),stat("users","amb",typ(a,"участь у конференції","участь у засіданні","інша діяльність"),"Участь у заходах"),stat("bulb","blue",a.length,"Всього")),
-  a.length?grid(a.map(r=>h("article",{class:"card hv"},media(r.photos||[],r.title,r.type),h("div",{class:"cb"},h("h3",{},r.title),h("p",{class:"mu"},[r.publisher,fmt(r)].filter(Boolean).join(", ")),lk("publications",r),ab("publications",r)))),"feature"):empty("publications")];
+  a.length?paged("pub",a,l=>grid(l.map(r=>h("article",{class:"card hv"},media(r.photos||[],r.title,r.type),h("div",{class:"cb"},h("h3",{},r.title),h("p",{class:"mu"},[r.publisher,fmt(r)].filter(Boolean).join(", ")),lk("publications",r),ab("publications",r)))),"feature")):empty("publications")];
  }
  function stud(){
   const ar=sorted(st.studentArticles),ev=sorted(st.events);
   const tabs=[["studentArticles","Статті студентів","file",ar],["events","Екскурсії та заходи","camera",ev]].filter(t=>A||t[3].length);
   if(!tabs.find(t=>t[0]===tab))tab=tabs[0][0];
-  const body=tab==="studentArticles"?(ar.length?h("div",{class:"list"},ar.map(r=>h("article",{class:"card hv sa-card"},r.photos&&r.photos.length?media(r.photos,r.title):null,h("div",{class:"cb"},
+  const body=tab==="studentArticles"?(ar.length?paged("sa",ar,l=>h("div",{class:"list"},l.map(r=>h("article",{class:"card hv sa-card"},r.photos&&r.photos.length?media(r.photos,r.title):null,h("div",{class:"cb"},
    h("div",{class:"who"},h("span",{class:"si c-green"},ic("users")),h("div",{},h("b",{},r.group?"Група "+r.group:(names(r)[0]||"Студент")),h("div",{class:"mu s"},r.year))),(r.group||names(r).length>1)&&names(r).length?h("ul",{class:"stl"},names(r).map(n=>h("li",{},n))):null,h("h3",{},r.title),r.venue?h("p",{class:"mu"},r.venue):null,
-   r.award?h("span",{class:"chip amb"},ic("award"),r.award):null,lk("studentArticles",r),ab("studentArticles",r))))):empty("studentArticles","Додати статтю")):
-   (ev.length?grid(ev.map(r=>h("article",{class:"card hv"},media(r.photos||[],r.title,r.type),h("div",{class:"cb"},h("h3",{},r.title),
-   h("div",{class:"ft"},h("span",{class:"dt"},ic("cal"),fmt(r)),r.count?h("span",{class:"dt g"},ic("users"),r.count):null),lk("events",r),ab("events",r))))):empty("events","Додати захід"));
+   r.award?h("span",{class:"chip amb"},ic("award"),r.award):null,lk("studentArticles",r),ab("studentArticles",r)))))):empty("studentArticles","Додати статтю")):
+   (ev.length?paged("ev",ev,l=>grid(l.map(r=>h("article",{class:"card hv"},media(r.photos||[],r.title,r.type),h("div",{class:"cb"},h("h3",{},r.title),
+   h("div",{class:"ft"},h("span",{class:"dt"},ic("cal"),fmt(r)),r.count?h("span",{class:"dt g"},ic("users"),r.count):null),lk("events",r),ab("events",r)))))):empty("events","Додати захід"));
   return [banner("stud","Робота зі студентами","Наукове керівництво студентськими роботами, організація екскурсій, конференцій та інших освітніх заходів.",add("studentArticles","Додати статтю"),add("events","Додати захід")),
   h("div",{class:"stats s4"},stat("file","green",ar.length,"Статей студентів"),stat("camera","blue",ev.length,"Заходів проведено"),stat("award","amb",ar.filter(r=>r.award).length,"Нагород отримано"),stat("users","pur",sum(ev,"count"),"Учасників")),
   h("div",{class:"tabs",role:"tablist"},tabs.map(t=>h("button",{role:"tab","aria-selected":t[0]===tab,class:t[0]===tab?"on":"",onclick:()=>{tab=t[0];draw("stud");}},ic(t[2]),t[1]))),body];
@@ -190,8 +207,8 @@ export function mount(root,opts={}){
   const a=sorted(st.awards);
   return [banner("awards","Нагороди викладача","Визнання професійних досягнень, нагороди та відзнаки за внесок у розвиток освіти та педагогічної науки.",add("awards")),
   h("div",{class:"stats s4"},stat("trophy","amb",a.length,"Всього нагород"),stat("medal","pur",typ(a,"почесна грамота","подяка"),"Грамоти та подяки"),stat("star","blue",typ(a,"диплом","сертифікат"),"Дипломи та сертифікати"),stat("cal","green",period(a),"Період отримання")),
-  a.length?h("div",{class:"hlist"},a.map(r=>h("article",{class:"card hv aw"},media(r.photos||[],r.title),h("div",{class:"cb"},h("div",{class:"awt"},h("span",{class:"si big c-amb"},ic("trophy")),h("span",{class:"chip solid"},fmt(r))),
-   h("h3",{},r.title),r.desc?h("p",{class:"mu"},r.desc):null,r.type?h("span",{class:"chip"},ic("medal"),r.type):null,lk("awards",r),ab("awards",r))))):empty("awards")];
+  a.length?paged("aw",a,l=>h("div",{class:"hlist"},l.map(r=>h("article",{class:"card hv aw"},media(r.photos||[],r.title),h("div",{class:"cb"},h("div",{class:"awt"},h("span",{class:"si big c-amb"},ic("trophy")),h("span",{class:"chip solid"},fmt(r))),
+   h("h3",{},r.title),r.desc?h("p",{class:"mu"},r.desc):null,r.type?h("span",{class:"chip"},ic("medal"),r.type):null,lk("awards",r),ab("awards",r)))))):empty("awards")];
  }
 
  /* ---------- Студентські роботи ---------- */

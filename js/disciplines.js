@@ -1,5 +1,5 @@
 // Розділи «Дисципліни» (два підрозділи) та «Корисні матеріали» (розділи з книгами, відео, посиланнями).
-import {parseVideo, setThumb, fileInfo, okUrl, hostOf, resType} from "./media.js";
+import {parseVideo, setThumb, fileInfo, okUrl, hostOf, resType, docView} from "./media.js";
 
 export const DISC = {
   it: {
@@ -13,10 +13,10 @@ export const DISC = {
 };
 
 export const KINDS = [
-  {k: "lecture", t: "Лекції", i: "book", w: ["лекція", "лекції", "лекцій"], d: "Теоретичні матеріали, які допомагають краще зрозуміти основи дисципліни.", add: "Додати лекцію", none: "Лекції ще не додано."},
-  {k: "practice", t: "Практичні роботи", i: "code", w: ["практична", "практичні", "практичних"], d: "Завдання для практичних занять та методичні вказівки до їх виконання.", add: "Додати практичну", none: "Практичні роботи ще не додано."},
-  {k: "self", t: "Самостійне вивчення", i: "file", w: ["матеріал", "матеріали", "матеріалів"], d: "Матеріали, які варто опрацювати самостійно поза аудиторією.", add: "Додати матеріал", none: "Матеріали для самостійного вивчення ще не додано."},
-  {k: "info", t: "Додаткова інформація", i: "info", w: ["матеріал", "матеріали", "матеріалів"], d: "Програма, критерії оцінювання та інші довідкові документи.", add: "Додати матеріал", none: "Додаткової інформації ще немає."}
+  {k: "lecture", n: "Лекція", t: "Лекції", i: "book", w: ["лекція", "лекції", "лекцій"], d: "Теоретичні матеріали, які допомагають краще зрозуміти основи дисципліни.", add: "Додати лекцію", none: "Лекції ще не додано."},
+  {k: "practice", n: "Практична робота", t: "Практичні роботи", i: "code", w: ["практична", "практичні", "практичних"], d: "Завдання для практичних занять та методичні вказівки до їх виконання.", add: "Додати практичну", none: "Практичні роботи ще не додано."},
+  {k: "self", n: "Матеріал", t: "Самостійне вивчення", i: "file", w: ["матеріал", "матеріали", "матеріалів"], d: "Матеріали, які варто опрацювати самостійно поза аудиторією.", add: "Додати матеріал", none: "Матеріали для самостійного вивчення ще не додано."},
+  {k: "info", n: "", t: "Додаткова інформація", i: "info", w: ["матеріал", "матеріали", "матеріалів"], d: "Програма, критерії оцінювання та інші довідкові документи.", add: "Додати матеріал", none: "Додаткової інформації ще немає."}
 ];
 
 export const pl = (n, w) => {
@@ -44,19 +44,38 @@ export function buildDiscipline(ctx, id) {
 
   const box = h("div", {class: "ds-body"});
 
+  function thumb(r, i, kind, view) {
+    const num = kind.k === "info" ? ic("info") : String(i + 1).padStart(2, "0");
+    const ph = h("span", {class: "dd-ph", "aria-hidden": "true"},
+      h("i", {class: "dd-l1"}), h("b", {class: "dd-n"}, num), h("i", {class: "dd-l2"}), h("i", {class: "dd-l3"}), h("i", {class: "dd-l2"}), h("i", {class: "dd-l3"}));
+    const box = h(view ? "button" : "div", view ? {type: "button", class: "dd-th", "aria-label": "Переглянути: " + r.title, title: "Переглянути", onclick: () => openDoc(h, ic, r)} : {class: "dd-th"}, ph);
+    const src = r.photo || (view ? view.thumb : "");
+    if (src) {
+      const img = h("img", {alt: "", loading: "lazy", src});
+      img.onerror = () => img.remove();
+      img.onload = () => {if (!r.photo && img.naturalWidth && img.naturalWidth <= 160) img.remove();};
+      box.append(img);
+    }
+    if (view) box.append(h("span", {class: "dd-zoom", "aria-hidden": "true"}, ic("ext")));
+    return box;
+  }
+
   function row(r, i, list, kind) {
-    const fi = fileInfo(r.link, r.ftype), ok = okUrl(r.link);
-    const num = h("span", {class: "ds-n" + (kind.k === "info" ? " ic-n" : "")}, kind.k === "info" ? ic("info") : String(i + 1).padStart(2, "0"));
+    const fi = fileInfo(r.link, r.ftype), ok = okUrl(r.link), dv = ok ? docView(r.link) : {embed: "", thumb: ""};
+    const canView = ok && (dv.embed || r.photo);
     const mv = A ? h("div", {class: "ds-mv"},
       h("button", {type: "button", class: "btn sm", "aria-label": "Перемістити вище", disabled: i === 0, onclick: () => A.move("materials", r, -1, list)}, ic("up")),
       h("button", {type: "button", class: "btn sm", "aria-label": "Перемістити нижче", disabled: i === list.length - 1, onclick: () => A.move("materials", r, 1, list)}, ic("down"))) : null;
-    return h("article", {class: "ds-row"}, num,
-      h("div", {class: "ds-t"},
-        h("h3", {}, r.title, fi.label ? h("span", {class: "ds-ft"}, fi.label) : null),
-        r.desc ? h("p", {class: "mu"}, r.desc) : null),
-      h("div", {class: "ds-a"},
-        ok && fi.dl ? h("a", {class: "ds-dl", href: fi.dl, target: "_blank", rel: "noopener noreferrer", "aria-label": "Завантажити: " + r.title, title: "Завантажити"}, ic("dl")) : null,
-        ok ? h("a", {class: "ds-view", href: r.link, target: "_blank", rel: "noopener noreferrer"}, "Переглянути", ic("r")) : null),
+    const eye = kind.n ? kind.n + (kind.k === "self" ? "" : " " + String(i + 1).padStart(2, "0")) : "";
+    return h("article", {class: "dd-card"},
+      thumb(r, i, kind, canView ? dv : null),
+      h("div", {class: "dd-in"},
+        h("div", {class: "dd-top"}, fi.label ? h("span", {class: "dd-ft"}, ic("file"), fi.label) : null),
+        h("div", {class: "dd-tt"}, eye ? h("small", {}, eye) : null, h("h3", {}, r.title)),
+        r.desc ? h("p", {class: "mu"}, r.desc) : null,
+        h("div", {class: "dd-bot"},
+          r.size ? h("span", {class: "dd-sz"}, ic("file"), r.size) : h("span"),
+          ok ? h("a", {class: "dd-btn", href: fi.dl || r.link, target: "_blank", rel: "noopener noreferrer", "aria-label": "Завантажити: " + r.title}, "Завантажити", ic("dl")) : null)),
       A ? h("div", {class: "ds-adm"}, mv, ab("materials", r)) : null);
   }
 
@@ -81,10 +100,10 @@ export function buildDiscipline(ctx, id) {
       h("div", {class: "ds-cm"}, h("h2", {}, kind.t), h("p", {class: "mu"}, kind.d)),
       h("div", {class: "ds-cr"}, list.length ? h("span", {class: "ds-tot"}, `Всього: ${list.length} ${pl(list.length, kind.w)}`) : null,
         add("materials", kind.add, {disc: id, kind: kind.k})));
-    const body = list.length ? h("div", {class: "ds-list"}, list.map((r, i) => row(r, i, list, kind)))
+    const body = list.length ? h("div", {class: "ds-list dd-grid"}, list.map((r, i) => row(r, i, list, kind)))
       : (A ? empty("materials", kind.add, {disc: id, kind: kind.k}) : h("div", {class: "empty"}, ic("file"), h("p", {}, kind.none)));
     const note = list.length ? h("div", {class: "ds-note"}, h("span", {class: "ds-ni"}, ic("info")),
-      h("p", {}, "Матеріали відкриваються за посиланням. Їх можна переглянути онлайн або завантажити на свій пристрій.")) : null;
+      h("p", {}, "Натисніть на картинку, щоб переглянути матеріал онлайн, або завантажте його на свій пристрій.")) : null;
     const side = quickBlock();
     box.replaceChildren(tabs, h("div", {class: "ds-layout" + (side ? "" : " one")}, h("section", {class: "ds-card card"}, head, body, note), side));
   }
@@ -96,6 +115,29 @@ export function buildDiscipline(ctx, id) {
 const RS = {sel: "", q: {}, sort: {}, tag: {}, lim: {}};
 const COVERS = ["#2b1b5e,#6c47ff", "#1d1a4a,#4f46e5", "#3b1d8f,#8b6cff", "#14213d,#5b3df5"];
 const hash = s => [...String(s)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+
+/* Вбудований перегляд документів (PDF та інші файли) у вікні поверх сторінки */
+export function openDoc(h, ic, r) {
+  const dv = docView(r.link), fi = fileInfo(r.link, r.ftype);
+  if (!dv.embed) { if (okUrl(r.link)) window.open(r.link, "_blank", "noopener"); return; }
+  const prev = document.activeElement;
+  const x = h("button", {class: "vm-x dm-x", type: "button", "aria-label": "Закрити перегляд", onclick: () => close()}, ic("x"));
+  const frame = h("iframe", {src: dv.embed, title: r.title, allow: "fullscreen", referrerpolicy: "no-referrer"});
+  const wait = h("div", {class: "dm-wait"}, h("span", {class: "dm-sp"}), "Завантаження документа…");
+  frame.addEventListener("load", () => wait.remove());
+  const bar = h("div", {class: "dm-bar"},
+    h("div", {class: "dm-tt"}, h("b", {}, r.title), fi.label ? h("span", {class: "ds-ft"}, fi.label) : null),
+    h("div", {class: "dm-ac"},
+      h("a", {class: "dd-btn sm", href: fi.dl || r.link, target: "_blank", rel: "noopener noreferrer"}, "Завантажити", ic("dl")),
+      h("a", {class: "dd-btn sm ghost", href: r.link, target: "_blank", rel: "noopener noreferrer", title: "Відкрити в новій вкладці"}, ic("ext"), h("span", {class: "dm-lb"}, "Нова вкладка")),
+      x));
+  const ov = h("div", {class: "vm dm", role: "dialog", "aria-modal": "true", "aria-label": r.title}, h("div", {class: "dm-box"}, bar, h("div", {class: "dm-view"}, wait, frame)));
+  const kd = e => {if (e.key === "Escape") {e.stopPropagation(); close();}};
+  function close() {document.removeEventListener("keydown", kd, true); ov.remove(); document.body.classList.remove("lock"); if (prev && prev.focus) prev.focus();}
+  ov.addEventListener("click", e => {if (e.target === ov) close();});
+  document.addEventListener("keydown", kd, true);
+  document.body.append(ov); document.body.classList.add("lock"); x.focus();
+}
 
 export function playVideo(h, ic, r) {
   const v = parseVideo(r.link);

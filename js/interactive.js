@@ -32,6 +32,7 @@ const lg=k=>h("span",{class:"lg "+k},LANGS[k]||k);
 
 export function buildInteractive(ctx){
   h=ctx.h;ic=ctx.ic;
+  if(window.__interactiveStart){S.tab=window.__interactiveStart.tab||"practice";S.lang=window.__interactiveStart.lang||"html";S.open=null;S.qz=null;window.__interactiveStart=null;}
   const {A,st,soon}=ctx;
   const quiz=byOrd(st.quiz),topics=byOrd(st.practice);
   if(!A&&!quiz.length&&!topics.length)return soon("Інтерактивні заняття","Тут з’являться тест тижня та практичні завдання з HTML, CSS і JavaScript з миттєвою перевіркою коду.","code");

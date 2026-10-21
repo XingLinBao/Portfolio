@@ -173,3 +173,67 @@
  .vm{padding:12px}
 }
 @media(prefers-reduced-motion:reduce){.rs-thumb img,.rs-play,.ds-view{transition:none}}
+
+/* ---------- картки матеріалів дисципліни (з превью та вбудованим переглядом) ---------- */
+.dd-grid{grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+.dd-card{position:relative;display:grid;grid-template-columns:112px minmax(0,1fr);gap:18px;padding:16px;border:1px solid var(--line);border-radius:18px;background:#fff;transition:border-color .2s,box-shadow .2s}
+.dd-card:hover{border-color:#cfc4ff;box-shadow:0 16px 32px -22px var(--glow)}
+.dd-th{position:relative;display:block;width:112px;aspect-ratio:3/4;padding:0;border:1px solid #e6e0ff;border-radius:10px;overflow:hidden;background:#f4f1ff;box-shadow:0 12px 22px -14px rgba(60,40,160,.55);align-self:start}
+button.dd-th{cursor:zoom-in;transition:transform .25s,box-shadow .25s}
+button.dd-th:hover{transform:translateY(-2px);box-shadow:0 18px 28px -14px rgba(60,40,160,.65)}
+button.dd-th:focus-visible{outline:3px solid var(--v);outline-offset:2px}
+.dd-th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;display:block;background:#fff}
+.dd-ph{position:absolute;inset:0;display:grid;align-content:start;gap:6px;padding:12px 10px;background:#fff}
+.dd-ph i{display:block;height:4px;border-radius:2px;background:#e4dff8}
+.dd-ph .dd-l1{width:60%;background:#cfc7f5;margin-bottom:4px}
+.dd-ph .dd-l2{width:100%}.dd-ph .dd-l3{width:78%}
+.dd-n{display:inline-grid;place-items:center;justify-self:start;min-width:26px;height:20px;padding:0 5px;margin-bottom:4px;border-radius:5px;background:var(--v);color:#fff;font:800 11px var(--fh)}
+.dd-n .ic{font-size:12px}
+.dd-zoom{position:absolute;right:6px;bottom:6px;display:grid;place-items:center;width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.94);color:var(--v);font-size:14px;box-shadow:0 6px 14px -6px rgba(0,0,0,.45);opacity:0;transition:opacity .2s}
+button.dd-th:hover .dd-zoom,button.dd-th:focus-visible .dd-zoom{opacity:1}
+.dd-in{display:grid;gap:8px;align-content:start;min-width:0}
+.dd-top{display:flex;align-items:center;gap:8px;min-height:0}.dd-top:empty{display:none}
+.dd-ft{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 6px;border-radius:8px;background:var(--tint);color:#4a3fb5;font:800 11.5px var(--font);letter-spacing:.03em}
+.dd-ft .ic{font-size:15px;color:var(--v)}
+.dd-tt{display:grid;gap:2px}
+.dd-tt small{color:var(--mu);font:600 13px var(--font)}
+.dd-tt h3{font-size:15.5px;line-height:1.3;font-weight:700;color:var(--ink)}
+.dd-in p{font-size:13px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.dd-bot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:4px}
+.dd-sz{display:inline-flex;align-items:center;gap:6px;color:var(--mu);font-size:12.5px}.dd-sz .ic{font-size:15px}
+.dd-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:8px 18px;border-radius:999px;border:1.5px solid var(--v);background:#fff;color:var(--v);font:700 13px var(--font);text-decoration:none;white-space:nowrap;cursor:pointer;transition:background .2s,color .2s}
+.dd-btn .ic{font-size:16px}
+.dd-btn:hover{background:var(--v);color:#fff}
+.dd-btn.sm{padding:8px 16px}
+.dd-btn.ghost{border-color:var(--line);color:#4a4678}
+.dd-btn.ghost:hover{border-color:var(--v);color:#fff}
+.dd-card .ds-adm{grid-column:1/-1}
+
+/* ---------- вікно перегляду документа ---------- */
+.dm{padding:20px}
+.dm-box{position:relative;display:grid;grid-template-rows:auto minmax(0,1fr);width:min(1100px,100%);height:min(92vh,100%);border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 40px 80px -30px rgba(0,0,0,.7)}
+.dm-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px 12px 22px;border-bottom:1px solid var(--line);background:#fff}
+.dm-tt{display:flex;align-items:center;gap:10px;min-width:0}
+.dm-tt b{font-size:15px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dm-ac{display:flex;align-items:center;gap:10px;flex:none}
+.dm .dm-x{position:static;width:40px;height:40px;background:var(--tint);color:var(--v)}
+.dm .dm-x:hover{background:#e4dcff}
+.dm-view{position:relative;background:#e9e6f5}
+.dm-view iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+.dm-wait{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:12px;color:var(--mu);font-size:14px}
+.dm-sp{width:30px;height:30px;border-radius:50%;border:3px solid #ddd6ff;border-top-color:var(--v);animation:dmspin .8s linear infinite}
+@keyframes dmspin{to{rotate:360deg}}
+
+@media(max-width:700px){
+ .dd-grid{grid-template-columns:minmax(0,1fr)}
+ .dd-card{grid-template-columns:92px minmax(0,1fr);gap:14px;padding:14px}
+ .dd-th{width:92px}
+ .dm{padding:0}
+ .dm-box{width:100%;height:100%;border-radius:0}
+ .dm-bar{flex-wrap:wrap;padding:10px 12px 10px 16px;gap:8px}
+ .dm-tt{flex:1 1 calc(100% - 56px)}
+ .dm-ac{flex:1 1 100%;order:3}
+ .dm-lb{display:none}
+ .dm-x{position:absolute!important;top:8px;right:8px}
+}
+@media(prefers-reduced-motion:reduce){button.dd-th,.dd-zoom,.dm-sp{transition:none;animation:none}}

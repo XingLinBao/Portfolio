@@ -28,6 +28,45 @@ service cloud.firestore {
         && d.lang in ['html','css','js'] && str(d,'desc',1000)
         && d.tasks is list && d.tasks.size() <= 40;
     }
+    // Дисципліни: лекції, практичні, самостійне вивчення, додаткова інформація (посилання на файли)
+    function ordOk(d) { return !('ord' in d) || d.ord is number; }
+    function goodMaterial(d) {
+      return d.keys().hasOnly(['disc','kind','title','desc','link','ftype','quick','ord','createdAt'])
+        && d.disc in ['it','web'] && d.kind in ['lecture','practice','self','info']
+        && d.title is string && d.title.size() > 0 && d.title.size() <= 300
+        && str(d,'desc',1000) && str(d,'ftype',40)
+        && d.link is string && d.link.matches('https://.*') && d.link.size() <= 500
+        && (!('quick' in d) || d.quick is bool) && ordOk(d);
+    }
+    // Корисні матеріали: розділи та їхній вміст
+    function goodResSection(d) {
+      return d.keys().hasOnly(['name','desc','ord','createdAt'])
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 200
+        && str(d,'desc',500) && ordOk(d);
+    }
+    function goodResource(d) {
+      return d.keys().hasOnly(['section','type','title','desc','link','tag','author','duration','size','ftype','photo','ord','createdAt'])
+        && d.section is string && d.section.size() > 0 && d.section.size() <= 100
+        && str(d,'type',20) && d.title is string && d.title.size() > 0 && d.title.size() <= 300
+        && str(d,'desc',1000) && str(d,'tag',60) && str(d,'author',200) && str(d,'duration',20) && str(d,'size',40) && str(d,'ftype',40)
+        && str(d,'photo',900000)
+        && d.link is string && d.link.matches('https://.*') && d.link.size() <= 500 && ordOk(d);
+    }
+    match /materials/{id} {
+      allow read: if true;
+      allow create, update: if owner() && goodMaterial(request.resource.data);
+      allow delete: if owner();
+    }
+    match /resSections/{id} {
+      allow read: if true;
+      allow create, update: if owner() && goodResSection(request.resource.data);
+      allow delete: if owner();
+    }
+    match /resources/{id} {
+      allow read: if true;
+      allow create, update: if owner() && goodResource(request.resource.data);
+      allow delete: if owner();
+    }
     match /profile/{id} {
       allow read: if true;
       allow write: if owner() && request.resource.data.keys().size() <= 20

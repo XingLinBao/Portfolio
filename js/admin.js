@@ -2,7 +2,7 @@ import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut,sendPasswo
 import {app,cache,delRec} from "./data.js";
 import {OWNER_UID} from "./config.js";
 import {mount,h,ic} from "./render.js";
-import {recordModal,profileModal,schedModal,confirmBox,toast} from "./modal.js";
+import {recordModal,profileModal,schedModal,discModal,confirmBox,toast} from "./modal.js";
 import {runWizard} from "./wizard.js";
 import {isInteractive,interactiveModal,quizMetaModal,clearQuiz,moveRec} from "./admin-interactive.js";
 const auth=getAuth(app),root=document.getElementById("app");
@@ -36,9 +36,10 @@ function start(){
   h("button",{class:"btn sm",onclick:()=>signOut(auth)},"Вийти")));
  const holder=h("div");root.append(bar,holder);
  const title=r=>r.title||r.subject||r.degree||r.name||r.student||"запис";
- site=mount(holder,{admin:{add:c=>isInteractive(c)?interactiveModal(c,null,refresh):recordModal(c,null,refresh),edit:(c,r)=>isInteractive(c)?interactiveModal(c,r,refresh):recordModal(c,r,refresh),
-  quizMeta:()=>quizMetaModal(refresh),clearQuiz:()=>clearQuiz(refresh),move:(c,r,d,l)=>moveRec(c,r,d,l,refresh),profile:()=>profileModal(refresh),sched:()=>schedModal(refresh),
-  async del(c,r){if(!(await confirmBox(`Видалити «${title(r)}»? Цю дію не можна скасувати.`,"Видалити",true,"Видалення")))return;
-   try{await delRec(c,r.id);toast("Видалено");await refresh();}catch(e){toast("Не вдалося видалити: "+(e.message||e),"err");}}}});
+ site=mount(holder,{admin:{add:(c,p)=>isInteractive(c)?interactiveModal(c,null,refresh):recordModal(c,p||null,refresh),edit:(c,r)=>isInteractive(c)?interactiveModal(c,r,refresh):recordModal(c,r,refresh),
+  quizMeta:()=>quizMetaModal(refresh),disc:id=>discModal(id,refresh),clearQuiz:()=>clearQuiz(refresh),move:(c,r,d,l)=>moveRec(c,r,d,l,refresh),profile:()=>profileModal(refresh),sched:()=>schedModal(refresh),
+  async del(c,r){const kids=c==="resSections"?(cache.resources||[]).filter(x=>x.section===r.id):[];
+   if(!(await confirmBox(kids.length?`Видалити розділ «${title(r)}» разом з усіма матеріалами в ньому (${kids.length})? Цю дію не можна скасувати.`:`Видалити «${title(r)}»? Цю дію не можна скасувати.`,"Видалити",true,"Видалення")))return;
+   try{await Promise.all(kids.map(k=>delRec("resources",k.id)));await delRec(c,r.id);toast("Видалено");await refresh();}catch(e){toast("Не вдалося видалити: "+(e.message||e),"err");}}}});
  site.refresh(true).then(()=>{if(cache.loaded&&!cache.profile.setupDone)runWizard(refresh);});
 }

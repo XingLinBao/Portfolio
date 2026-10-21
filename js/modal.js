@@ -1,8 +1,6 @@
 import {h,ic} from "./render.js";
 import {SCHEMA,MONTHS,saveRec,saveProfile,cache,getSched} from "./data.js";
 import {photoField} from "./images.js";
-import {parseVideo,setThumb} from "./media.js";
-import {DISC} from "./disciplines.js";
 const stack=[];let uid=0;
 const FOC='a[href],button:not([disabled]),input:not([disabled]):not(.sr),select,textarea,[tabindex="0"]';
 document.addEventListener("keydown",e=>{
@@ -45,28 +43,14 @@ export function buildForm(fields,v={}){
  for(const f of fields){
   const id="f"+(++uid);let ctl,get,fin,extra=null;
   if(f.t==="textarea"){ctl=h("textarea",{id,rows:5,maxlength:3000,placeholder:f.ph||""});ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value.trim()});}
-  else if(f.t==="select"){ctl=h("select",{id},h("option",{value:""},f.blank||"— оберіть —"),...f.opts.map(o=>Array.isArray(o)?h("option",{value:o[0]},o[1]):h("option",{value:o},o)));ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value});}
+  else if(f.t==="select"){ctl=h("select",{id},h("option",{value:""},"— оберіть —"),...f.opts.map(o=>Array.isArray(o)?h("option",{value:o[0]},o[1]):h("option",{value:o},o)));ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value});}
   else if(f.t==="check"){const i=h("input",{id,type:"checkbox"});i.checked=!!v[f.k];ctl=h("label",{class:"chk"},i,f.l);get=()=>({[f.k]:i.checked});}
   else if(f.t==="year"){ctl=ysel(id,v[f.k]);get=()=>({[f.k]:+ctl.value||0});}
   else if(f.t==="my"){const dd=h("select",{id,"aria-label":"Число"},h("option",{value:""},"Число"),...Array.from({length:31},(_,i)=>h("option",{value:i+1},i+1))),m=h("select",{"aria-label":"Місяць"},h("option",{value:""},"Місяць"),...MONTHS.map((n,i)=>h("option",{value:i+1},n))),y=ysel(id+"y",v.year);dd.value=v.day||"";m.value=v.month||"";
    ctl=h("div",{class:"row3"},dd,m,y);get=()=>({day:+dd.value||0,month:+m.value||0,year:+y.value||0});}
   else if(f.t==="number"){ctl=h("input",{id,type:"number",min:0,step:1,inputmode:"numeric"});ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value===""?0:Math.max(0,Math.round(+ctl.value))});}
   else if(f.t==="url"){const i=h("input",{id,type:"url",placeholder:"https://",maxlength:500});i.value=v[f.k]||"";
-   const row=h("div",{class:"urlrow"},i,h("button",{type:"button",class:"btn sm",onclick:()=>/^https:\/\/\S+$/.test(i.value.trim())?window.open(i.value.trim(),"_blank","noopener"):toast("Вкажіть посилання, що починається з https://","err")},"Перевірити посилання"));
-   ctl=row;
-   if(f.preview){
-    const pv=h("div",{class:"vprev",hidden:true});let timer,tok=0;
-    const upd=()=>{const t=++tok,v=parseVideo(i.value);
-     if(!v){pv.hidden=true;pv.replaceChildren();return;}
-     pv.hidden=false;
-     const img=h("img",{alt:"Прев’ю відео"}),fail=()=>{if(t===tok)pv.replaceChildren(h("span",{class:"mu s"},"Прев’ю для цього відео отримати не вдалося — додайте обкладинку нижче."));};
-     const ok=()=>{if(t===tok)pv.replaceChildren(img,h("span",{class:"mu s"},"Так відео виглядатиме на сайті. Власна обкладинка, якщо її додати, замінить це прев’ю."));};
-     pv.replaceChildren(h("span",{class:"mu s"},"Завантажуємо прев’ю…"));
-     img.addEventListener("load",()=>{if(img.naturalWidth>160)ok();});
-     setThumb(img,i.value,fail);
-     if(v.kind==="file")fail();};
-    i.addEventListener("input",()=>{clearTimeout(timer);timer=setTimeout(upd,400);});upd();
-    ctl=h("div",{},row,pv);}
+   ctl=h("div",{class:"urlrow"},i,h("button",{type:"button",class:"btn sm",onclick:()=>/^https:\/\/\S+$/.test(i.value.trim())?window.open(i.value.trim(),"_blank","noopener"):toast("Вкажіть посилання, що починається з https://","err")},"Перевірити посилання"));
    get=()=>({[f.k]:i.value.trim()});}
   else if(f.t==="multi"){const on=new Set(v[f.k]||[]);
    ctl=h("div",{class:"mchk"},f.opts.map(o=>{const i=h("input",{type:"checkbox",value:o[0]});i.checked=on.has(o[0]);return h("label",{class:"chk"},i,o[1]);}));
@@ -114,9 +98,9 @@ function saveFlow({title,form,save,onSaved,again}){
 }
 function mkForm(S,rec){const f=buildForm(typeof S.f==="function"?S.f():S.f,rec||{});if(S.check){const v0=f.validate;f.validate=()=>v0()||S.check(f.get());}return f;}
 export async function recordModal(col,rec,onSaved){
- const S=SCHEMA[col],isNew=!(rec&&rec.id),ONE={materials:"Зберегти й додати ще",resources:"Зберегти й додати ще"},again=isNew&&col==="studentArticles"?"Зберегти й додати ще одну групу":(isNew&&col==="studentWorks"?"Зберегти й додати ще одну роботу":(isNew&&ONE[col])||null);
+ const S=SCHEMA[col],again=!rec&&col==="studentArticles"?"Зберегти й додати ще одну групу":(!rec&&col==="studentWorks"?"Зберегти й додати ще одну роботу":null);
  let r;
- do{r=await saveFlow({title:(isNew?"Додати: ":"Змінити: ")+S.label,form:mkForm(S,rec),save:d=>saveRec(col,rec&&rec.id,d),onSaved,again});}while(r==="again");
+ do{r=await saveFlow({title:(rec?"Змінити: ":"Додати: ")+S.label,form:mkForm(S,rec),save:d=>saveRec(col,rec&&rec.id,d),onSaved,again});}while(r==="again");
  return !!r;
 }
 export const PROFILE_FIELDS=[{k:"fullName",l:"ПІБ",req:1,ph:"Іванова Олена Петрівна"},{k:"position",l:"Посада",req:1,ph:"Викладач педагогічних дисциплін"},{k:"institution",l:"Назва закладу",req:1,ph:"Коледж"},
@@ -136,10 +120,4 @@ export function schedModal(onSaved){
  const form=buildForm(f,{g1:sc.groups[0],g2:sc.groups[1],start:sc.start,pairsText:sc.pairs.join("\n")});
  const v0=form.validate;form.validate=()=>v0()||(parsePairs(form.get().pairsText)?null:"Час пар: по одному рядку, наприклад 09:00-10:20");
  return saveFlow({title:"Налаштування розкладу",form,save:d=>saveProfile({sched:{groups:[d.g1,d.g2],start:d.start||"",pairs:parsePairs(d.pairsText)}}),onSaved});
-}
-
-export function discModal(id,onSaved){
- const cur=(cache.profile.discs&&cache.profile.discs[id])||{};
- return saveFlow({title:"Опис дисципліни: "+DISC[id].title,form:buildForm([{k:"desc",l:"Короткий опис під заголовком",t:"textarea",hint:"Якщо залишити порожнім — буде показано стандартний текст."}],{desc:cur.desc||""}),
-  save:d=>saveProfile({discs:{...(cache.profile.discs||{}),[id]:{desc:d.desc}}}),onSaved});
 }

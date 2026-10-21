@@ -39,7 +39,7 @@ export function buildInteractive(ctx){
   if(S.sig!==sig){S.sig=sig;S.qz=null;}
   const sp=(c,t)=>h("span",{class:"k-"+c},t),ln=(...c)=>h("span",{class:"ln"},...c);
   const ban=h("section",{class:"ilb"},
-    h("div",{class:"ilb-l"},h("h1",{},"Інтерактивні ",h("span",{class:"grad"},"заняття")),
+    h("div",{class:"ilb-l"},h("h1",{},"Інтерактивні заняття"),
       h("p",{},"Перевірте знання в тесті тижня та практикуйтеся: пишіть код у вбудованому редакторі, одразу бачте результат, а валідатор підкаже, що виправити.")),
     h("div",{class:"ilb-r","aria-hidden":"true"},h("div",{class:"ilb-code"},
       h("span",{class:"ilb-tab"},"quiz.js"),
@@ -103,7 +103,7 @@ function quizView(ctx,quiz){
         h("p",{class:"mu"},meta.desc||"Перевірте, як ви засвоїли HTML, CSS та JavaScript. Запитання бувають різних типів: з однією відповіддю, з кількома та на співставлення."),
         quiz.length?h("div",{class:"iq-chips"},h("span",{class:"chip"},ic("list"),`${quiz.length} ${pl(quiz.length,"запитання","запитання","запитань")}`),...Object.keys(LANGS).filter(k=>cnt[k]).map(k=>h("span",{class:"chip"},`${LANGS[k]} · ${cnt[k]}`))):null,
         h("p",{class:"mu s"},"Після завершення ви побачите правильні відповіді та пояснення."),
-        quiz.length?h("button",{class:"cta pri",onclick:begin},ic("play"),"Розпочати тест"):h("p",{class:"mu"},"Запитання ще не додано.")))];
+        quiz.length?h("button",{class:"cta grad",onclick:begin},ic("play"),"Розпочати тест"):h("p",{class:"mu"},"Запитання ще не додано.")))];
     if(A)out.push(adminList());
     return out;
   }
@@ -136,9 +136,9 @@ function quizView(ctx,quiz){
         h("i",{style:`width:${(z.i+1)/z.items.length*100}%`}),h("span",{},`Запитання ${z.i+1} з ${z.items.length}`))),
       h("div",{class:"iq-nav"},
         h("button",{class:"btn",disabled:z.i===0,onclick:()=>{z.i--;z.warn=false;paint();top();}},ic("l"),"Назад"),
-        last?(z.warn?h("div",{class:"iq-nb"},h("button",{class:"btn",onclick:()=>{z.warn=false;paint();}},"Повернутись"),h("button",{class:"cta pri sm",onclick:()=>{z.done=true;paint();top();}},ic("check"),"Завершити все одно")):
-          h("button",{class:"cta pri sm",onclick:()=>{if(z.items.some(x=>!answered(x))){z.warn=true;paint();}else{z.done=true;paint();top();}}},ic("check"),"Завершити тест")):
-        h("button",{class:"cta pri sm",onclick:()=>{z.i++;paint();top();}},"Далі",ic("r"))),
+        last?(z.warn?h("div",{class:"iq-nb"},h("button",{class:"btn",onclick:()=>{z.warn=false;paint();}},"Повернутись"),h("button",{class:"cta grad sm",onclick:()=>{z.done=true;paint();top();}},ic("check"),"Завершити все одно")):
+          h("button",{class:"cta grad sm",onclick:()=>{if(z.items.some(x=>!answered(x))){z.warn=true;paint();}else{z.done=true;paint();top();}}},ic("check"),"Завершити тест")):
+        h("button",{class:"cta grad sm",onclick:()=>{z.i++;paint();top();}},"Далі",ic("r"))),
       dotsEl];
   }
   function show(it){
@@ -156,7 +156,7 @@ function quizView(ctx,quiz){
       h("div",{class:"iq-ring",style:`--p:${pct}`},h("b",{},`${ok}/${n}`),h("span",{},pct+"%")),
       h("div",{class:"iq-rb"},h("h2",{},"Тест завершено"),h("p",{},msg),
         h("div",{class:"iq-bt"},Object.keys(by).map(k=>h("div",{class:"iq-bar"},lg(k),h("div",{class:"iq-track"},h("div",{style:`width:${by[k][0]/by[k][1]*100}%`})),h("span",{},`${by[k][0]}/${by[k][1]}`)))),
-        h("div",{class:"iq-ra"},h("button",{class:"cta pri sm",onclick:begin},ic("undo"),"Пройти ще раз"),h("button",{class:"btn",onclick:()=>{S.qz=null;paint();top();}},"До початку")))),
+        h("div",{class:"iq-ra"},h("button",{class:"cta grad sm",onclick:begin},ic("undo"),"Пройти ще раз"),h("button",{class:"btn",onclick:()=>{S.qz=null;paint();top();}},"До початку")))),
       h("h3",{class:"iq-rh"},"Розбір відповідей"),
       ...z.items.map((it,i)=>h("article",{class:"card pad iq-rq "+(res[i]?"ok":"bad")},
         h("div",{class:"iq-meta"},h("span",{class:"iq-st"},ic(res[i]?"check":"x")),h("b",{},`Запитання ${i+1}`),lg(it.q.topic)),
@@ -265,11 +265,11 @@ function workspace(ctx,topic,ti,repaint){
         errs.length?h("div",{class:"ws-grp"},h("h4",{},"Помилки в коді"),h("ul",{class:"ws-list"},errs.map(s=>h("li",{class:"bad"},ic("x"),h("button",{class:"ws-link",onclick:()=>jump(s)},`${s.lang}${s.line?`, рядок ${s.line}`:""}`),h("span",{},s.msg))))):null,
         warns.length?h("div",{class:"ws-grp"},h("h4",{},"Зауваження"),h("ul",{class:"ws-list"},warns.map(s=>h("li",{class:"warn"},ic("bulb"),h("button",{class:"ws-link",onclick:()=>jump(s)},`${s.lang}${s.line?`, рядок ${s.line}`:""}`),h("span",{},s.msg))))):null,
         r.items.length?h("div",{class:"ws-grp"},h("h4",{},"Що перевірено"),h("ul",{class:"ws-list"},r.items.map(i=>h("li",{class:i.ok?"ok":"bad"},ic(i.ok?"check":"x"),h("span",{},h("b",{},i.label),i.ok?null:h("div",{class:"ws-hint"},i.hint)))))):null,
-        r.pass?h("div",{class:"ws-ra"},nxt?h("button",{class:"cta pri sm",onclick:()=>go(ti+1)},"Наступне завдання",ic("r")):h("button",{class:"cta pri sm",onclick:back},ic("check"),"Тема завершена — до тем"),h("button",{class:"btn",onclick:()=>res.hidden=true},"Залишитись")):null].filter(Boolean));
+        r.pass?h("div",{class:"ws-ra"},nxt?h("button",{class:"cta grad sm",onclick:()=>go(ti+1)},"Наступне завдання",ic("r")):h("button",{class:"cta grad sm",onclick:back},ic("check"),"Тема завершена — до тем"),h("button",{class:"btn",onclick:()=>res.hidden=true},"Залишитись")):null].filter(Boolean));
       if(r.pass){markDone(topic,task);paintSide();}
       res.scrollIntoView({block:"nearest",behavior:"smooth"});
     };
-    const chk=h("button",{class:"cta pri sm"},ic("check"),"Перевірити");
+    const chk=h("button",{class:"cta grad sm"},ic("check"),"Перевірити");
     chk.onclick=async()=>{chk.disabled=true;chk.lastChild.textContent="Перевіряємо…";const s=++rseq;emptyCon();
       try{const r=await validateTask(frame,getFiles(),{...task,edit},hooks);if(s===rseq)showRes(r);}
       catch(e){res.hidden=false;res.className="card pad ws-res bad";res.replaceChildren(h("p",{},"Не вдалося виконати перевірку: "+(e.message||e)));}

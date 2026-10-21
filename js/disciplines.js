@@ -14,6 +14,7 @@ export const DISC = {
 
 export const KINDS = [
   {k: "lecture", n: "Лекція", t: "Лекції", i: "book", w: ["лекція", "лекції", "лекцій"], d: "Теоретичні матеріали, які допомагають краще зрозуміти основи дисципліни.", add: "Додати лекцію", none: "Лекції ще не додано."},
+  {k: "present", n: "Презентація", t: "Презентації", i: "layout", w: ["презентація", "презентації", "презентацій"], d: "Слайди до занять: перегляньте онлайн або завантажте на свій пристрій.", add: "Додати презентацію", none: "Презентації ще не додано."},
   {k: "practice", n: "Практична робота", t: "Практичні роботи", i: "code", w: ["практична", "практичні", "практичних"], d: "Завдання для практичних занять та методичні вказівки до їх виконання.", add: "Додати практичну", none: "Практичні роботи ще не додано."},
   {k: "self", n: "Матеріал", t: "Самостійне вивчення", i: "file", w: ["матеріал", "матеріали", "матеріалів"], d: "Матеріали, які варто опрацювати самостійно поза аудиторією.", add: "Додати матеріал", none: "Матеріали для самостійного вивчення ще не додано."},
   {k: "info", n: "", t: "Додаткова інформація", i: "info", w: ["матеріал", "матеріали", "матеріалів"], d: "Програма, критерії оцінювання та інші довідкові документи.", add: "Додати матеріал", none: "Додаткової інформації ще немає."}
@@ -44,7 +45,8 @@ export function buildDiscipline(ctx, id) {
 
   const box = h("div", {class: "ds-body"});
 
-  function thumb(r, i, kind, view) {
+  const isLand = (r, kind) => kind.k === "present" || /docs\.google\.com\/presentation\/|\.pptx?(\?|#|$)/i.test(r.link || "");
+  function thumb(r, i, kind, view, card) {
     const num = kind.k === "info" ? ic("info") : String(i + 1).padStart(2, "0");
     const ph = h("span", {class: "dd-ph", "aria-hidden": "true"},
       h("i", {class: "dd-l1"}), h("b", {class: "dd-n"}, num), h("i", {class: "dd-l2"}), h("i", {class: "dd-l3"}), h("i", {class: "dd-l2"}), h("i", {class: "dd-l3"}));
@@ -53,7 +55,14 @@ export function buildDiscipline(ctx, id) {
     if (src) {
       const img = h("img", {alt: "", loading: "lazy", src});
       img.onerror = () => img.remove();
-      img.onload = () => {if (!r.photo && img.naturalWidth && img.naturalWidth <= 160) img.remove();};
+      img.onload = () => {
+        const w = img.naturalWidth, hh = img.naturalHeight;
+        if (!r.photo && w && w <= 160) {img.remove(); return;}
+        if (!w || !hh) return;
+        const land = w > hh * 1.05;
+        card.classList.toggle("land", land);
+        box.style.aspectRatio = String(Math.min(1.9, Math.max(0.6, w / hh)));
+      };
       box.append(img);
     }
     if (view) box.append(h("span", {class: "dd-zoom", "aria-hidden": "true"}, ic("ext")));
@@ -67,8 +76,9 @@ export function buildDiscipline(ctx, id) {
       h("button", {type: "button", class: "btn sm", "aria-label": "Перемістити вище", disabled: i === 0, onclick: () => A.move("materials", r, -1, list)}, ic("up")),
       h("button", {type: "button", class: "btn sm", "aria-label": "Перемістити нижче", disabled: i === list.length - 1, onclick: () => A.move("materials", r, 1, list)}, ic("down"))) : null;
     const eye = kind.n ? kind.n + (kind.k === "self" ? "" : " " + String(i + 1).padStart(2, "0")) : "";
-    return h("article", {class: "dd-card"},
-      thumb(r, i, kind, canView ? dv : null),
+    const card = h("article", {class: "dd-card" + (isLand(r, kind) ? " land" : "")});
+    card.append(
+      thumb(r, i, kind, canView ? dv : null, card),
       h("div", {class: "dd-in"},
         h("div", {class: "dd-top"}, fi.label ? h("span", {class: "dd-ft"}, ic("file"), fi.label) : null),
         h("div", {class: "dd-tt"}, eye ? h("small", {}, eye) : null, h("h3", {}, r.title)),
@@ -77,6 +87,7 @@ export function buildDiscipline(ctx, id) {
           r.size ? h("span", {class: "dd-sz"}, ic("file"), r.size) : h("span"),
           ok ? h("a", {class: "dd-btn", href: fi.dl || r.link, target: "_blank", rel: "noopener noreferrer", "aria-label": "Завантажити: " + r.title}, "Завантажити", ic("dl")) : null)),
       A ? h("div", {class: "ds-adm"}, mv, ab("materials", r)) : null);
+    return card;
   }
 
   function quickBlock() {

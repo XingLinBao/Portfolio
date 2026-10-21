@@ -1,0 +1,34 @@
+/* WEB.LAB — єдиний банер сторінок (підключається після disciplines.css).
+   Фон банера — білий і розтягується на всю ширину екрана, вміст тримається в контейнері 1300px.
+   Усі банери мають однакову висоту. Банер електронного журналу (.jbanner) цей файл не змінює. */
+
+.pg{flex:1;display:flex;flex-direction:column;min-width:0}
+.pg>.wrap{flex:1;width:100%}
+
+.bn{position:relative;width:100%;background:#fff;color:var(--ink);border:0;border-radius:0;box-shadow:none}
+.bn-in{width:100%;max-width:1300px;margin:0 auto;padding:0 28px;height:400px;display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:24px;align-items:center}
+.bn-l{display:flex;flex-direction:column;align-items:flex-start;gap:16px;min-width:0}
+.bn-eb{font:800 12px var(--font);letter-spacing:.16em;text-transform:uppercase;color:#5b57a0}
+.bn h1{max-width:16em;font-family:var(--fh);font-weight:800;font-size:clamp(28px,3.5vw,46px);line-height:1.12;letter-spacing:-.015em;color:#1b1747;overflow-wrap:anywhere}
+.bn-ac{display:block;color:#7c5cff}
+.bn-l>p{max-width:52ch;font-size:16.5px;line-height:1.6;color:var(--mu);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.bn-b{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:6px}
+.bn .cta{padding:14px 26px;font-size:15px}
+
+/* ілюстрація праворуч */
+.bn-r{height:100%;min-width:0;display:flex;align-items:center;justify-content:flex-end}
+.bn-art{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;user-select:none;-webkit-user-drag:none}
+
+/* «Студентські роботи»: вікна зі скриншотами робіт замість готової картинки */
+.bn-r .mw-stack{position:relative;width:min(100%,400px);aspect-ratio:1.18;flex:none;margin-right:2%}
+.bn-r .mw{border:1px solid var(--line);border-radius:14px;box-shadow:0 26px 44px -22px rgba(76,52,200,.4)}
+.bn-pill{position:absolute;z-index:5;padding:8px 18px;border-radius:12px;background:#7c5cff;color:#fff;font:800 14px var(--font);letter-spacing:.02em;box-shadow:0 14px 24px -12px rgba(76,52,200,.55)}
+.bn-pill.p1{left:2%;top:4%}.bn-pill.p2{right:0;top:0}.bn-pill.p3{left:36%;bottom:0;padding:7px 16px}
+
+@media(max-width:900px){
+ .bn-in{grid-template-columns:minmax(0,1fr);height:auto;gap:8px;padding:30px 18px 20px}
+ .bn-r{height:auto;justify-content:center}
+ .bn-art{max-height:260px}
+ .bn-r .mw-stack{width:min(100%,340px)}
+ .bn-l>p{-webkit-line-clamp:6}
+}

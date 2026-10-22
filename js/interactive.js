@@ -13,6 +13,8 @@ const ls={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;
 const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const S={tab:"quiz",lang:"html",open:null,qz:null,sig:""};
 let h,ic;
+/* Глибинне посилання з головної: відкриває вкладку «Практичні завдання» з потрібною мовою */
+export function openPractice(lang){S.tab="practice";S.lang=lang;S.open=null;}
 
 // простий формат тексту завдань: порожній рядок — новий абзац, «- » — список, `код` — моноширинний
 function inline(s){return s.split(/(`[^`]+`)/).map(x=>/^`[^`]+`$/.test(x)?h("code",{},x.slice(1,-1)):x).filter(x=>x!=="");}

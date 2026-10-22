@@ -1,6 +1,7 @@
 import {load,cache,MONTHS,MONTHS_GEN,getSched} from "./data.js";
 import {buildInteractive} from "./interactive.js";
 import {buildDiscipline,buildResources} from "./disciplines.js";
+import {bannerArt} from "./banner-art.js";
 export const h=(t,a={},...c)=>{const e=document.createElement(t);
  for(const[k,v]of Object.entries(a)){if(v==null||v===false)continue;if(k==="class")e.className=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?"":v);}
  c.flat().forEach(x=>{if(x!=null&&x!==false)e.append(x.nodeType?x:document.createTextNode(x));});return e;};
@@ -133,7 +134,7 @@ export function mount(root,opts={}){
   const o=(st.profile&&st.profile.banners&&st.profile.banners[key])||{},pair=Array.isArray(d.title)?d.title:[d.title||"",""],own=!!(o.title||o.accent);
   const eff={eyebrow:o.eyebrow||d.eyebrow||"",title:own?(o.title||""):pair[0],accent:own?(o.accent||""):(pair[1]||""),desc:o.desc||d.desc||""};
   const edit=A?h("button",{class:"btn sm",type:"button",onclick:()=>A.banner(key,eff)},ic("edit"),"Змінити текст"):null;
-  const pic=typeof art==="string"?h("img",{class:"bn-art",src:`img/banner-${art}.webp`,alt:"",decoding:"async"}):art;
+  const pic=typeof art==="string"?bannerArt(art):art;
   return h("section",{class:"bn"},h("div",{class:"bn-in"},
    h("div",{class:"bn-l"},eff.eyebrow?h("span",{class:"bn-eb"},eff.eyebrow):null,
     h("h1",{},eff.title,eff.accent?h("span",{class:"bn-ac"},eff.accent):null),
@@ -236,10 +237,8 @@ export function mount(root,opts={}){
   return h("div",{class:"mw "+cls,"aria-hidden":"true"},h("div",{class:"mw-h"},h("i"),h("i"),h("i"),h("span",{},r?r.title:"mysite.html")),h("div",{class:"mw-b"},body));
  }
  function worksBanner(list){
-  const ph=list.filter(r=>r.photo),yr=Math.max(0,...list.map(r=>+r.year||0))||new Date().getFullYear();
-  const art=h("div",{class:"mw-stack"},mockWin(ph[0]||null,"m1"),mockWin(ph[1]||null,"m2"),mockWin(ph[2]||null,"m3"),
-   h("span",{class:"bn-pill p1"},"HTML"),h("span",{class:"bn-pill p2"},"CSS"),h("span",{class:"bn-pill p3"},"JS"));
-  return bn("works",{eyebrow:"Студентське портфоліо • "+yr,title:["Ідеї, що стають","вебсайтами."],desc:"Добірка навчальних проєктів з вебдизайну та розробки — від першого макета до готового сайту."},art,
+  const yr=Math.max(0,...list.map(r=>+r.year||0))||new Date().getFullYear();
+  return bn("works",{eyebrow:"Студентське портфоліо • "+yr,title:["Ідеї, що стають","вебсайтами."],desc:"Добірка навчальних проєктів з вебдизайну та розробки — від першого макета до готового сайту."},"works",
    h("button",{class:"cta pri",type:"button",onclick:()=>{const t=document.getElementById("wk-list");if(t)t.scrollIntoView({behavior:"smooth",block:"start"});}},"Переглянути проєкти",ic("adown")),
    add("studentWorks","Додати роботу"));
  }

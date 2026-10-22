@@ -37,7 +37,7 @@ export function buildDiscipline(ctx, id) {
   const D = DISC[id], info = (st.profile && st.profile.discs && st.profile.discs[id]) || {};
   const mats = (st.materials || []).filter(m => m.disc === id);
 
-  const hero = bn("disc_" + id, {eyebrow: "Навчальний матеріал", title: D.head, desc: info.desc || D.lead}, "a");
+  const hero = bn("disc_" + id, {eyebrow: "Навчальний матеріал", title: D.head, desc: info.desc || D.lead}, "disc");
 
   const box = h("div", {class: "ds-body"});
 
@@ -178,7 +178,7 @@ export function buildResources(ctx) {
   };
 
   const hero = bn("res", {eyebrow: "Корисні матеріали", title: ["Підручники, відео", "та додаткові ресурси"],
-      desc: "Збираємо для вас найкорисніші матеріали для вивчення веб-технологій: підручники, відеоуроки, корисні посилання та інструменти."}, "b",
+      desc: "Збираємо для вас найкорисніші матеріали для вивчення веб-технологій: підручники, відеоуроки, корисні посилання та інструменти."}, "res",
     h("button", {class: "cta pri", type: "button", onclick: () => {const t = document.getElementById("rs-tabs"); if (t) t.scrollIntoView({behavior: "smooth", block: "start"});}}, "Обрати категорію", ic("adown")),
     add("resSections", "Додати розділ"));
 

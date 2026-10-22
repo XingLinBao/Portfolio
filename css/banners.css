@@ -1,4 +1,4 @@
-/* WEB.LAB — єдиний банер сторінок (підключається після disciplines.css).
+/* Learn2Web — єдиний банер сторінок (підключається після disciplines.css).
    Фон банера — білий і розтягується на всю ширину екрана, вміст тримається в контейнері 1300px.
    Усі банери мають однакову висоту. Банер електронного журналу (.jbanner) цей файл не змінює. */
 
@@ -56,3 +56,39 @@
 .bn-r .mw-stack .p3{animation-duration:4.8s;animation-delay:-1.6s;--fy:-11px}
 @keyframes bnFloatT{0%,100%{translate:0 0}50%{translate:0 var(--fy,-8px)}}
 @media(prefers-reduced-motion:reduce){.bn-r .mw-stack .mw,.bn-r .mw-stack .bn-pill{animation:none}}
+
+/* ---------- Головна: картки технологій, найкращі роботи, оголошення ---------- */
+.hc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.hc{display:flex;flex-direction:column;gap:8px;padding:24px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:var(--sh);text-decoration:none;color:var(--ink);transition:transform .25s,box-shadow .25s}
+.hc:hover{transform:translateY(-4px);box-shadow:0 20px 36px -20px rgba(76,52,200,.4)}
+.hc-ic{display:grid;place-items:center;width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,#9b82ff,#6c47ff);color:#fff;font:800 16px var(--fh);margin-bottom:8px}
+.hc-ic .ic{font-size:22px}
+.hc h3{font-size:22px;line-height:1.2}
+.hc p{font-size:15px;line-height:1.5;color:var(--mu);margin-bottom:6px}
+.hc-more{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;color:var(--v);margin-top:auto}
+.hc:hover .hc-more .ic{transform:translateX(3px)}.hc-more .ic{transition:transform .2s}
+.hs-h{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+.hs-h h2{font-family:var(--fh);font-size:24px;font-weight:800;color:var(--ink)}
+.hs-h .lk{margin:0;white-space:nowrap}
+
+/* Оголошення: список новин / конференцій */
+.an-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:start}
+.an-col{padding:24px}
+.an-h{display:flex;align-items:center;gap:16px;margin-bottom:20px}.an-h h2{font-family:var(--fh);font-size:26px;font-weight:800;color:var(--ink)}
+.an-list{display:flex;flex-direction:column;gap:14px}
+.an-it{position:relative;display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.an-th{aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#efeaff,#e0d8ff)}
+.an-th img{width:100%;height:100%;object-fit:cover;display:block}
+.an-ph{width:100%;height:100%;display:grid;place-items:center;color:var(--v)}.an-ph .ic{font-size:34px}
+.an-b{display:flex;flex-direction:column;gap:6px;min-width:0;padding-right:56px}
+.an-d{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--mu)}.an-d .ic{color:var(--v);font-size:14px}
+.an-b h3{font-size:17px;line-height:1.3;font-weight:800;color:var(--ink)}
+.an-b p{font-size:14.5px;line-height:1.5;color:var(--mu);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.an-badge{position:absolute;top:14px;right:14px;padding:5px 12px;border-radius:999px;background:var(--tint);color:#5b3df5;font-size:12px;font-weight:700;white-space:nowrap}
+.an-go{position:absolute;right:14px;bottom:14px;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--tint);color:var(--v);text-decoration:none;transition:background .2s,color .2s}
+.an-go:hover{background:var(--v);color:#fff}
+.an-it>.ab{grid-column:1/-1;margin:0}
+.an-empty{padding:18px 4px}
+@media(max-width:1000px){.an-cols{grid-template-columns:1fr}}
+@media(max-width:900px){.hc-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.an-it{grid-template-columns:1fr}.an-b{padding-right:0}.an-go{position:static;justify-self:end}.an-badge{position:static;justify-self:start}.an-col{padding:18px}}

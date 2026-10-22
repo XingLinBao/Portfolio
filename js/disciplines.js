@@ -279,7 +279,7 @@ export function buildResources(ctx) {
         .map(x => h("li", {}, h("a", {href: x[0]}, h("span", {class: "ds-qi"}, ic(x[1])), h("span", {class: "ds-qt"}, h("b", {}, x[2]), h("small", {}, x[3]))))))),
     h("aside", {class: "rs-quote"}, h("span", {class: "rs-qm", "aria-hidden": "true"}, "“"),
       h("p", {}, "Найкращий спосіб вчитися — це робити. Але хороші ресурси допомагають робити це ефективніше."),
-      h("span", {class: "rs-qa"}, ic("star"), "Web.Lab")));
+      h("span", {class: "rs-qa"}, ic("star"), "Learn2Web")));
 
   paintTiles(); paintMain();
   return [hero, secs.length ? tiles : null, h("div", {class: "rs-layout"}, content, side)].filter(Boolean);

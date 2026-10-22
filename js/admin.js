@@ -2,7 +2,7 @@ import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut,sendPasswo
 import {app,cache,delRec} from "./data.js";
 import {OWNER_UID} from "./config.js";
 import {mount,h,ic} from "./render.js";
-import {recordModal,profileModal,schedModal,bannerModal,confirmBox,toast} from "./modal.js";
+import {recordModal,profileModal,bannerModal,confirmBox,toast} from "./modal.js";
 import {runWizard} from "./wizard.js";
 import {isInteractive,interactiveModal,quizMetaModal,clearQuiz,moveRec} from "./admin-interactive.js";
 const auth=getAuth(app),root=document.getElementById("app");
@@ -37,7 +37,7 @@ function start(){
  const holder=h("div");root.append(bar,holder);
  const title=r=>r.title||r.subject||r.degree||r.name||r.student||"запис";
  site=mount(holder,{admin:{add:(c,p)=>isInteractive(c)?interactiveModal(c,null,refresh):recordModal(c,p||null,refresh),edit:(c,r)=>isInteractive(c)?interactiveModal(c,r,refresh):recordModal(c,r,refresh),
-  quizMeta:()=>quizMetaModal(refresh),banner:(k,c)=>bannerModal(k,c,refresh),clearQuiz:()=>clearQuiz(refresh),move:(c,r,d,l)=>moveRec(c,r,d,l,refresh),profile:()=>profileModal(refresh),sched:()=>schedModal(refresh),
+  quizMeta:()=>quizMetaModal(refresh),banner:(k,c)=>bannerModal(k,c,refresh),clearQuiz:()=>clearQuiz(refresh),move:(c,r,d,l)=>moveRec(c,r,d,l,refresh),profile:()=>profileModal(refresh),
   async del(c,r){const kids=c==="resSections"?(cache.resources||[]).filter(x=>x.section===r.id):[];
    if(!(await confirmBox(kids.length?`Видалити розділ «${title(r)}» разом з усіма матеріалами в ньому (${kids.length})? Цю дію не можна скасувати.`:`Видалити «${title(r)}»? Цю дію не можна скасувати.`,"Видалити",true,"Видалення")))return;
    try{await Promise.all(kids.map(k=>delRec("resources",k.id)));await delRec(c,r.id);toast("Видалено");await refresh();}catch(e){toast("Не вдалося видалити: "+(e.message||e),"err");}}}});

@@ -1,5 +1,5 @@
 import {h,ic} from "./render.js";
-import {SCHEMA,MONTHS,saveRec,saveProfile,cache,getSched} from "./data.js";
+import {SCHEMA,MONTHS,saveRec,saveProfile,cache} from "./data.js";
 import {photoField} from "./images.js";
 import {parseVideo,setThumb} from "./media.js";
 const stack=[];let uid=0;
@@ -123,18 +123,6 @@ export const PROFILE_FIELDS=[{k:"fullName",l:"ПІБ",req:1,ph:"Іванова �
  {k:"about",l:"Про мене",t:"textarea"},{k:"photo",l:"Фото профілю",t:"photo"}];
 export function profileModal(onSaved){
  return saveFlow({title:"Профіль",form:buildForm(PROFILE_FIELDS,cache.profile||{}),save:d=>saveProfile(d),onSaved});
-}
-
-const PAIR_RE=/^(\d{1,2})[:.](\d{2})\s*[-–—]\s*(\d{1,2})[:.](\d{2})$/;
-function parsePairs(t){const out=[];for(const raw of t.split("\n")){const s=raw.trim();if(!s)continue;const m=s.match(PAIR_RE);if(!m)return null;const p=n=>String(n).padStart(2,"0");out.push(`${p(m[1])}:${m[2]}-${p(m[3])}:${m[4]}`);}return out.length?out:null;}
-export function schedModal(onSaved){
- const sc=getSched();
- const f=[{k:"g1",l:"Назва першої групи",req:1},{k:"g2",l:"Назва другої групи",req:1},
-  {k:"start",l:"Перший день семестру",t:"date",hint:"Потрібен для нумерації навчальних тижнів і парних/непарних тижнів. Можна не вказувати."},
-  {k:"pairsText",l:"Час пар",t:"textarea",req:1,hint:"По одному рядку на пару, наприклад: 09:00-10:20"}];
- const form=buildForm(f,{g1:sc.groups[0],g2:sc.groups[1],start:sc.start,pairsText:sc.pairs.join("\n")});
- const v0=form.validate;form.validate=()=>v0()||(parsePairs(form.get().pairsText)?null:"Час пар: по одному рядку, наприклад 09:00-10:20");
- return saveFlow({title:"Налаштування розкладу",form,save:d=>saveProfile({sched:{groups:[d.g1,d.g2],start:d.start||"",pairs:parsePairs(d.pairsText)}}),onSaved});
 }
 
 /* Тексти на головних банерах сторінок. Порожнє поле = стандартний текст. */

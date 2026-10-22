@@ -6,7 +6,7 @@ export const app=initializeApp(firebaseConfig);
 export const db=getFirestore(app);
 export const MONTHS=["Січень","Лютий","Березень","Квітень","Травень","Червень","Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"];
 export const MONTHS_GEN=["січня","лютого","березня","квітня","травня","червня","липня","серпня","вересня","жовтня","листопада","грудня"];
-export const COLS=["education","subjects","certificates","publications","studentArticles","events","awards","studentWorks","lessons","quiz","practice","materials","resSections","resources"];
+export const COLS=["education","subjects","certificates","publications","studentArticles","events","awards","studentWorks","announcements","quiz","practice","materials","resSections","resources"];
 const Y={k:"year",l:"Рік",t:"year",req:1},D={k:"my",t:"my",l:"Дата",req:1,hint:"Число можна не вказувати — тоді буде показано лише місяць і рік."},PH={k:"photos",l:"Фото або PDF (до 6, перше — обкладинка)",t:"photos",hint:"PDF автоматично перетворюється на зображення (кожна сторінка — окреме фото)."},
 LK={k:"link",l:"Посилання",t:"url",hint:"У Google Диску: «Доступ» → «Усі, хто має посилання» → «Читач». Лише https://"};
 const FT=["PDF","Word","PowerPoint","Excel","Архів","Інше"];
@@ -51,26 +51,15 @@ export const SCHEMA={
   {k:"ftype",l:"Формат файлу",t:"select",opts:FT,blank:"Визначити автоматично"},
   {k:"photo",l:"Обкладинка або прев’ю (необов’язково)",t:"photo",hint:"Для відео з YouTube та Vimeo прев’ю підтягується саме. Для книг додайте обкладинку; для інших відео — власне прев’ю."}];},
   check:d=>(cache.resSections||[]).length?null:"Спочатку створіть розділ"},
- awards:{label:"нагороду",f:[{k:"title",l:"Назва",req:1},{k:"desc",l:"Опис",t:"textarea"},sel("type","Тип",["Почесна грамота","Подяка","Диплом","Сертифікат","Інше"]),D,PH,LK]}
-,
- lessons:{label:"заняття",f:()=>{const sc=getSched();return[
-  {k:"g",l:"Група",t:"select",opts:[["g1",sc.groups[0]],["g2",sc.groups[1]]],req:1},
-  {k:"subject",l:"Дисципліна",req:1,sugg:subjectSuggestions,hint:"Оберіть зі списку раніше внесених дисциплін або введіть нову."},
-  {k:"type",l:"Вид заняття",t:"select",opts:["Лекція","Практичне","Лабораторне","Семінар","Консультація","Інше"],req:1},
-  {k:"rep",l:"Повторення",t:"select",opts:[["all","Щотижня"],["odd","Лише непарні тижні"],["even","Лише парні тижні"],["once","Одноразове (за датою)"]],req:1},
-  {k:"day",l:"День тижня",t:"select",opts:[["1","Понеділок"],["2","Вівторок"],["3","Середа"],["4","Четвер"],["5","П’ятниця"],["6","Субота"]],hint:"Для одноразового заняття не потрібен."},
-  {k:"date",l:"Дата (лише для одноразового заняття)",t:"date"},
-  {k:"pair",l:"Пара",t:"select",opts:sc.pairs.map((p,i)=>[String(i+1),`${i+1} пара (${p.replace("-"," — ")})`]),req:1},
-  {k:"mode",l:"Формат",t:"select",opts:[["online","Онлайн"],["offline","Офлайн"]],req:1},
-  {k:"link",l:"Посилання на заняття (для онлайн)",t:"url",hint:"Лише https://, наприклад Google Meet або Zoom."},
-  {k:"building",l:"Корпус (для офлайн)"},{k:"room",l:"Аудиторія (для офлайн)"},
-  {k:"changed",l:"Позначити як «Нещодавно змінено»",t:"check"}];},
-  check:d=>{if(d.rep==="once"&&!d.date)return "Вкажіть дату одноразового заняття";if(d.rep!=="once"&&!d.day)return "Оберіть день тижня";if(d.mode==="offline"&&!d.room&&!d.building)return "Вкажіть корпус або аудиторію";return null;}}
+ awards:{label:"нагороду",f:[{k:"title",l:"Назва",req:1},{k:"desc",l:"Опис",t:"textarea"},sel("type","Тип",["Почесна грамота","Подяка","Диплом","Сертифікат","Інше"]),D,PH,LK]},
+ announcements:{label:"оголошення",f:[sel("type","Тип",["Новина","Конференція"]),{k:"title",l:"Заголовок",req:1},{k:"desc",l:"Короткий опис",t:"textarea"},D,
+  {k:"when",l:"Дата проведення (текстом, для конференцій)",ph:"29 листопада – 9 грудня 2025",hint:"Необов’язково. Якщо заповнено, показується замість дати вище."},
+  {k:"badge",l:"Позначка",ph:"Онлайн, Офлайн або Участь з доповіддю"},
+  {k:"photo",l:"Зображення",t:"photo",hint:"Бажано пропорції 4:3."},
+  {k:"link",l:"Посилання",t:"url",hint:"Необов’язково. Лише https://"}]}
 };
 function subjectSuggestions(){const set=new Set();[...(cache.lessons||[]).map(l=>l.subject),...(cache.subjects||[]).map(s=>s.name)].forEach(x=>{if(x&&String(x).trim())set.add(String(x).trim());});return [...set].sort((a,b)=>a.localeCompare(b,"uk"));}
-export const DEF_SCHED={groups:["ІДП-31","БТ-31"],start:"",pairs:["09:00-10:20","10:30-11:50","12:10-13:30","13:40-15:00","15:10-16:30"]};
-export function getSched(){const s=(cache.profile&&cache.profile.sched)||{},g=s.groups||[];return{groups:[g[0]||DEF_SCHED.groups[0],g[1]||DEF_SCHED.groups[1]],start:s.start||"",pairs:s.pairs&&s.pairs.length?s.pairs:DEF_SCHED.pairs};}
-const SOFT=["lessons","quiz","practice","studentWorks","materials","resSections","resources"];
+const SOFT=["announcements","quiz","practice","studentWorks","materials","resSections","resources"];
 export const cache={loaded:false,profile:{}};
 export async function load(force){
  if(cache.loaded&&!force)return cache;

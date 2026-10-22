@@ -61,6 +61,15 @@ service cloud.firestore {
         && d.link is string && d.link.matches('https://.*') && d.link.size() <= 500
         && str(d,'photo',900000) && ordOk(d);
     }
+    // Оголошення: новини та конференції
+    function goodAnn(d) {
+      return d.keys().hasOnly(['type','title','desc','year','month','day','when','badge','link','photo','ord','createdAt'])
+        && d.type in ['Новина','Конференція']
+        && d.title is string && d.title.size() > 0 && d.title.size() <= 300
+        && str(d,'desc',2000) && str(d,'when',120) && str(d,'badge',80) && str(d,'photo',900000)
+        && num(d,'year') && num(d,'month') && num(d,'day')
+        && (!('link' in d) || (d.link is string && d.link.size() <= 500 && (d.link == '' || d.link.matches('https://.*'))));
+    }
     match /studentWorks/{id} {
       allow read: if true;
       allow create, update: if owner() && goodWork(request.resource.data);
@@ -100,9 +109,10 @@ service cloud.firestore {
       allow create, update: if owner() && goodPractice(request.resource.data);
       allow delete: if owner();
     }
-    match /lessons/{id} {
+    match /announcements/{id} {
       allow read: if true;
-      allow create, update, delete: if owner();
+      allow create, update: if owner() && goodAnn(request.resource.data);
+      allow delete: if owner();
     }
     match /{col}/{id} {
       allow read: if col in ['education','subjects','certificates','publications','studentArticles','events','awards'];

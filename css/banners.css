@@ -45,3 +45,14 @@
 @keyframes bnSway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
 @media(prefers-reduced-motion:reduce){.bn-svg .fl1,.bn-svg .fl2,.bn-svg .fl3,.bn-svg .sway{animation:none}}
 @media(max-width:900px){.bn-svgwrap{justify-content:center}.bn-svg{max-height:260px}}
+
+/* «Студентські роботи»: паріння вікон і міток (через властивість translate, щоб не ламати rotate) */
+.bn-r .mw-stack .mw,.bn-r .mw-stack .bn-pill{animation:bnFloatT 6s ease-in-out infinite}
+.bn-r .mw-stack .m1{animation-duration:6.6s;animation-delay:-1s}
+.bn-r .mw-stack .m2{animation-duration:5.4s;animation-delay:-3s}
+.bn-r .mw-stack .m3{animation-duration:7s;animation-delay:-2s}
+.bn-r .mw-stack .p1{animation-duration:4.4s;animation-delay:-.6s;--fy:-10px}
+.bn-r .mw-stack .p2{animation-duration:5s;animation-delay:-2.4s;--fy:-9px}
+.bn-r .mw-stack .p3{animation-duration:4.8s;animation-delay:-1.6s;--fy:-11px}
+@keyframes bnFloatT{0%,100%{translate:0 0}50%{translate:0 var(--fy,-8px)}}
+@media(prefers-reduced-motion:reduce){.bn-r .mw-stack .mw,.bn-r .mw-stack .bn-pill{animation:none}}

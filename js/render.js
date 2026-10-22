@@ -142,7 +142,7 @@ export function mount(root,opts={}){
     btn.some(Boolean)||edit?h("div",{class:"bn-b"},btn,edit):null),
    h("div",{class:"bn-r","aria-hidden":"true"},pic)));
  };
- const banner=(k,t,d,...btn)=>bn(k,{eyebrow:EYE[k],title:t,desc:d},"b",...btn);
+ const banner=(k,t,d,...btn)=>bn(k,{eyebrow:EYE[k],title:t,desc:d},k,...btn);
  const grid=(c,cls="")=>h("div",{class:"grid "+cls},c);
  const secCard=(i,c,t,col,body)=>h("section",{class:"card pad"},h("div",{class:"sch"},h("span",{class:"si big c-"+c},ic(i)),h("h2",{},t),add(col)),body);
 
@@ -151,7 +151,7 @@ export function mount(root,opts={}){
   css:'<svg viewBox="0 0 64 72" aria-hidden="true"><path d="M4 4h56l-5 56-23 8-23-8z" fill="#1572b6"/><path d="M32 8v56l18-6 4-50z" fill="#33a9dc"/><text x="32" y="47" text-anchor="middle" font-size="30" font-weight="800" fill="#fff" font-family="Unbounded,Manrope,sans-serif">3</text></svg>',
   js:'<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="10" fill="#f7df1e"/><text x="58" y="56" text-anchor="end" font-size="28" font-weight="800" fill="#1a1a1a" font-family="Unbounded,Manrope,sans-serif">JS</text></svg>'};
  const tech=(k,cls="")=>{const e=h("span",{class:"tb "+k+" "+cls});e.innerHTML=TECH[k];return e;};
- const soon=(t,d)=>[bn("lessons",{eyebrow:"Незабаром",title:[t,""],desc:d},"b")];
+ const soon=(t,d)=>[bn("lessons",{eyebrow:"Незабаром",title:[t,""],desc:d},"lessons")];
  const sh=(i,c,t,col)=>h("div",{class:"sch"},h("span",{class:"si big c-"+c},ic(i)),h("h2",{},t),col?add(col):null);
  function homeBanner(){
   const p=st.profile||{};
@@ -237,8 +237,10 @@ export function mount(root,opts={}){
   return h("div",{class:"mw "+cls,"aria-hidden":"true"},h("div",{class:"mw-h"},h("i"),h("i"),h("i"),h("span",{},r?r.title:"mysite.html")),h("div",{class:"mw-b"},body));
  }
  function worksBanner(list){
-  const yr=Math.max(0,...list.map(r=>+r.year||0))||new Date().getFullYear();
-  return bn("works",{eyebrow:"Студентське портфоліо • "+yr,title:["Ідеї, що стають","вебсайтами."],desc:"Добірка навчальних проєктів з вебдизайну та розробки — від першого макета до готового сайту."},"works",
+  const ph=list.filter(r=>r.photo),yr=Math.max(0,...list.map(r=>+r.year||0))||new Date().getFullYear();
+  const art=h("div",{class:"mw-stack"},mockWin(ph[0]||null,"m1"),mockWin(ph[1]||null,"m2"),mockWin(ph[2]||null,"m3"),
+   h("span",{class:"bn-pill p1"},"HTML"),h("span",{class:"bn-pill p2"},"CSS"),h("span",{class:"bn-pill p3"},"JS"));
+  return bn("works",{eyebrow:"Студентське портфоліо • "+yr,title:["Ідеї, що стають","вебсайтами."],desc:"Добірка навчальних проєктів з вебдизайну та розробки — від першого макета до готового сайту."},art,
    h("button",{class:"cta pri",type:"button",onclick:()=>{const t=document.getElementById("wk-list");if(t)t.scrollIntoView({behavior:"smooth",block:"start"});}},"Переглянути проєкти",ic("adown")),
    add("studentWorks","Додати роботу"));
  }

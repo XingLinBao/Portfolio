@@ -38,7 +38,7 @@ export function buildInteractive(ctx){
   const sig=JSON.stringify([quiz,topics.map(t=>t.id+":"+(t.tasks||[]).length)]);
   if(S.sig!==sig){S.sig=sig;S.qz=null;}
   const ban=ctx.bn("lessons",{eyebrow:"Практика з кодом",title:["Інтерактивні","заняття"],
-    desc:"Перевірте знання в тесті тижня та практикуйтеся: пишіть код у вбудованому редакторі, одразу бачте результат, а валідатор підкаже, що виправити."},"b");
+    desc:"Перевірте знання в тесті тижня та практикуйтеся: пишіть код у вбудованому редакторі, одразу бачте результат, а валідатор підкаже, що виправити."},"lessons");
   const menu=h("div",{class:"il-menu",role:"tablist","aria-label":"Розділ","aria-orientation":"vertical"});
   const box=h("div",{class:"il-box"});
   const lay=h("div",{class:"il"},menu,box);

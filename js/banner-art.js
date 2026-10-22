@@ -123,58 +123,199 @@ function home() {
  ${base(p, 320, 405, 200)}`);
 }
 
-/* студентські проєкти: сайт у браузері, фіолетове вікно позаду, вікно з кодом, три таблетки */
-function works() {
-  const p = "w" + (++uid);
-  return svg(p, `
- ${blob(p, 300, 220, 250)}${ring(300, 215, 190, ".4")}${ring(190, 250, 120, ".3")}
- ${dot(40, 150, 5, "#c9b9ff", "fl3")}${dot(560, 230, 5, "#b9a6ff", "fl1")}${dot(110, 400, 4, "#c9b9ff", "fl2")}
- <g transform="translate(200 40) rotate(4)"><g class="fl2" filter="url(#${p}ss)"><rect width="330" height="170" rx="14" fill="url(#${p}v)"/><circle cx="16" cy="15" r="4" fill="#fff" opacity=".7"/><circle cx="30" cy="15" r="4" fill="#fff" opacity=".5"/><circle cx="44" cy="15" r="4" fill="#fff" opacity=".35"/></g></g>
- <g transform="translate(300 118) rotate(2)"><g class="fl3" filter="url(#${p}sh)"><rect width="290" height="220" rx="14" fill="url(#${p}sc)"/><circle cx="16" cy="15" r="3.5" fill="#ff8aa0"/><circle cx="29" cy="15" r="3.5" fill="#ffd166"/><circle cx="42" cy="15" r="3.5" fill="#6ee7a8"/>${code(26, 44, 10, 15, .85)}</g></g>
- <g transform="translate(60 112)"><g class="fl1" filter="url(#${p}sh)">
-  <rect width="320" height="236" rx="14" fill="#fff" stroke="#e8e3fb"/>
-  <circle cx="16" cy="15" r="4" fill="#8b6cff"/><circle cx="30" cy="15" r="4" fill="#b9a6ff"/><circle cx="44" cy="15" r="4" fill="#d9d1fa"/>
-  <rect x="18" y="38" width="46" height="6" rx="3" fill="#2b2857"/><rect x="190" y="38" width="22" height="6" rx="3" fill="#d9d1fa"/><rect x="222" y="38" width="22" height="6" rx="3" fill="#d9d1fa"/><rect x="254" y="38" width="22" height="6" rx="3" fill="#d9d1fa"/>
-  <rect x="14" y="56" width="292" height="150" rx="10" fill="#f7f4ff"/>
-  <rect x="30" y="86" width="104" height="9" rx="4.5" fill="#1b1747"/><rect x="30" y="102" width="84" height="9" rx="4.5" fill="#1b1747"/>
-  <rect x="30" y="124" width="92" height="5" rx="2.5" fill="#c9c2e6"/><rect x="30" y="134" width="70" height="5" rx="2.5" fill="#c9c2e6"/>
-  <rect x="30" y="156" width="64" height="20" rx="10" fill="#1b1747"/><rect x="42" y="164" width="40" height="4" rx="2" fill="#fff" opacity=".8"/>
-  <rect x="160" y="64" width="138" height="134" rx="10" fill="#efe6dc"/>
-  <ellipse cx="224" cy="186" rx="34" ry="6" fill="#d7c8b8"/>
-  <path d="M196 182c-8-26 2-48 28-48s36 22 28 48z" fill="#faf6f0"/><path d="M224 136V98" stroke="#7aa886" stroke-width="3"/>
-  <ellipse cx="210" cy="112" rx="14" ry="7" transform="rotate(-35 210 112)" fill="#6fa77d"/><ellipse cx="240" cy="106" rx="14" ry="7" transform="rotate(35 240 106)" fill="#5d9a70"/><ellipse cx="224" cy="92" rx="6" ry="12" fill="#7bb78d"/>
-  <rect x="150" y="150" width="46" height="34" rx="4" fill="#cdb79c"/>
-  <rect x="18" y="214" width="120" height="6" rx="3" fill="#e4defb"/></g></g>
- ${pill(p, 78, 68, 96, 42, "HTML", -8, "fl3", 19)}${pill(p, 520, 62, 80, 38, "CSS", 7, "fl1", 18)}${pill(p, 498, 372, 78, 46, "JS", 0, "fl2", 22)}`);
-}
+/* ---- додаткові примітиви ---- */
+const STAR = "0,-15 4.4,-5 15,-4.6 6.8,2.6 9.3,13 0,7.4 -9.3,13 -6.8,2.6 -15,-4.6 -4.4,-5";
+const lines = (x, y, w, n, gap = 12, c = "#e4defb", h = 5) => Array.from({length: n}, (_, i) =>
+  `<rect x="${x}" y="${y + i * gap}" width="${i === n - 1 ? w * .6 : w}" height="${h}" rx="${h / 2}" fill="${c}"/>`).join("");
+const star = (_p, x, y, s, cls, c = "#fbbf24") => `<g transform="translate(${x} ${y}) scale(${s})"><g class="${cls}"><polygon points="${STAR}" fill="${c}"/></g></g>`;
+const person = (_p, x, y, s, skin, hair, shirt, cls) => `<g transform="translate(${x} ${y}) scale(${s})"><g class="${cls}">
+ <path d="M-40 0c0-30 16-44 40-44s40 14 40 44z" fill="${shirt}"/>
+ <rect x="-8" y="-54" width="16" height="14" rx="6" fill="${skin}"/>
+ <circle cx="0" cy="-70" r="25" fill="${skin}"/>
+ <path d="M-27-70c-2-22 12-32 27-32s30 10 27 32c-6-12-16-16-27-16s-21 4-27 16z" fill="${hair}"/>
+ <circle cx="-8" cy="-68" r="2.4" fill="#2b2857"/><circle cx="8" cy="-68" r="2.4" fill="#2b2857"/>
+ <path d="M-6-58q6 5 12 0" fill="none" stroke="#2b2857" stroke-width="2" stroke-linecap="round"/></g></g>`;
 
-/* дисципліни: ноутбук, два вікна, книги + рослина, таблетки HTML / CSS / JS */
+/* дисципліни (веб): ноутбук, два вікна, рослина, таблетки HTML / CSS / JS */
 function disc() {
   const p = "d" + (++uid);
   return svg(p, `
  ${blob(p, 300, 230, 250)}${ring(300, 210, 200, ".4")}${ring(318, 220, 150, ".25")}
  ${dot(60, 100, 5, "#c9b9ff", "fl2")}${dot(556, 150, 6, "#b9a6ff", "fl3")}${dot(300, 20, 4, "#c9b9ff", "fl1")}${dot(70, 390, 4, "#b9a6ff", "fl3")}
+ ${plant(p, 548, 390, 1.15, true)}
  ${laptop(p, 118, 66, "", 11)}
  ${win(p, 24, 200, 190, 150, -3, "fl2", true)}${win(p, 330, 108, 240, 156, 3, "fl1", true, true)}
- ${plant(p, 538, 262, 1, true)}
- ${books(p, 380, 250)}
- ${pill(p, 108, 62, 96, 42, "HTML", -7, "fl3", 19)}${pill(p, 490, 46, 84, 38, "CSS", 6, "fl1", 18)}${pill(p, 300, 394, 62, 34, "JS", 0, "fl2", 17)}
+ ${pill(p, 108, 62, 96, 42, "HTML", -7, "fl3", 19)}${pill(p, 490, 46, 84, 38, "CSS", 6, "fl1", 18)}${pill(p, 330, 372, 62, 34, "JS", 0, "fl2", 17)}
  ${base(p, 300, 410, 220)}`);
 }
 
-/* корисні матеріали: ноутбук, стос книг із рослиною, плитки play / книга / шапка */
+/* дисципліна «Інтернет-технології»: глобус, орбіта з мітками, вікно браузера */
+function discIt() {
+  const p = "i" + (++uid);
+  const mer = [-60, -30, 0, 30, 60].map(a => `<ellipse cx="0" cy="0" rx="${Math.round(110 * Math.cos(a * Math.PI / 180))}" ry="110" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="2"/>`).join("");
+  return svg(p, `
+ ${blob(p, 300, 225, 250)}${ring(300, 220, 195, ".4")}${ring(300, 220, 150, ".25")}
+ ${dot(70, 120, 5, "#c9b9ff", "fl2")}${dot(540, 340, 6, "#b9a6ff", "fl3")}${dot(520, 70, 4, "#c9b9ff", "fl1")}
+ <g transform="translate(300 220)" filter="url(#${p}sh)"><circle r="112" fill="url(#${p}v)"/><g class="sway" style="transform-origin:0 0">${mer}</g>
+  <path d="M-110 0h220M-96-50h192M-96 50h192" stroke="#fff" stroke-opacity=".28" stroke-width="2"/>
+  <path d="M-58-70c18-8 34 6 30 22s-22 14-28 30-24 4-30-10c-6-14 4-34 28-42zM30 10c16-6 34 6 32 24-2 20-24 34-38 22-12-10-8-40 6-46z" fill="#fff" opacity=".25"/></g>
+ ${win(p, 36, 250, 190, 130, -4, "fl2", false, true)}
+ ${tile(p, 520, 200, 62, "code", 6, "fl1")}
+ ${pill(p, 112, 86, 100, 42, "HTTP", -7, "fl3", 19)}${pill(p, 476, 98, 84, 38, "WWW", 6, "fl2", 18)}${pill(p, 428, 372, 70, 36, "IP", -4, "fl1", 18)}
+ <g class="fl3"><circle cx="300" cy="62" r="9" fill="#fff" stroke="#8b6cff" stroke-width="3"/></g>
+ ${base(p, 300, 410, 200)}`);
+}
+
+/* корисні матеріали: ноутбук, плитки «відео / книга / шапка», картки відео та PDF */
 function res() {
   const p = "r" + (++uid);
   return svg(p, `
  <circle cx="290" cy="170" r="150" fill="url(#${p}bl)"/>${blob(p, 130, 250, 110)}${blob(p, 470, 230, 120)}
- ${dot(40, 380, 3.5, "#b9a6ff", "fl1")}${dot(56, 396, 3, "#b9a6ff", "fl2")}${dot(74, 386, 3, "#b9a6ff", "fl3")}${dot(540, 40, 4, "#c9b9ff", "fl2")}
- ${laptop(p, 98, 78, "", 11)}
- ${plant(p, 470, 262, 1.1, true)}${books(p, 342, 232)}
- ${tile(p, 98, 64, 64, "play", -6, "fl1")}${tile(p, 52, 224, 62, "cap", 6, "fl3")}${tile(p, 506, 56, 62, "book", 5, "fl2")}
- ${base(p, 280, 388, 220)}`);
+ ${dot(40, 380, 3.5, "#b9a6ff", "fl1")}${dot(56, 396, 3, "#b9a6ff", "fl2")}${dot(74, 386, 3, "#b9a6ff", "fl3")}${dot(560, 150, 4, "#c9b9ff", "fl2")}
+ ${plant(p, 44, 396, .85, true)}
+ ${laptop(p, 70, 78, "", 11)}
+ <g transform="translate(410 214) rotate(4)"><g class="fl2" filter="url(#${p}sh)"><rect width="162" height="104" rx="12" fill="url(#${p}sc)"/><rect x="10" y="10" width="142" height="60" rx="7" fill="#3a3670"/>
+  <circle cx="81" cy="40" r="19" fill="#fff" opacity=".92"/><path d="M75 31l16 9-16 9z" fill="#6c47ff"/><rect x="10" y="82" width="142" height="5" rx="2.5" fill="#fff" opacity=".18"/><rect x="10" y="82" width="70" height="5" rx="2.5" fill="#a78bfa"/></g></g>
+ <g transform="translate(432 330) rotate(-4)"><g class="fl1" filter="url(#${p}sh)"><rect width="120" height="84" rx="12" fill="#fff" stroke="#e8e3fb"/><rect x="12" y="14" width="34" height="42" rx="5" fill="#ff7a8a"/><text x="29" y="40" text-anchor="middle" font-family="${FONT}" font-weight="800" font-size="12" fill="#fff">PDF</text>
+  ${lines(56, 18, 52, 3, 12)}<rect x="12" y="64" width="96" height="8" rx="4" fill="#ece8fc"/></g></g>
+ ${tile(p, 96, 62, 64, "play", -6, "fl1")}${tile(p, 532, 70, 62, "book", 5, "fl2")}${tile(p, 40, 214, 58, "cap", 6, "fl3")}
+ ${base(p, 250, 392, 200)}`);
 }
 
-export const ART = { a: home, b: res, home, works, disc, res };
+/* підвищення кваліфікації: сертифікат із печаткою */
+function cert() {
+  const p = "c" + (++uid);
+  return svg(p, `
+ ${blob(p, 300, 225, 250)}${ring(300, 220, 190, ".35")}
+ ${dot(50, 150, 5, "#c9b9ff", "fl2")}${dot(556, 240, 6, "#b9a6ff", "fl3")}${dot(300, 20, 4, "#c9b9ff", "fl1")}
+ <g transform="translate(110 64) rotate(-3)"><g class="fl1" filter="url(#${p}sh)">
+  <rect width="380" height="270" rx="14" fill="#fff" stroke="#e4defb"/>
+  <rect x="14" y="14" width="352" height="242" rx="8" fill="none" stroke="#b9a6ff" stroke-width="2"/>
+  <rect x="22" y="22" width="336" height="226" rx="5" fill="none" stroke="#d9d1fa" stroke-dasharray="3 5"/>
+  <text x="190" y="66" text-anchor="middle" font-family="${FONT}" font-weight="800" font-size="26" letter-spacing="5" fill="#3a2fa0">СЕРТИФІКАТ</text>
+  <rect x="140" y="80" width="100" height="3" rx="1.5" fill="#b9a6ff"/>
+  <rect x="140" y="104" width="100" height="6" rx="3" fill="#d9d1fa"/>
+  <rect x="96" y="128" width="188" height="11" rx="5.5" fill="#6c47ff" opacity=".85"/>
+  ${lines(110, 160, 160, 3, 14, "#ece8fc", 6)}
+  <path d="M46 226c10-18 16 8 26-8s14 6 24-4" fill="none" stroke="#6c47ff" stroke-width="2.5" stroke-linecap="round"/><rect x="40" y="234" width="76" height="2" fill="#d9d1fa"/>
+  <rect x="268" y="234" width="76" height="2" fill="#d9d1fa"/><rect x="282" y="222" width="48" height="6" rx="3" fill="#e4defb"/></g></g>
+ <g transform="translate(450 300)"><g class="fl2" filter="url(#${p}ss)">
+  <path d="M-18 20-34 76-12 66 2 84 10 30z" fill="#6c47ff"/><path d="M18 20 34 76 12 66-2 84-10 30z" fill="#8b6cff"/>
+  <circle r="42" fill="#fbbf24"/><circle r="42" fill="url(#${p}v)" opacity="0"/><circle r="33" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2.5"/>
+  <circle r="42" fill="none" stroke="#f59e0b" stroke-width="3"/><g transform="scale(1.35)"><polygon points="${STAR}" fill="#fff"/></g></g></g>
+ ${pill(p, 82, 78, 104, 40, "120 год", -7, "fl3", 18)}${tile(p, 532, 96, 62, "cap", 6, "fl1")}
+ <g transform="translate(66 346)"><g class="fl1"><circle r="26" fill="#34d399" filter="url(#${p}ss)"/><path d="M-11 0l7 8 15-17" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+ ${base(p, 300, 412, 200)}`);
+}
+
+/* інноваційна робота: стопка статей / публікацій */
+function pub() {
+  const p = "u" + (++uid);
+  const col = (x, y) => lines(x, y, 100, 8, 12, "#e4defb", 5);
+  return svg(p, `
+ ${blob(p, 300, 225, 250)}${ring(300, 215, 190, ".35")}
+ ${dot(56, 130, 5, "#c9b9ff", "fl2")}${dot(552, 330, 6, "#b9a6ff", "fl3")}${dot(310, 22, 4, "#c9b9ff", "fl1")}
+ <g transform="translate(120 84) rotate(-12)"><g class="fl3"><rect width="250" height="300" rx="12" fill="#ece8fc" stroke="#ddd5fa"/></g></g>
+ <g transform="translate(250 76) rotate(7)"><g class="fl2" filter="url(#${p}ss)"><rect width="250" height="310" rx="12" fill="#f6f3ff" stroke="#e4defb"/>${lines(20, 30, 180, 3, 14, "#d9d1fa", 6)}</g></g>
+ <g transform="translate(170 60) rotate(-3)"><g class="fl1" filter="url(#${p}sh)">
+  <rect width="270" height="330" rx="12" fill="#fff" stroke="#e8e3fb"/>
+  <rect x="22" y="26" width="190" height="11" rx="5.5" fill="#1b1747"/><rect x="22" y="44" width="140" height="11" rx="5.5" fill="#1b1747"/>
+  <rect x="22" y="66" width="90" height="5" rx="2.5" fill="#8b6cff"/>
+  <path d="M22 84h226" stroke="#e4defb" stroke-width="2"/>
+  ${col(22, 98)}${col(148, 98)}
+  <rect x="22" y="206" width="104" height="92" rx="8" fill="#f1edff"/>
+  <rect x="36" y="262" width="14" height="22" rx="3" fill="#b9a6ff"/><rect x="58" y="246" width="14" height="38" rx="3" fill="#8b6cff"/><rect x="80" y="232" width="14" height="52" rx="3" fill="#6c47ff"/><rect x="102" y="254" width="14" height="30" rx="3" fill="#a78bfa"/>
+  <rect x="148" y="206" width="100" height="5" rx="2.5" fill="#e4defb"/>${lines(148, 224, 100, 6, 12, "#ece8fc", 5)}</g></g>
+ ${pill(p, 88, 86, 98, 40, "Стаття", -7, "fl3", 18)}${pill(p, 520, 72, 70, 36, "PDF", 7, "fl1", 17)}${tile(p, 532, 250, 60, "book", 6, "fl2")}
+ <g transform="translate(70 350)"><g class="fl2"><circle r="26" fill="#fff" stroke="#d9d1fa" filter="url(#${p}ss)"/><text x="0" y="12" text-anchor="middle" font-family="${FONT}" font-weight="800" font-size="34" fill="#6c47ff">“</text></g></g>
+ ${base(p, 300, 412, 200)}`);
+}
+
+/* робота зі студентами: група студентів біля презентації */
+function stud() {
+  const p = "s" + (++uid);
+  return svg(p, `
+ ${blob(p, 300, 225, 250)}${ring(300, 220, 190, ".35")}
+ ${dot(50, 90, 5, "#c9b9ff", "fl2")}${dot(556, 200, 6, "#b9a6ff", "fl3")}${dot(110, 400, 4, "#c9b9ff", "fl1")}
+ <g transform="translate(140 40) rotate(-2)"><g class="fl1" filter="url(#${p}sh)">
+  <rect width="320" height="200" rx="14" fill="#fff" stroke="#e8e3fb"/><circle cx="16" cy="15" r="4" fill="#ff8aa0"/><circle cx="30" cy="15" r="4" fill="#ffd166"/><circle cx="44" cy="15" r="4" fill="#6ee7a8"/>
+  <rect x="20" y="40" width="130" height="10" rx="5" fill="#1b1747"/>${lines(20, 64, 130, 4, 13, "#e4defb", 5)}
+  <rect x="172" y="40" width="128" height="140" rx="10" fill="#f1edff"/>
+  <path d="M184 160l28-34 24 18 30-48 24 20" fill="none" stroke="#6c47ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="212" cy="126" r="4.5" fill="#fff" stroke="#6c47ff" stroke-width="2.5"/><circle cx="272" cy="96" r="4.5" fill="#fff" stroke="#6c47ff" stroke-width="2.5"/>
+  <rect x="20" y="130" width="130" height="50" rx="8" fill="#f7f4ff"/><circle cx="44" cy="155" r="12" fill="#fbbf24"/>${lines(66, 146, 70, 2, 14, "#d9d1fa", 6)}</g></g>
+ ${person(p, 150, 420, 1.05, "#f6c9a6", "#3a2a22", "#8b6cff", "fl2")}
+ ${person(p, 300, 430, 1.2, "#e9b48a", "#1b1747", "#6c47ff", "fl1")}
+ ${person(p, 452, 420, 1.05, "#fbd9bd", "#b4572a", "#ff8aa0", "fl3")}
+ <g transform="translate(94 266)"><g class="fl3"><rect x="-34" y="-20" width="68" height="38" rx="14" fill="#fff" stroke="#d9d1fa" filter="url(#${p}ss)"/><path d="M-6 18l-4 12 14-12z" fill="#fff" stroke="#d9d1fa"/><circle cx="-14" cy="0" r="3.5" fill="#8b6cff"/><circle cx="0" cy="0" r="3.5" fill="#8b6cff"/><circle cx="14" cy="0" r="3.5" fill="#8b6cff"/></g></g>
+ ${tile(p, 530, 96, 62, "cap", 6, "fl2")}${pill(p, 520, 290, 80, 36, "Група", 6, "fl1", 17)}${star(p, 66, 70, 1.1, "fl2")}`);
+}
+
+/* нагороди: кубок, медаль і зірки */
+function awards() {
+  const p = "a" + (++uid);
+  return svg(p, `
+ <defs><linearGradient id="${p}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fde68a"/><stop offset="1" stop-color="#f59e0b"/></linearGradient></defs>
+ ${blob(p, 300, 225, 250)}${ring(300, 220, 190, ".35")}${ring(300, 220, 140, ".25")}
+ ${dot(60, 160, 5, "#c9b9ff", "fl2")}${dot(548, 330, 6, "#b9a6ff", "fl3")}${dot(150, 400, 4, "#c9b9ff", "fl1")}
+ <g filter="url(#${p}sh)"><g class="fl1">
+  <path d="M238 118c-40-4-48 26-34 52 10 18 30 26 46 28" fill="none" stroke="url(#${p}g)" stroke-width="14" stroke-linecap="round"/>
+  <path d="M362 118c40-4 48 26 34 52-10 18-30 26-46 28" fill="none" stroke="url(#${p}g)" stroke-width="14" stroke-linecap="round"/>
+  <path d="M226 96h148v84c0 54-32 92-74 92s-74-38-74-92z" fill="url(#${p}g)"/>
+  <path d="M244 110h22v76c0 36 10 58 26 70-30-8-48-34-48-78z" fill="#fff" opacity=".35"/>
+  <g transform="translate(300 170) scale(2.3)"><polygon points="${STAR}" fill="#fff"/></g>
+  <rect x="282" y="268" width="36" height="46" fill="#f59e0b"/><rect x="282" y="268" width="36" height="12" fill="#fff" opacity=".25"/>
+  <rect x="236" y="312" width="128" height="30" rx="8" fill="url(#${p}vd)"/><rect x="214" y="338" width="172" height="34" rx="10" fill="url(#${p}v)"/>
+  <rect x="262" y="320" width="76" height="6" rx="3" fill="#fff" opacity=".6"/></g></g>
+ <g transform="translate(112 290)"><g class="fl2" filter="url(#${p}ss)"><path d="M-16-6-30-56h22l8 36zM16-6 30-56H8l-8 36z" fill="#6c47ff"/><circle r="34" fill="url(#${p}g)"/><circle r="26" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2.5"/><g transform="scale(1.1)"><polygon points="${STAR}" fill="#fff"/></g></g></g>
+ ${star(p, 80, 86, 1.5, "fl3")}${star(p, 520, 80, 1.9, "fl2", "#fbbf24")}${star(p, 500, 250, 1.1, "fl1", "#fcd34d")}${star(p, 190, 40, 0.9, "fl1", "#fcd34d")}
+ ${pill(p, 508, 340, 98, 38, "Грамота", 6, "fl3", 17)}
+ ${base(p, 300, 408, 190)}`);
+}
+
+/* розклад занять: календар і годинник */
+function schedule() {
+  const p = "k" + (++uid);
+  const cells = Array.from({length: 35}, (_, i) => {
+    const c = i % 7, r = Math.floor(i / 7), x = 18 + c * 38, y = 96 + r * 36, hot = i === 16, dd = [3, 9, 10, 15, 22, 23, 29].includes(i);
+    return `<rect x="${x}" y="${y}" width="30" height="28" rx="8" fill="${hot ? `url(#${p}v)` : dd ? "#ece8fc" : "#f7f4ff"}"/>${dd && !hot ? `<circle cx="${x + 15}" cy="${y + 14}" r="3" fill="#8b6cff"/>` : ""}${hot ? `<circle cx="${x + 15}" cy="${y + 14}" r="4" fill="#fff"/>` : ""}`;
+  }).join("");
+  const hdr = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"].map((d, i) => `<text x="${33 + i * 38}" y="84" text-anchor="middle" font-family="${FONT}" font-weight="700" font-size="11" fill="#9a94c4">${d}</text>`).join("");
+  return svg(p, `
+ ${blob(p, 300, 225, 250)}${ring(300, 220, 190, ".35")}
+ ${dot(60, 100, 5, "#c9b9ff", "fl2")}${dot(548, 320, 6, "#b9a6ff", "fl3")}${dot(120, 400, 4, "#c9b9ff", "fl1")}
+ <g transform="translate(142 56) rotate(-2)"><g class="fl1" filter="url(#${p}sh)">
+  <rect width="290" height="300" rx="16" fill="#fff" stroke="#e8e3fb"/><path d="M0 16a16 16 0 0 1 16-16h258a16 16 0 0 1 16 16v38H0z" fill="url(#${p}vd)"/>
+  <rect x="70" y="-8" width="10" height="24" rx="5" fill="#d9d1fa" stroke="#fff"/><rect x="210" y="-8" width="10" height="24" rx="5" fill="#d9d1fa" stroke="#fff"/>
+  <rect x="22" y="20" width="110" height="10" rx="5" fill="#fff" opacity=".9"/><rect x="22" y="36" width="70" height="6" rx="3" fill="#fff" opacity=".45"/>${hdr}${cells}</g></g>
+ <g transform="translate(486 112)"><g class="fl2" filter="url(#${p}sh)"><circle r="52" fill="#fff" stroke="#e8e3fb"/><circle r="44" fill="#f7f4ff"/>
+  ${Array.from({length: 12}, (_, i) => `<rect x="-1.5" y="-40" width="3" height="${i % 3 ? 5 : 9}" rx="1.5" fill="#b9a6ff" transform="rotate(${i * 30})"/>`).join("")}
+  <path d="M0 0V-26" stroke="#1b1747" stroke-width="4" stroke-linecap="round"/><path d="M0 0l18 10" stroke="#6c47ff" stroke-width="4" stroke-linecap="round"/><circle r="5" fill="#6c47ff"/></g></g>
+ ${pill(p, 92, 92, 110, 40, "Пн – Сб", -7, "fl3", 18)}${tile(p, 70, 330, 58, "book", -6, "fl1")}
+ <g transform="translate(512 316)"><g class="fl3"><circle r="28" fill="#34d399" filter="url(#${p}ss)"/><path d="M-12 0l8 9 16-18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+ ${base(p, 300, 412, 190)}`);
+}
+
+/* інтерактивні заняття: редактор коду + тест */
+function lessons() {
+  const p = "l" + (++uid);
+  const opt = (y, on) => `<circle cx="22" cy="${y}" r="8" fill="${on ? "#6c47ff" : "#fff"}" stroke="${on ? "#6c47ff" : "#cfc4fb"}" stroke-width="2"/>${on ? `<circle cx="22" cy="${y}" r="3" fill="#fff"/>` : ""}<rect x="40" y="${y - 3}" width="${on ? 120 : 96}" height="6" rx="3" fill="${on ? "#b9a6ff" : "#e4defb"}"/>`;
+  return svg(p, `
+ ${blob(p, 300, 225, 250)}${ring(300, 220, 190, ".35")}
+ ${dot(56, 360, 5, "#c9b9ff", "fl2")}${dot(556, 90, 6, "#b9a6ff", "fl3")}${dot(300, 20, 4, "#c9b9ff", "fl1")}
+ <g transform="translate(40 80) rotate(-2)"><g class="fl1" filter="url(#${p}sh)"><rect width="320" height="236" rx="14" fill="url(#${p}sc)"/>
+  <circle cx="16" cy="15" r="3.5" fill="#ff8aa0"/><circle cx="29" cy="15" r="3.5" fill="#ffd166"/><circle cx="42" cy="15" r="3.5" fill="#6ee7a8"/><rect x="0" y="32" width="320" height="1" fill="#fff" opacity=".08"/>
+  ${code(40, 52, 11, 15, .95)}<rect x="40" y="218" width="8" height="4" rx="2" fill="#fff"><animate attributeName="opacity" values="1;0;1" dur="1.2s" repeatCount="indefinite"/></rect></g></g>
+ <g transform="translate(300 150) rotate(3)"><g class="fl2" filter="url(#${p}sh)"><rect width="250" height="200" rx="14" fill="#fff" stroke="#e8e3fb"/>
+  <rect x="20" y="20" width="26" height="26" rx="8" fill="url(#${p}v)"/><rect x="58" y="26" width="150" height="8" rx="4" fill="#1b1747"/><rect x="58" y="40" width="96" height="6" rx="3" fill="#d9d1fa"/>
+  <g transform="translate(20 0)">${opt(78, false)}${opt(108, true)}${opt(138, false)}</g>
+  <rect x="20" y="162" width="92" height="24" rx="12" fill="url(#${p}v)"/><rect x="38" y="171" width="56" height="6" rx="3" fill="#fff" opacity=".85"/></g></g>
+ <g transform="translate(532 150)"><g class="fl3"><circle r="30" fill="#34d399" filter="url(#${p}ss)"/><path d="M-13 0l9 10 17-20" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+ ${tile(p, 76, 66, 62, "code", -6, "fl3")}${pill(p, 470, 366, 104, 38, "Тест тижня", 5, "fl1", 15)}
+ ${base(p, 300, 412, 200)}`);
+}
+
+export const ART = { a: home, b: res, home, disc, disc_web: disc, disc_it: discIt, res, cert, pub, stud, awards, schedule, lessons };
 export function bannerArt(name) {
   const e = document.createElement("div");
   e.className = "bn-art bn-svgwrap";

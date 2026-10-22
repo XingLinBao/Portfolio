@@ -37,7 +37,7 @@ export function buildDiscipline(ctx, id) {
   const D = DISC[id], info = (st.profile && st.profile.discs && st.profile.discs[id]) || {};
   const mats = (st.materials || []).filter(m => m.disc === id);
 
-  const hero = bn("disc_" + id, {eyebrow: "Навчальний матеріал", title: D.head, desc: info.desc || D.lead}, "disc");
+  const hero = bn("disc_" + id, {eyebrow: "Навчальний матеріал", title: D.head, desc: info.desc || D.lead}, "disc_" + id);
 
   const box = h("div", {class: "ds-body"});
 

@@ -1,0 +1,169 @@
+/* Learn2Web — єдиний банер сторінок (підключається після disciplines.css).
+   Фон банера — білий і розтягується на всю ширину екрана, вміст тримається в контейнері 1300px.
+   Усі банери мають однакову висоту. Банер електронного журналу (.jbanner) цей файл не змінює. */
+
+.pg{flex:1;display:flex;flex-direction:column;min-width:0}
+.pg>.wrap{flex:1;width:100%}
+
+.bn{position:relative;overflow:hidden;width:100%;background:#fff;color:var(--ink);border:0;border-radius:0;box-shadow:none}
+.bn-in{width:100%;max-width:1300px;margin:0 auto;padding:0 28px;height:400px;display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:24px;align-items:center}
+.bn-l{display:flex;flex-direction:column;align-items:flex-start;gap:16px;min-width:0}
+.bn-eb{font:800 12px var(--font);letter-spacing:.16em;text-transform:uppercase;color:#5b57a0}
+.bn h1{max-width:16em;font-family:var(--fh);font-weight:800;font-size:clamp(28px,3.5vw,46px);line-height:1.12;letter-spacing:-.015em;color:#1b1747;overflow-wrap:anywhere}
+.bn-ac{display:block;color:#7c5cff}
+.bn-l>p{max-width:52ch;font-size:16.5px;line-height:1.6;color:var(--mu);display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.bn-b{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:6px}
+.bn .cta{padding:14px 26px;font-size:15px}
+
+/* ілюстрація праворуч */
+.bn-r{height:100%;min-width:0;display:flex;align-items:center;justify-content:flex-end}
+.bn-art{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;user-select:none;-webkit-user-drag:none}
+
+/* «Студентські роботи»: вікна зі скриншотами робіт замість готової картинки */
+.bn-r .mw-stack{position:relative;width:min(100%,400px);aspect-ratio:1.18;flex:none;margin-right:2%}
+.bn-r .mw{border:1px solid var(--line);border-radius:14px;box-shadow:0 26px 44px -22px rgba(76,52,200,.4)}
+.bn-pill{position:absolute;z-index:5;padding:8px 18px;border-radius:12px;background:#7c5cff;color:#fff;font:800 14px var(--font);letter-spacing:.02em;box-shadow:0 14px 24px -12px rgba(76,52,200,.55)}
+.bn-pill.p1{left:2%;top:4%}.bn-pill.p2{right:0;top:0}.bn-pill.p3{left:36%;bottom:0;padding:7px 16px}
+
+@media(max-width:900px){
+ .bn-in{grid-template-columns:minmax(0,1fr);height:auto;gap:8px;padding:30px 18px 20px}
+ .bn-r{height:auto;justify-content:center}
+ .bn-r .mw-stack{width:min(100%,340px)}
+ .bn-l>p{-webkit-line-clamp:6}
+}
+
+/* ---------- SVG-ілюстрації банерів + анімація паріння ---------- */
+/* ілюстрація вписується в рамку банера (рамка обрізає паріння, тіні та будь-які виступи) */
+.bn-svgwrap{position:relative;overflow:hidden;width:100%;height:100%;max-width:100%;min-height:0}
+.bn-svg{position:absolute;inset:0;display:block;width:100%;height:100%;max-height:none;overflow:visible;user-select:none;pointer-events:none}
+.bn-svg .fl1,.bn-svg .fl2,.bn-svg .fl3{animation:bnFloat 5.5s ease-in-out infinite;will-change:transform}
+.bn-svg .fl1{animation-duration:5s}
+.bn-svg .fl2{animation-duration:6.4s;animation-delay:-2s;--fy:-7px}
+.bn-svg .fl3{animation-duration:4.2s;animation-delay:-1.2s;--fy:-11px}
+.bn-svg .sway{transform-box:fill-box;animation:bnSway 6s ease-in-out infinite}
+@keyframes bnFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(var(--fy,-9px))}}
+@keyframes bnSway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
+@media(prefers-reduced-motion:reduce){.bn-svg .fl1,.bn-svg .fl2,.bn-svg .fl3,.bn-svg .sway{animation:none}}
+@media(max-width:900px){.bn-svgwrap{height:260px;max-height:none}.bn-svg{max-height:none}}
+
+/* «Студентські роботи»: паріння вікон і міток (через властивість translate, щоб не ламати rotate) */
+.bn-r .mw-stack .mw,.bn-r .mw-stack .bn-pill{animation:bnFloatT 6s ease-in-out infinite}
+.bn-r .mw-stack .m1{animation-duration:6.6s;animation-delay:-1s}
+.bn-r .mw-stack .m2{animation-duration:5.4s;animation-delay:-3s}
+.bn-r .mw-stack .m3{animation-duration:7s;animation-delay:-2s}
+.bn-r .mw-stack .p1{animation-duration:4.4s;animation-delay:-.6s;--fy:-10px}
+.bn-r .mw-stack .p2{animation-duration:5s;animation-delay:-2.4s;--fy:-9px}
+.bn-r .mw-stack .p3{animation-duration:4.8s;animation-delay:-1.6s;--fy:-11px}
+@keyframes bnFloatT{0%,100%{translate:0 0}50%{translate:0 var(--fy,-8px)}}
+@media(prefers-reduced-motion:reduce){.bn-r .mw-stack .mw,.bn-r .mw-stack .bn-pill{animation:none}}
+
+/* ---------- Головна: картки технологій, найкращі роботи, оголошення ---------- */
+.hc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.hc{display:flex;flex-direction:column;gap:8px;padding:24px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:var(--sh);text-decoration:none;color:var(--ink);transition:transform .25s,box-shadow .25s}
+.hc:hover{transform:translateY(-4px);box-shadow:0 20px 36px -20px rgba(76,52,200,.4)}
+.hc-ic{display:grid;place-items:center;width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,#9b82ff,#6c47ff);color:#fff;font:800 16px var(--fh);margin-bottom:8px}
+.hc-ic .ic{font-size:22px}
+.hc h3{font-size:22px;line-height:1.2}
+.hc p{font-size:15px;line-height:1.5;color:var(--mu);margin-bottom:6px}
+.hc-more{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;color:var(--v);margin-top:auto}
+.hc:hover .hc-more .ic{transform:translateX(3px)}.hc-more .ic{transition:transform .2s}
+.hs-h{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+.hs-h h2{font-family:var(--fh);font-size:24px;font-weight:800;color:var(--ink)}
+.hs-h .lk{margin:0;white-space:nowrap}
+
+/* Оголошення: список новин / конференцій */
+.an-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:start}
+.an-col{padding:24px}
+.an-h{display:flex;align-items:center;gap:16px;margin-bottom:20px}.an-h h2{font-family:var(--fh);font-size:26px;font-weight:800;color:var(--ink)}
+.an-list{display:flex;flex-direction:column;gap:14px}
+.an-it{position:relative;display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.an-th{aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#efeaff,#e0d8ff)}
+.an-th img{width:100%;height:100%;object-fit:cover;display:block}
+.an-ph{width:100%;height:100%;display:grid;place-items:center;color:var(--v)}.an-ph .ic{font-size:34px}
+.an-b{display:flex;flex-direction:column;gap:6px;min-width:0;padding-right:56px}
+.an-d{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--mu)}.an-d .ic{color:var(--v);font-size:14px}
+.an-b h3{font-size:17px;line-height:1.3;font-weight:800;color:var(--ink)}
+.an-b p{font-size:14.5px;line-height:1.5;color:var(--mu);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.an-badge{position:absolute;top:14px;right:14px;padding:5px 12px;border-radius:999px;background:var(--tint);color:#5b3df5;font-size:12px;font-weight:700;white-space:nowrap}
+.an-go{position:absolute;right:14px;bottom:14px;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--tint);color:var(--v);text-decoration:none;transition:background .2s,color .2s}
+.an-go:hover{background:var(--v);color:#fff}
+.an-it>.ab{grid-column:1/-1;margin:0}
+.an-empty{padding:18px 4px}
+@media(max-width:1000px){.an-cols{grid-template-columns:1fr}}
+@media(max-width:900px){.hc-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.an-it{grid-template-columns:1fr}.an-b{padding-right:0}.an-go{position:static;justify-self:end}.an-badge{position:static;justify-self:start}.an-col{padding:18px}}
+
+/* ---------- «Про викладача»: фото-картка в банері та блок інформації ---------- */
+.bn-l>p{-webkit-line-clamp:5}
+.me-info{padding:30px}
+.me-grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:36px;align-items:start}
+.me-ph{aspect-ratio:4/5;border-radius:22px;overflow:hidden;background:var(--tint);border:1px solid var(--line);box-shadow:0 22px 40px -26px rgba(76,52,200,.45)}
+.me-ph img,.me-ph .ph{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+.me-ph img{cursor:zoom-in}
+.me-ph .ph{display:grid;place-items:center;color:var(--v);font-size:64px}
+.me-body{display:grid;gap:26px;min-width:0}
+.me-tx{display:grid;gap:10px}
+.me-tx h3{font:800 24px/1.25 var(--fh);color:var(--ink)}
+.me-ab{white-space:pre-line;font-size:16px;line-height:1.7;color:var(--mu);margin-top:6px}
+.me-ct h4{font:800 14px var(--font);letter-spacing:.12em;text-transform:uppercase;color:#5b57a0;margin-bottom:12px}
+.me-ct .ct{flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:10px;margin:0}
+.me-ct .ct li{background:#faf8ff;border:1px solid var(--line);border-radius:14px;padding:12px 16px;overflow-wrap:anywhere}
+.me-ct .ct .ic{color:var(--v)}
+@media(max-width:900px){.me-grid{grid-template-columns:minmax(0,1fr);gap:24px}.me-ph{width:min(100%,300px);margin:0 auto}.me-info{padding:22px}}
+
+/* ---------- Оголошення: клікабельна картка й плавне модальне вікно ---------- */
+.an-it[role=button]{cursor:pointer;transition:border-color .2s,box-shadow .2s,transform .2s}
+.an-it[role=button]:hover{border-color:#cfc4ff;box-shadow:0 16px 32px -22px rgba(76,52,200,.5);transform:translateY(-2px)}
+.an-it[role=button]:focus-visible{outline:3px solid #b9a6ff;outline-offset:2px}
+.an-it:hover .an-go{background:var(--v);color:#fff}
+.an-d.dl{color:#b45309}.an-d.dl .ic{color:#d97706}
+.an-ov{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:24px;background:rgba(18,14,56,.62);backdrop-filter:blur(4px);animation:anFade .25s ease both}
+.an-m{position:relative;width:min(720px,100%);max-height:calc(100vh - 48px);display:flex;flex-direction:column;border-radius:24px;background:#fff;box-shadow:0 40px 80px -30px rgba(30,20,100,.6);overflow:hidden;animation:anPop .32s cubic-bezier(.2,.8,.2,1) both}
+.an-ov.out{animation:anFadeOut .22s ease both}
+.an-ov.out .an-m{animation:anPopOut .22s ease both}
+.an-x{position:absolute;top:14px;right:14px;z-index:3;display:grid;place-items:center;width:38px;height:38px;border:0;border-radius:50%;background:var(--tint);color:var(--v);cursor:pointer;transition:background .2s,color .2s}
+.an-x:hover{background:var(--v);color:#fff}
+.an-mb{display:grid;gap:16px;padding:30px 32px 32px;overflow-y:auto;overscroll-behavior:contain}
+.an-mt{display:flex;flex-wrap:wrap;gap:8px;padding-right:48px}
+.an-mt .chip{display:inline-flex;align-items:center;gap:6px}
+.an-mb h2{font:800 clamp(22px,3vw,28px)/1.25 var(--fh);color:var(--ink);overflow-wrap:anywhere}
+.an-md{font-size:16px;line-height:1.7;color:var(--mu);white-space:pre-line;overflow-wrap:anywhere}
+.an-mm{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.an-mm li{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#faf8ff}
+.an-mi{display:grid;place-items:center;flex:none;width:38px;height:38px;border-radius:11px;background:var(--tint);color:var(--v)}
+.an-mm li>span:last-child{display:grid;gap:1px;min-width:0}
+.an-mm small{font-size:12px;font-weight:600;color:var(--mu)}
+.an-mm b{font-size:15px;color:var(--ink);overflow-wrap:anywhere}
+.an-mg .media{aspect-ratio:16/10;border-radius:16px;border:1px solid var(--line)}
+.an-mg .media:after{display:none}
+.an-ml{justify-self:start}
+@keyframes anFade{from{opacity:0}}
+@keyframes anFadeOut{to{opacity:0}}
+@keyframes anPop{from{opacity:0;transform:translateY(18px) scale(.97)}}
+@keyframes anPopOut{to{opacity:0;transform:translateY(10px) scale(.98)}}
+@media(max-width:560px){.an-ov{padding:10px}.an-m{max-height:calc(100vh - 20px);border-radius:20px}.an-mb{padding:24px 18px 22px}}
+@media(prefers-reduced-motion:reduce){.an-ov,.an-m,.an-ov.out,.an-ov.out .an-m{animation:none}.an-it[role=button]{transition:none}}
+
+/* ---------- Оголошення: розділи на всю ширину, по 3 картки в ряд ---------- */
+.an-stack{display:flex;flex-direction:column;gap:24px}
+.an-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.an-grid .an-it{grid-template-columns:minmax(0,1fr);align-content:start;align-items:start;gap:14px;padding:12px 12px 16px}
+.an-grid .an-th{aspect-ratio:16/10}
+.an-grid .an-b{padding:0 6px 28px 6px}
+.an-grid .an-badge{top:22px;right:22px;background:#fff}
+.an-grid .an-go{right:16px;bottom:16px}
+.an-grid .an-it>.ab{padding:0 6px}
+@media(max-width:1000px){.an-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.an-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- читач PDF у вікні оголошення ---------- */
+.pv{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#faf8ff}
+.pv-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line)}
+.pv-n{display:flex;align-items:center;gap:8px;min-width:0;color:var(--v)}.pv-n b{color:var(--ink);font-size:14px;overflow-wrap:anywhere}
+.pv-a{display:flex;gap:8px;flex-wrap:wrap}
+.pv-dl{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--v);color:#fff;font:700 13px var(--font);text-decoration:none}
+.pv-dl:hover{background:#5a37ec}.pv-dl.ghost{background:#fff;color:var(--v);border:1px solid var(--line)}.pv-dl.ghost:hover{background:var(--tint)}
+.pv-view{max-height:min(560px,60vh);overflow:auto;padding:14px;display:grid;gap:14px;justify-items:center;overscroll-behavior:contain}
+.pv-pg{display:block;width:100%;max-width:900px;height:auto;background:#fff;border-radius:6px;box-shadow:0 8px 20px -12px rgba(40,30,120,.4)}
+.pv-st,.pv-more{display:flex;align-items:center;gap:10px;color:var(--mu);font-size:14px;padding:20px 0;text-align:center}
+.an-th .an-pdfc{object-position:top}

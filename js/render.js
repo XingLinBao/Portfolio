@@ -205,7 +205,7 @@ export function mount(root,opts={}){
   const prev=document.activeElement,conf=r.type==="Конференція",when=r.when||fmt(r),dl=fmtIso(r.deadline),ph=annPh(r),ok=okUrl(r.link);
   const closeB=h("button",{class:"an-x",type:"button","aria-label":"Закрити",onclick:()=>close()},ic("x"));
   const meta=[when?["cal",conf?"Дата проведення":"Дата",when]:null,dl?["clock","Термін виконання",dl]:null].filter(Boolean);
-  const box=h("div",{class:"an-m",role:"dialog","aria-modal":"true","aria-label":r.title},closeB,
+  const box=h("div",{class:"an-m"+(okPdf(r.pdf)?" wide":""),role:"dialog","aria-modal":"true","aria-label":r.title},closeB,
    h("div",{class:"an-mb"},
     h("div",{class:"an-mt"},h("span",{class:"chip"},ic(conf?"cal":"news"),r.type||"Новина"),r.badge?h("span",{class:"chip solid"},r.badge):null),
     h("h2",{},r.title),

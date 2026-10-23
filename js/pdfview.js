@@ -30,7 +30,7 @@ export function pdfViewer(h, ic, url, name) {
   (async () => {
     try {
       const l = await loadLib(), doc = await l.getDocument({data: bytes(url)}).promise, n = Math.min(doc.numPages, 40);
-      const w = Math.max(320, Math.min(root.clientWidth || 640, 900)), dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = 900, dpr = Math.min(window.devicePixelRatio || 1, 2);
       for (let i = 1; i <= n; i++) {
         const pg = await doc.getPage(i), v0 = pg.getViewport({scale: 1}), v = pg.getViewport({scale: w * dpr / v0.width});
         const c = h("canvas", {class: "pv-pg", "aria-label": `Сторінка ${i} з ${doc.numPages}`});

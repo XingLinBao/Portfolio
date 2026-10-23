@@ -45,3 +45,17 @@ export function pdfViewer(h, ic, url, name) {
   })();
   return root;
 }
+
+/* Перша сторінка PDF як картинка-обкладинка (jpeg data-URL). Результат кешується. */
+const covers = new Map();
+export function pdfCover(url, width = 560) {
+  const k = url.length + ":" + url.slice(-64);
+  if (!covers.has(k)) covers.set(k, (async () => {
+    const l = await loadLib(), doc = await l.getDocument({data: bytes(url)}).promise, pg = await doc.getPage(1), v0 = pg.getViewport({scale: 1}), v = pg.getViewport({scale: width / v0.width});
+    const c = document.createElement("canvas"); c.width = Math.round(v.width); c.height = Math.round(v.height);
+    const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+    await pg.render({canvasContext: x, viewport: v}).promise;
+    return c.toDataURL("image/jpeg", .82);
+  })().catch(e => {covers.delete(k); throw e;}));
+  return covers.get(k);
+}

@@ -2,7 +2,7 @@ import {load,cache,MONTHS,MONTHS_GEN} from "./data.js";
 import {buildInteractive,openPractice} from "./interactive.js";
 import {buildDiscipline,buildResources} from "./disciplines.js";
 import {bannerArt} from "./banner-art.js";
-import {pdfViewer,okPdf} from "./pdfview.js";
+import {pdfViewer,okPdf,pdfCover} from "./pdfview.js";
 export const h=(t,a={},...c)=>{const e=document.createElement(t);
  for(const[k,v]of Object.entries(a)){if(v==null||v===false)continue;if(k==="class")e.className=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?"":v);}
  c.flat().forEach(x=>{if(x!=null&&x!==false)e.append(x.nodeType?x:document.createTextNode(x));});return e;};
@@ -198,7 +198,7 @@ export function mount(root,opts={}){
   if(ed.length||A)out.push(secCard("cap","blue","Освіта","education",ed.length?h("div",{class:"tl"},ed.map(e=>h("div",{class:"tli"},h("div",{class:"tli-r"},h("div",{class:"tli-t"},h("h3",{},e.degree),h("p",{class:"mu"},e.place),h("span",{class:"yr"},e.year)),e.photos&&e.photos.length?h("button",{class:"dipl",type:"button","aria-label":"Переглянути фото диплома",onclick:()=>gallery(e.photos,0)},h("img",{src:e.photos[0],alt:"Диплом: "+e.degree}),e.photos.length>1?h("span",{},"+"+(e.photos.length-1)):null):null),ab("education",e)))):empty("education")));
   return out.filter(Boolean);
  }
- const annPh=r=>r.photos&&r.photos.length?r.photos:(r.photo?[r.photo]:[]);
+ const annPh=r=>[r.photo,...(r.photos||[])].filter((x,i,a)=>x&&a.indexOf(x)===i);
  const fmtIso=v=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||"");return m?`${+m[3]} ${MONTHS_GEN[+m[2]-1]} ${m[1]}`:(v||"");};
  /* Плавне модальне вікно з повною інформацією про оголошення */
  function annModal(r){
@@ -227,6 +227,8 @@ export function mount(root,opts={}){
  const annItem=r=>{
   const conf=r.type==="Конференція",when=r.when||fmt(r),dl=fmtIso(r.deadline),cover=annPh(r)[0];
   const th=cover?h("img",{src:cover,alt:"",loading:"lazy"}):h("div",{class:"an-ph"},ic(conf?"cal":"news"));
+  /* немає фото, але є PDF — обкладинка з першої сторінки документа */
+  if(!cover&&okPdf(r.pdf))pdfCover(r.pdf).then(u=>{if(th.isConnected||th.parentNode)th.replaceWith(h("img",{src:u,alt:"",loading:"lazy",class:"an-pdfc"}));}).catch(()=>{});
   const open=e=>{if(e.target.closest(".ab"))return;annModal(r);};
   return h("article",{class:"an-it",tabindex:"0",role:"button","aria-haspopup":"dialog","aria-label":"Відкрити оголошення: "+r.title,onclick:open,
     onkeydown:e=>{if((e.key==="Enter"||e.key===" ")&&e.target===e.currentTarget){e.preventDefault();annModal(r);}}},h("div",{class:"an-th"},th),

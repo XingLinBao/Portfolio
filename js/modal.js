@@ -80,7 +80,7 @@ export function buildForm(fields,v={}){
    const init=v[f.k]&&v[f.k].length?v[f.k]:(f.legacy&&v[f.legacy]?[v[f.legacy]]:[""]);
    init.forEach(x=>mk(x));ctl=h("div",{},rows,addB);get=()=>({[f.k]:inputs.map(i=>i.value.trim()).filter(Boolean)});}
   else if(f.t==="pdf"){
-   let data=v[f.k]||"",name=v.pdfName||"";const MAXB=700000;
+   let data=v[f.k]||"",name=v.pdfName||"";const MAXB=600000;
    const inp=h("input",{type:"file",accept:"application/pdf",class:"sr"}),info=h("div",{class:"psize",role:"status"}),msg=h("div",{class:"pmsg",role:"alert"}),
     rm=h("button",{type:"button",class:"btn sm danger",onclick:()=>{data="";name="";draw();}},ic("trash"),"Прибрати");
    const draw=()=>{info.textContent=data?`${name||"Документ.pdf"} · ≈ ${Math.round(data.length*.75/1024)} КБ`:"Файл не додано";rm.hidden=!data;};

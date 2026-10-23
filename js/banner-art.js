@@ -318,19 +318,48 @@ function lessons() {
 }
 
 
-/* про викладача: викладачка за ноутбуком, плитки та мітки */
+/* про викладача: портфоліо — сайт-макет, галерея робіт, палітра, папка й олівець */
 function me() {
   const p = "m" + (++uid);
+  const mini = (x, y, w, h, f, c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${f}"/><circle cx="${x + w * .72}" cy="${y + h * .3}" r="${h * .1}" fill="#fff" opacity=".8"/><path d="M${x} ${y + h}l${w * .36}-${h * .46} ${w * .26} ${h * .3} ${w * .16}-${h * .16} ${w * .22} ${h * .32}z" fill="${c}"/>`;
+  const sw = (x, c) => `<circle cx="${x}" cy="32" r="15" fill="${c}"/><circle cx="${x - 4}" cy="27" r="4" fill="#fff" opacity=".35"/>`;
   return svg(p, `
- ${base(p, 320, 412, 215)}
- ${blob(p, 320, 225, 250)}${ring(320, 220, 195, ".35")}${ring(320, 220, 145, ".22")}
- ${dot(40, 150, 5, "#c9b9ff", "fl2")}${dot(566, 210, 6, "#b9a6ff", "fl3")}${dot(300, 22, 4, "#c9b9ff", "fl1")}${dot(70, 388, 4, "#b9a6ff", "fl2")}
- ${laptop(p, 206, 96, "", 11)}
- ${win(p, 424, 250, 150, 112, 5, "fl2", true, true)}
- ${person(p, 150, 424, 1.6, "#f6c9a6", "#4a2f27", "#8b6cff", "fl1", true)}
- ${plant(p, 556, 396, .62, true)}
- ${pill(p, 120, 84, 96, 42, "HTML", -7, "fl3", 19)}${pill(p, 506, 62, 84, 38, "CSS", 7, "fl1", 18)}${pill(p, 372, 30, 62, 32, "JS", -3, "fl2", 16)}
- ${tile(p, 52, 232, 60, "cap", -6, "fl2")}${star(p, 82, 330, 1.1, "fl3")}`);
+ ${base(p, 310, 414, 215)}
+ ${blob(p, 310, 225, 250)}${ring(310, 215, 195, ".35")}${ring(320, 225, 145, ".22")}
+ ${dot(44, 190, 5, "#c9b9ff", "fl2")}${dot(574, 214, 6, "#b9a6ff", "fl3")}${dot(250, 30, 4, "#c9b9ff", "fl1")}${dot(566, 400, 4, "#b9a6ff", "fl2")}
+ <g transform="translate(336 62) rotate(7)"><g class="fl2" filter="url(#${p}ss)">
+  <rect width="190" height="226" rx="14" fill="#fff" stroke="#e8e3fb"/>
+  ${mini(14, 14, 76, 64, "#e9e3ff", "#9b82ff")}${mini(100, 14, 76, 64, "#fde6f1", "#f472b6")}
+  ${mini(14, 90, 76, 64, "#def5ea", "#34d399")}${mini(100, 90, 76, 64, "#fff0d2", "#fbbf24")}
+  <rect x="14" y="170" width="120" height="7" rx="3.5" fill="#d9d1fa"/><rect x="14" y="186" width="84" height="6" rx="3" fill="#ece8fc"/>
+  <circle cx="160" cy="196" r="11" fill="url(#${p}v)"/></g></g>
+ <g transform="translate(58 100) rotate(-3)"><g class="fl1" filter="url(#${p}sh)">
+  <rect width="332" height="236" rx="14" fill="#fff" stroke="#e8e3fb"/>
+  <circle cx="16" cy="16" r="4" fill="#ff8aa0"/><circle cx="30" cy="16" r="4" fill="#ffd166"/><circle cx="44" cy="16" r="4" fill="#6ee7a8"/>
+  <rect x="66" y="8" width="170" height="16" rx="8" fill="#f1edff"/><rect x="250" y="9" width="60" height="14" rx="7" fill="#8b6cff" opacity=".85"/>
+  <path d="M0 34h332" stroke="#eee9fc"/>
+  <rect x="22" y="54" width="150" height="13" rx="6.5" fill="#1b1747"/><rect x="22" y="74" width="108" height="13" rx="6.5" fill="#6c47ff"/>
+  <rect x="22" y="98" width="140" height="6" rx="3" fill="#d9d1fa"/><rect x="22" y="110" width="116" height="6" rx="3" fill="#e4defb"/>
+  <rect x="22" y="128" width="86" height="24" rx="12" fill="url(#${p}v)"/>
+  <rect x="190" y="48" width="122" height="106" rx="12" fill="#efeaff"/><circle cx="276" cy="78" r="10" fill="#c9b9ff"/>
+  <path d="M190 154l34-44 28 30 22-18 38 32z" fill="url(#${p}v)"/>
+  <rect x="22" y="170" width="92" height="52" rx="10" fill="#f7f4ff" stroke="#ece8fc"/><rect x="120" y="170" width="92" height="52" rx="10" fill="#f7f4ff" stroke="#ece8fc"/><rect x="218" y="170" width="92" height="52" rx="10" fill="#f7f4ff" stroke="#ece8fc"/>
+  ${mini(30, 178, 30, 24, "#e9e3ff", "#9b82ff")}${mini(128, 178, 30, 24, "#fde6f1", "#f472b6")}${mini(226, 178, 30, 24, "#def5ea", "#34d399")}
+  <rect x="66" y="184" width="40" height="5" rx="2.5" fill="#d9d1fa"/><rect x="164" y="184" width="40" height="5" rx="2.5" fill="#d9d1fa"/><rect x="262" y="184" width="40" height="5" rx="2.5" fill="#d9d1fa"/>
+  <rect x="30" y="208" width="66" height="5" rx="2.5" fill="#ece8fc"/><rect x="128" y="208" width="66" height="5" rx="2.5" fill="#ece8fc"/><rect x="226" y="208" width="66" height="5" rx="2.5" fill="#ece8fc"/></g></g>
+ <g transform="translate(34 288)"><g class="fl3" filter="url(#${p}sh)">
+  <path d="M0 22a10 10 0 0 1 10-10h40l12 14h66a10 10 0 0 1 10 10v70a10 10 0 0 1-10 10H10A10 10 0 0 1 0 106z" fill="#cdbfff"/>
+  <rect x="14" y="22" width="108" height="46" rx="6" fill="#fff" transform="rotate(-3 14 22)"/>
+  <rect x="0" y="40" width="148" height="76" rx="12" fill="url(#${p}v)"/><rect x="3" y="43" width="142" height="28" rx="10" fill="#fff" opacity=".13"/>
+  <text x="74" y="86" text-anchor="middle" font-family="${FONT}" font-weight="800" font-size="17" fill="#fff">Портфоліо</text></g></g>
+ <g transform="translate(374 300) rotate(-5)"><g class="fl2" filter="url(#${p}ss)">
+  <rect width="150" height="88" rx="14" fill="#fff" stroke="#e8e3fb"/>${sw(30, "#6c47ff")}${sw(62, "#ec4899")}${sw(94, "#fbbf24")}${sw(126, "#34d399")}
+  <rect x="16" y="62" width="70" height="7" rx="3.5" fill="#d9d1fa"/><rect x="94" y="62" width="40" height="7" rx="3.5" fill="#ece8fc"/></g></g>
+ <g transform="translate(556 292) rotate(28)"><g class="fl1" filter="url(#${p}ss)">
+  <rect x="-9" y="-78" width="18" height="12" rx="4" fill="#ff8aa0"/><rect x="-9" y="-68" width="18" height="96" fill="#fbbf24"/><rect x="-9" y="-68" width="6" height="96" fill="#fff" opacity=".3"/>
+  <path d="M-9 28h18l-9 26z" fill="#f5d6b3"/><path d="M-3.5 45h7L0 54z" fill="#3a2a22"/></g></g>
+ <g transform="translate(330 232)"><g class="fl1"><path d="M0 0v30l8-7 6 14 6-3-6-14 10-1z" fill="#1b1747" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></g></g>
+ ${pill(p, 112, 66, 132, 42, "Portfolio", -6, "fl3", 19)}${tile(p, 542, 70, 58, "code", 6, "fl2")}${star(p, 300, 40, 1.1, "fl3")}${star(p, 40, 120, .9, "fl1", "#fcd34d")}`);
 }
 
 export const ART = { a: home, b: res, home, disc, disc_web: disc, disc_it: discIt, res, cert, pub, stud, awards, news, lessons, me };

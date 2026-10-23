@@ -245,3 +245,14 @@ button.dd-th:hover .dd-zoom,button.dd-th:focus-visible .dd-zoom{opacity:1}
  .dd-card.land{grid-template-columns:128px minmax(0,1fr)}
  .dd-card.land .dd-th{width:128px}
 }
+
+/* ---------- пагінація матеріалів (до 8 карток) і плавна поява ---------- */
+.dd-wrap{display:grid;gap:26px}
+.dd-wrap>*{min-width:0}
+.dd-grid{transition:opacity .16s ease}
+.dd-grid.dd-out{opacity:0}
+.dd-pg{margin-top:2px}
+@keyframes ddIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.dd-card.fx{animation:ddIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 60ms)}
+.ds-card{scroll-margin-top:90px}
+@media(prefers-reduced-motion:reduce){.dd-grid{transition:none}.dd-card.fx{animation:none}}

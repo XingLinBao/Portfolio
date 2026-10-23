@@ -163,7 +163,11 @@
 .pv-a{display:flex;gap:8px;flex-wrap:wrap}
 .pv-dl{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--v);color:#fff;font:700 13px var(--font);text-decoration:none}
 .pv-dl:hover{background:#5a37ec}.pv-dl.ghost{background:#fff;color:var(--v);border:1px solid var(--line)}.pv-dl.ghost:hover{background:var(--tint)}
-.pv-view{max-height:min(560px,60vh);overflow:auto;padding:14px;display:grid;gap:14px;justify-items:center;overscroll-behavior:contain}
+.pv-view{padding:14px;display:grid;gap:14px;justify-items:center;overscroll-behavior:contain}
 .pv-pg{display:block;width:100%;max-width:900px;height:auto;background:#fff;border-radius:6px;box-shadow:0 8px 20px -12px rgba(40,30,120,.4)}
 .pv-st,.pv-more{display:flex;align-items:center;gap:10px;color:var(--mu);font-size:14px;padding:20px 0;text-align:center}
 .an-th .an-pdfc{object-position:top}
+
+/* з PDF: ширше вікно, а весь документ прокручується разом із вікном оголошення */
+.an-m.wide{width:min(940px,100%)}
+.an-mb{min-height:0;grid-auto-rows:max-content;align-content:start}

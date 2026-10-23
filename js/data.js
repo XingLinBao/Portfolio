@@ -55,8 +55,12 @@ export const SCHEMA={
  announcements:{label:"оголошення",f:[sel("type","Тип",["Новина","Конференція"]),{k:"title",l:"Заголовок",req:1},{k:"desc",l:"Короткий опис",t:"textarea"},D,
   {k:"when",l:"Дата проведення (текстом, для конференцій)",ph:"29 листопада – 9 грудня 2025",hint:"Необов’язково. Якщо заповнено, показується замість дати вище."},
   {k:"badge",l:"Позначка",ph:"Онлайн, Офлайн або Участь з доповіддю"},
-  {k:"photo",l:"Зображення",t:"photo",hint:"Бажано пропорції 4:3."},
-  {k:"link",l:"Посилання",t:"url",hint:"Необов’язково. Лише https://"}]}
+  {k:"deadline",l:"Термін виконання (за наявності)",t:"date",hint:"Необов’язково. Якщо вказано, показується в картці та у вікні оголошення."},
+  {k:"photos",l:"Фото (до 6, перше — обкладинка)",t:"photos",hint:"Бажано пропорції 4:3. Якщо додати кілька фото, у вікні оголошення вони відобразяться галереєю."},
+  {k:"link",l:"Посилання",t:"url",hint:"Необов’язково. Лише https://"}],
+  /* старі записи мали одне фото в полі photo — переносимо його в photos */
+  pre:r=>r&&r.photo&&!(r.photos&&r.photos.length)?{...r,photos:[r.photo]}:r,
+  post:d=>({...d,photo:""})}
 };
 function subjectSuggestions(){const set=new Set();[...(cache.lessons||[]).map(l=>l.subject),...(cache.subjects||[]).map(s=>s.name)].forEach(x=>{if(x&&String(x).trim())set.add(String(x).trim());});return [...set].sort((a,b)=>a.localeCompare(b,"uk"));}
 const SOFT=["announcements","quiz","practice","studentWorks","materials","resSections","resources"];

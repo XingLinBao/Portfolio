@@ -115,7 +115,7 @@ function mkForm(S,rec){const f=buildForm(typeof S.f==="function"?S.f():S.f,rec||
 export async function recordModal(col,rec,onSaved){
  const S=SCHEMA[col],isNew=!(rec&&rec.id),ONE={materials:"Зберегти й додати ще",resources:"Зберегти й додати ще"},again=isNew&&col==="studentArticles"?"Зберегти й додати ще одну групу":(isNew&&col==="studentWorks"?"Зберегти й додати ще одну роботу":(isNew&&ONE[col])||null);
  let r;
- do{r=await saveFlow({title:(isNew?"Додати: ":"Змінити: ")+S.label,form:mkForm(S,rec),save:d=>saveRec(col,rec&&rec.id,d),onSaved,again});}while(r==="again");
+ do{r=await saveFlow({title:(isNew?"Додати: ":"Змінити: ")+S.label,form:mkForm(S,S.pre?S.pre(rec):rec),save:d=>saveRec(col,rec&&rec.id,S.post?S.post(d):d),onSaved,again});}while(r==="again");
  return !!r;
 }
 export const PROFILE_FIELDS=[{k:"fullName",l:"ПІБ",req:1,ph:"Іванова Олена Петрівна"},{k:"position",l:"Посада",req:1,ph:"Викладач педагогічних дисциплін"},{k:"institution",l:"Назва закладу",req:1,ph:"Коледж"},

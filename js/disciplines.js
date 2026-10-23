@@ -30,6 +30,7 @@ const ordKey = r => r.ord ?? r.createdAt ?? 0;
 export const byOrd = a => [...(a || [])].sort((x, y) => ordKey(x) - ordKey(y));
 const norm = s => String(s || "").toLowerCase();
 const DT = {it: "lecture", web: "lecture"};
+const PER = 8, DPG = {};
 
 /* ============================================================ ДИСЦИПЛІНА */
 export function buildDiscipline(ctx, id) {
@@ -97,6 +98,7 @@ export function buildDiscipline(ctx, id) {
       })) : h("p", {class: "mu s"}, "Позначте матеріал прапорцем «Показати у швидкому доступі» — він з’явиться тут."));
   }
 
+  /* Не більше PER карток на сторінці; решта — через перемикач сторінок */
   function paint() {
     const kind = KINDS.find(k => k.k === DT[id]) || KINDS[0];
     const list = byOrd(mats.filter(m => m.kind === kind.k));
@@ -107,12 +109,52 @@ export function buildDiscipline(ctx, id) {
       h("div", {class: "ds-cm"}, h("h2", {}, kind.t), h("p", {class: "mu"}, kind.d)),
       h("div", {class: "ds-cr"}, list.length ? h("span", {class: "ds-tot"}, `Всього: ${list.length} ${pl(list.length, kind.w)}`) : null,
         add("materials", kind.add, {disc: id, kind: kind.k})));
-    const body = list.length ? h("div", {class: "ds-list dd-grid"}, list.map((r, i) => row(r, i, list, kind)))
+
+    const key = id + ":" + kind.k, pages = Math.max(1, Math.ceil(list.length / PER));
+    const grid = h("div", {class: "ds-list dd-grid"}), pager = h("nav", {class: "wk-pg dd-pg", "aria-label": "Сторінки матеріалів"});
+    let body = null, swap = 0;
+    const page = () => (DPG[key] = Math.min(Math.max(1, DPG[key] || 1), pages));
+    function fill(anim) {
+      const p = page(), start = (p - 1) * PER;
+      grid.replaceChildren(...list.slice(start, start + PER).map((r, j) => {
+        const c = row(r, start + j, list, kind);
+        if (anim) {c.classList.add("fx"); c.style.setProperty("--i", j);}
+        return c;
+      }));
+      const nums = [];
+      for (let i = 1; i <= pages; i++) if (pages <= 7 || i === 1 || i === pages || Math.abs(i - p) <= 1) nums.push(i);
+      const mid = [];
+      nums.forEach((n, k) => {
+        if (k && n - nums[k - 1] > 1) mid.push(h("span", {class: "pg-gap", "aria-hidden": "true"}, "…"));
+        mid.push(h("button", {class: "pgb" + (n === p ? " on" : ""), type: "button", "aria-label": "Сторінка " + n, "aria-current": n === p ? "page" : null, onclick: () => go(n)}, n));
+      });
+      pager.replaceChildren(...(pages > 1 ? [
+        h("button", {class: "pgb", type: "button", "aria-label": "Попередня сторінка", disabled: p === 1, onclick: () => go(p - 1)}, ic("l")), ...mid,
+        h("button", {class: "pgb", type: "button", "aria-label": "Наступна сторінка", disabled: p === pages, onclick: () => go(p + 1)}, ic("r"))] : []));
+    }
+    function go(n) {
+      if (n === page()) return;
+      DPG[key] = n;
+      const t = ++swap, reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (body) body.scrollIntoView({behavior: reduce ? "auto" : "smooth", block: "start"});
+      if (reduce) {fill(false); return;}
+      grid.style.minHeight = grid.offsetHeight + "px";
+      grid.classList.add("dd-out");
+      setTimeout(() => {
+        if (t !== swap) return;
+        fill(true); grid.classList.remove("dd-out");
+        setTimeout(() => {if (t === swap) grid.style.minHeight = "";}, 700);
+      }, 160);
+    }
+    fill(false);
+
+    const listEl = list.length ? h("div", {class: "dd-wrap"}, grid, pager)
       : (A ? empty("materials", kind.add, {disc: id, kind: kind.k}) : h("div", {class: "empty"}, ic("file"), h("p", {}, kind.none)));
     const note = list.length ? h("div", {class: "ds-note"}, h("span", {class: "ds-ni"}, ic("info")),
       h("p", {}, "Натисніть на картинку, щоб переглянути матеріал онлайн, або завантажте його на свій пристрій.")) : null;
     const side = quickBlock();
-    box.replaceChildren(tabs, h("div", {class: "ds-layout" + (side ? "" : " one")}, h("section", {class: "ds-card card"}, head, body, note), side));
+    body = h("section", {class: "ds-card card"}, head, listEl, note);
+    box.replaceChildren(tabs, h("div", {class: "ds-layout" + (side ? "" : " one")}, body, side));
   }
   paint();
   return [hero, box];

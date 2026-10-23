@@ -142,7 +142,7 @@ function disc() {
   return svg(p, `
  ${blob(p, 300, 230, 250)}${ring(300, 210, 200, ".4")}${ring(318, 220, 150, ".25")}
  ${dot(60, 100, 5, "#c9b9ff", "fl2")}${dot(556, 150, 6, "#b9a6ff", "fl3")}${dot(300, 20, 4, "#c9b9ff", "fl1")}${dot(70, 390, 4, "#b9a6ff", "fl3")}
- ${plant(p, 548, 390, 1.15, true)}
+ ${plant(p, 548, 372, 1.0, true)}
  ${laptop(p, 118, 66, "", 11)}
  ${win(p, 24, 200, 190, 150, -3, "fl2", true)}${win(p, 330, 108, 240, 156, 3, "fl1", true, true)}
  ${pill(p, 108, 62, 96, 42, "HTML", -7, "fl3", 19)}${pill(p, 490, 46, 84, 38, "CSS", 6, "fl1", 18)}${pill(p, 330, 372, 62, 34, "JS", 0, "fl2", 17)}
@@ -172,7 +172,7 @@ function res() {
   return svg(p, `
  <circle cx="290" cy="170" r="150" fill="url(#${p}bl)"/>${blob(p, 130, 250, 110)}${blob(p, 470, 230, 120)}
  ${dot(40, 380, 3.5, "#b9a6ff", "fl1")}${dot(56, 396, 3, "#b9a6ff", "fl2")}${dot(74, 386, 3, "#b9a6ff", "fl3")}${dot(560, 150, 4, "#c9b9ff", "fl2")}
- ${plant(p, 44, 396, .85, true)}
+ ${plant(p, 44, 378, .85, true)}
  ${laptop(p, 70, 78, "", 11)}
  <g transform="translate(410 214) rotate(4)"><g class="fl2" filter="url(#${p}sh)"><rect width="162" height="104" rx="12" fill="url(#${p}sc)"/><rect x="10" y="10" width="142" height="60" rx="7" fill="#3a3670"/>
   <circle cx="81" cy="40" r="19" fill="#fff" opacity=".92"/><path d="M75 31l16 9-16 9z" fill="#6c47ff"/><rect x="10" y="82" width="142" height="5" rx="2.5" fill="#fff" opacity=".18"/><rect x="10" y="82" width="70" height="5" rx="2.5" fill="#a78bfa"/></g></g>

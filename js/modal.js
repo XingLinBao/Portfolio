@@ -79,7 +79,19 @@ export function buildForm(fields,v={}){
     inputs.push(i);rows.append(row);sync();if(foc)i.focus();}
    const init=v[f.k]&&v[f.k].length?v[f.k]:(f.legacy&&v[f.legacy]?[v[f.legacy]]:[""]);
    init.forEach(x=>mk(x));ctl=h("div",{},rows,addB);get=()=>({[f.k]:inputs.map(i=>i.value.trim()).filter(Boolean)});}
-  else if(f.t==="photos"||f.t==="photo"){const one=f.t==="photo",pf=photoField(one?(v[f.k]?[v[f.k]]:[]):(v[f.k]||[]),{single:one,maxSide:one?800:1200,limit:one?500000:800000});
+  else if(f.t==="pdf"){
+   let data=v[f.k]||"",name=v.pdfName||"";const MAXB=700000;
+   const inp=h("input",{type:"file",accept:"application/pdf",class:"sr"}),info=h("div",{class:"psize",role:"status"}),msg=h("div",{class:"pmsg",role:"alert"}),
+    rm=h("button",{type:"button",class:"btn sm danger",onclick:()=>{data="";name="";draw();}},ic("trash"),"Прибрати");
+   const draw=()=>{info.textContent=data?`${name||"Документ.pdf"} · ≈ ${Math.round(data.length*.75/1024)} КБ`:"Файл не додано";rm.hidden=!data;};
+   inp.addEventListener("change",()=>{msg.textContent="";const fl=inp.files[0];inp.value="";if(!fl)return;
+    if(fl.type!=="application/pdf"){msg.textContent="Потрібен файл у форматі PDF";return;}
+    const r=new FileReader();r.onload=()=>{if(r.result.length>MAXB){msg.textContent=`PDF завеликий (≈ ${Math.round(fl.size/1024)} КБ). Максимум ≈ ${Math.round(MAXB*.75/1024)} КБ — стисніть файл або додайте посилання.`;return;}
+     data=r.result;name=fl.name.slice(0,150);draw();};r.onerror=()=>{msg.textContent="Помилка читання файлу";};r.readAsDataURL(fl);});
+   draw();
+   ctl=h("div",{class:"pf"},h("div",{class:"prow"},h("label",{class:"btn sm pick"},"Додати PDF",inp),rm,info),msg);
+   get=()=>({[f.k]:data,pdfName:name});}
+  else if(f.t==="photos"||f.t==="photo"){const one=f.t==="photo",pf=photoField(one?(v[f.k]?[v[f.k]]:[]):(v[f.k]||[]),{single:one,maxSide:one?800:1200,limit:f.limit||(one?500000:800000),pdf:f.pdf!==false});
    ctl=pf.el;get=()=>({[f.k]:pf.get()});fin=async()=>({[f.k]:await pf.finalize()});}
   else{ctl=h("input",{id,type:f.t||"text",maxlength:300,placeholder:f.ph||""});ctl.value=v[f.k]||"";get=()=>({[f.k]:ctl.value.trim()});
    if(f.sugg){extra=h("datalist",{id:"dl"+id},...f.sugg().map(x=>h("option",{value:x})));ctl.setAttribute("list","dl"+id);ctl.setAttribute("autocomplete","off");}}

@@ -31,10 +31,10 @@ async function pdfToImages(file,slots,maxSide){
  }
  return {imgs,total:doc.numPages,cut:doc.numPages>n};
 }
-export function photoField(init=[],{single=false,max=6,maxSide=1200,limit=LIMIT}={}){
+export function photoField(init=[],{single=false,max=6,maxSide=1200,limit=LIMIT,pdf=true}={}){
  let L=[...init];
  const grid=h("div",{class:"pgrid"}),info=h("div",{class:"psize",role:"status"}),msg=h("div",{class:"pmsg",role:"alert"});
- const inp=h("input",{type:"file",accept:single?"image/jpeg,image/png,image/webp":"image/jpeg,image/png,image/webp,application/pdf",multiple:!single,class:"sr"});
+ const inp=h("input",{type:"file",accept:single||!pdf?"image/jpeg,image/png,image/webp":"image/jpeg,image/png,image/webp,application/pdf",multiple:!single,class:"sr"});
  const total=()=>L.reduce((a,s)=>a+sz(s),0);
  const mv=(i,d)=>{const j=i+d;[L[i],L[j]]=[L[j],L[i]];draw();};
  function draw(){
@@ -55,7 +55,7 @@ export function photoField(init=[],{single=false,max=6,maxSide=1200,limit=LIMIT}
   }
   inp.value="";draw();
  });
- const pick=h("label",{class:"btn sm pick"},single?"Обрати фото":"Додати фото або PDF",inp);
+ const pick=h("label",{class:"btn sm pick"},single?"Обрати фото":(pdf?"Додати фото або PDF":"Додати фото"),inp);
  draw();
  return {el:h("div",{class:"pf"},grid,h("div",{class:"prow"},pick,info),msg),get:()=>single?(L[0]||""):L,
   async finalize(){

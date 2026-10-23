@@ -2,6 +2,7 @@ import {load,cache,MONTHS,MONTHS_GEN} from "./data.js";
 import {buildInteractive,openPractice} from "./interactive.js";
 import {buildDiscipline,buildResources} from "./disciplines.js";
 import {bannerArt} from "./banner-art.js";
+import {pdfViewer,okPdf} from "./pdfview.js";
 export const h=(t,a={},...c)=>{const e=document.createElement(t);
  for(const[k,v]of Object.entries(a)){if(v==null||v===false)continue;if(k==="class")e.className=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?"":v);}
  c.flat().forEach(x=>{if(x!=null&&x!==false)e.append(x.nodeType?x:document.createTextNode(x));});return e;};
@@ -97,15 +98,15 @@ const subjLinks=s=>{const a=[["materials","Матеріали курсу","book"
 const latest=a=>[...(a||[])].sort((x,y)=>(y.createdAt||0)-(x.createdAt||0)||key(y)-key(x));
 const PER=8,PG={};
 /* Список карток: не більше PER на сторінці, внизу — перемикач сторінок. mk(items) повертає вузол зі списком. */
-function paged(key,items,mk){
- const box=h("div",{class:"pgd"}),pager=h("nav",{class:"wk-pg","aria-label":"Сторінки"}),pages=Math.max(1,Math.ceil(items.length/PER));
+function paged(key,items,mk,per=PER){
+ const box=h("div",{class:"pgd"}),pager=h("nav",{class:"wk-pg","aria-label":"Сторінки"}),pages=Math.max(1,Math.ceil(items.length/per));
  function paint(){
   const p=PG[key]=Math.min(Math.max(1,PG[key]||1),pages);
   const go=n=>{PG[key]=n;paint();box.scrollIntoView({behavior:"smooth",block:"start"});};
   const nums=[];for(let i=1;i<=pages;i++)if(pages<=7||i===1||i===pages||Math.abs(i-p)<=1)nums.push(i);
   const mid=[];nums.forEach((n,k)=>{if(k&&n-nums[k-1]>1)mid.push(h("span",{class:"pg-gap","aria-hidden":"true"},"…"));
    mid.push(h("button",{class:"pgb"+(n===p?" on":""),type:"button","aria-label":"Сторінка "+n,"aria-current":n===p?"page":null,onclick:()=>go(n)},n));});
-  box.replaceChildren(mk(items.slice((p-1)*PER,p*PER)),pager);
+  box.replaceChildren(mk(items.slice((p-1)*per,p*per)),pager);
   pager.replaceChildren(...(pages>1?[
    h("button",{class:"pgb",type:"button","aria-label":"Попередня сторінка",disabled:p===1,onclick:()=>go(p-1)},ic("l")),...mid,
    h("button",{class:"pgb",type:"button","aria-label":"Наступна сторінка",disabled:p===pages,onclick:()=>go(p+1)},ic("r"))]:[]));
@@ -174,13 +175,10 @@ export function mount(root,opts={}){
  }
  function meBanner(){
   const p=st.profile||{};
-  const card=h("div",{class:"me-card"},
-   h("div",{class:"me-ph"},p.photo?h("img",{src:p.photo,alt:""}):h("div",{class:"ph"},ic("user"))),
-   h("div",{class:"me-cap"},h("b",{},p.fullName||"ПІБ не вказано"),p.position?h("span",{},p.position):null));
   const to=p.email?h("a",{class:"cta pri",href:"mailto:"+p.email},"Зв’язатися зі мною",ic("arr")):
    h("button",{class:"cta pri",type:"button",onclick:()=>{const t=document.getElementById("me-info");if(t)t.scrollIntoView({behavior:"smooth",block:"start"});}},"Зв’язатися зі мною",ic("arr"));
   return bn("me",{eyebrow:"Про мене",title:["Навчаю створювати","з ідеї — справжній вебсайт"],
-   desc:"Я — викладач вебтехнологій та вебдизайну. Допомагаю студентам розвивати свій потенціал, опановувати сучасні інструменти та створювати власні проєкти. Вірю, що кожен може навчитися, якщо є підтримка, практика і натхнення."},card,to);
+   desc:"Я — викладач вебтехнологій та вебдизайну. Допомагаю студентам розвивати свій потенціал, опановувати сучасні інструменти та створювати власні проєкти. Вірю, що кожен може навчитися, якщо є підтримка, практика і натхнення."},"me",to);
  }
  function about(){
   const p=st.profile||{};
@@ -192,9 +190,10 @@ export function mount(root,opts={}){
   const info=h("section",{class:"card pad me-info",id:"me-info"},
    h("div",{class:"sch"},h("span",{class:"si big c-pur"},ic("user")),h("h2",{},"Інформація про викладача"),A?h("button",{class:"btn primary sm",onclick:A.profile},ic("edit"),"Змінити профіль"):null),
    h("div",{class:"me-grid"},
-    h("div",{class:"me-tx"},h("h3",{},p.fullName||"ПІБ не вказано"),p.position?h("p",{class:"pos"},p.position):null,
+    h("div",{class:"me-ph"},p.photo?h("img",{src:p.photo,alt:p.fullName||"Фото викладача",loading:"lazy",tabindex:"0",onclick:()=>gallery([p.photo],0)}):h("div",{class:"ph"},ic("user"))),
+    h("div",{class:"me-body"},h("div",{class:"me-tx"},h("h3",{},p.fullName||"ПІБ не вказано"),p.position?h("p",{class:"pos"},p.position):null,
      p.about?h("p",{class:"me-ab"},p.about):h("p",{class:"mu"},A?"Додайте розповідь про себе через «Змінити профіль».":"")),
-    ct.children.length?h("div",{class:"me-ct"},h("h4",{},"Контакти"),ct):null));
+    ct.children.length?h("div",{class:"me-ct"},h("h4",{},"Контакти"),ct):null)));
   const out=[meBanner(),info],ed=sorted(st.education);
   if(ed.length||A)out.push(secCard("cap","blue","Освіта","education",ed.length?h("div",{class:"tl"},ed.map(e=>h("div",{class:"tli"},h("div",{class:"tli-r"},h("div",{class:"tli-t"},h("h3",{},e.degree),h("p",{class:"mu"},e.place),h("span",{class:"yr"},e.year)),e.photos&&e.photos.length?h("button",{class:"dipl",type:"button","aria-label":"Переглянути фото диплома",onclick:()=>gallery(e.photos,0)},h("img",{src:e.photos[0],alt:"Диплом: "+e.degree}),e.photos.length>1?h("span",{},"+"+(e.photos.length-1)):null):null),ab("education",e)))):empty("education")));
   return out.filter(Boolean);
@@ -213,6 +212,7 @@ export function mount(root,opts={}){
     r.desc?h("p",{class:"an-md"},r.desc):null,
     meta.length?h("ul",{class:"an-mm"},meta.map(m=>h("li",{},h("span",{class:"an-mi"},ic(m[0])),h("span",{},h("small",{},m[1]),h("b",{},m[2]))))):null,
     ph.length?h("div",{class:"an-mg"+(ph.length>1?" many":"")},media(ph,r.title)):null,
+    okPdf(r.pdf)?pdfViewer(h,ic,r.pdf,r.pdfName):null,
     ok?h("a",{class:"cta pri an-ml",href:r.link,target:"_blank",rel:"noopener noreferrer"},"Перейти за посиланням",ic("arr")):null));
   const ov=h("div",{class:"an-ov"},box);
   const kd=e=>{if(e.key==="Escape"&&!document.querySelector(".gal")){e.stopPropagation();close();}
@@ -248,10 +248,10 @@ export function mount(root,opts={}){
  function news(){
   const a=sorted(st.announcements),nw=a.filter(r=>r.type!=="Конференція"),cf=a.filter(r=>r.type==="Конференція").sort((x,y)=>key(x)-key(y));
   const col=(key,icn,title,list)=>h("section",{class:"card pad an-col"},h("div",{class:"an-h"},h("span",{class:"si big c-pur"},ic(icn)),h("h2",{},title)),
-   list.length?paged(key,list,l=>h("div",{class:"an-list"},l.map(annItem))):h("p",{class:"mu an-empty"},"Поки що немає записів."));
+   list.length?paged(key,list,l=>h("div",{class:"an-grid"},l.map(annItem)),6):h("p",{class:"mu an-empty"},"Поки що немає записів."));
   return [bn("news",{eyebrow:"Новини · Оголошення · Конференції",title:["Актуальні події","коледжу"],desc:"Будьте в курсі всіх важливих новин, оголошень та можливостей для професійного розвитку."},"news",
    add("announcements","Додати новину",{type:"Новина"}),add("announcements","Додати конференцію",{type:"Конференція"})),
-   h("div",{class:"an-cols"},col("annN","news","Новини",nw),col("annC","cal","Конференції",cf))];
+   h("div",{class:"an-stack"},col("annC","cal","Конференції",cf),col("annN","news","Новини",nw))];
  }
  function home(){return [homeBanner(),techCards(),journalBanner(),homeNews()].filter(Boolean);}
  function cert(){

@@ -168,6 +168,5 @@
 .pv-st,.pv-more{display:flex;align-items:center;gap:10px;color:var(--mu);font-size:14px;padding:20px 0;text-align:center}
 .an-th .an-pdfc{object-position:top}
 
-/* з PDF: ширше вікно, а весь документ прокручується разом із вікном оголошення */
-.an-m.wide{width:min(940px,100%)}
+/* PDF вписується в ширину вікна, а прокручується все вікно оголошення разом із ним */
 .an-mb{min-height:0;grid-auto-rows:max-content;align-content:start}

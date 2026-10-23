@@ -318,48 +318,37 @@ function lessons() {
 }
 
 
-/* про викладача: портфоліо — сайт-макет, галерея робіт, палітра, папка й олівець */
+/* про викладача: резюме з фото та позначками, монітор, книги, ручка й рослина */
 function me() {
   const p = "m" + (++uid);
-  const mini = (x, y, w, h, f, c) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${f}"/><circle cx="${x + w * .72}" cy="${y + h * .3}" r="${h * .1}" fill="#fff" opacity=".8"/><path d="M${x} ${y + h}l${w * .36}-${h * .46} ${w * .26} ${h * .3} ${w * .16}-${h * .16} ${w * .22} ${h * .32}z" fill="${c}"/>`;
-  const sw = (x, c) => `<circle cx="${x}" cy="32" r="15" fill="${c}"/><circle cx="${x - 4}" cy="27" r="4" fill="#fff" opacity=".35"/>`;
+  const ik = (x, y, body) => `<g transform="translate(${x} ${y})" fill="none" stroke="#6c47ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${body}</g>`;
+  const row = (y, icon) => ik(32, y + 8, icon) + `<rect x="62" y="${y}" width="104" height="9" rx="4.5" fill="#c9bdfa"/><rect x="62" y="${y + 17}" width="70" height="6" rx="3" fill="#e4defb"/>`;
+  const book = (x, y, w, rot) => `<g transform="translate(${x} ${y}) rotate(${rot})"><rect x="3" y="20" width="${w - 6}" height="14" rx="4" fill="#f4f1ff" stroke="#ddd5fa"/>
+   <rect width="${w}" height="26" rx="6" fill="url(#${p}vd)"/><rect width="${w}" height="9" rx="5" fill="#fff" opacity=".12"/><rect x="0" y="0" width="12" height="26" rx="6" fill="#4b2fd0" opacity=".35"/></g>`;
   return svg(p, `
- ${base(p, 310, 414, 215)}
- ${blob(p, 310, 225, 250)}${ring(310, 215, 195, ".35")}${ring(320, 225, 145, ".22")}
- ${dot(44, 190, 5, "#c9b9ff", "fl2")}${dot(574, 214, 6, "#b9a6ff", "fl3")}${dot(250, 30, 4, "#c9b9ff", "fl1")}${dot(566, 400, 4, "#b9a6ff", "fl2")}
- <g transform="translate(336 62) rotate(7)"><g class="fl2" filter="url(#${p}ss)">
-  <rect width="190" height="226" rx="14" fill="#fff" stroke="#e8e3fb"/>
-  ${mini(14, 14, 76, 64, "#e9e3ff", "#9b82ff")}${mini(100, 14, 76, 64, "#fde6f1", "#f472b6")}
-  ${mini(14, 90, 76, 64, "#def5ea", "#34d399")}${mini(100, 90, 76, 64, "#fff0d2", "#fbbf24")}
-  <rect x="14" y="170" width="120" height="7" rx="3.5" fill="#d9d1fa"/><rect x="14" y="186" width="84" height="6" rx="3" fill="#ece8fc"/>
-  <circle cx="160" cy="196" r="11" fill="url(#${p}v)"/></g></g>
- <g transform="translate(58 100) rotate(-3)"><g class="fl1" filter="url(#${p}sh)">
-  <rect width="332" height="236" rx="14" fill="#fff" stroke="#e8e3fb"/>
-  <circle cx="16" cy="16" r="4" fill="#ff8aa0"/><circle cx="30" cy="16" r="4" fill="#ffd166"/><circle cx="44" cy="16" r="4" fill="#6ee7a8"/>
-  <rect x="66" y="8" width="170" height="16" rx="8" fill="#f1edff"/><rect x="250" y="9" width="60" height="14" rx="7" fill="#8b6cff" opacity=".85"/>
-  <path d="M0 34h332" stroke="#eee9fc"/>
-  <rect x="22" y="54" width="150" height="13" rx="6.5" fill="#1b1747"/><rect x="22" y="74" width="108" height="13" rx="6.5" fill="#6c47ff"/>
-  <rect x="22" y="98" width="140" height="6" rx="3" fill="#d9d1fa"/><rect x="22" y="110" width="116" height="6" rx="3" fill="#e4defb"/>
-  <rect x="22" y="128" width="86" height="24" rx="12" fill="url(#${p}v)"/>
-  <rect x="190" y="48" width="122" height="106" rx="12" fill="#efeaff"/><circle cx="276" cy="78" r="10" fill="#c9b9ff"/>
-  <path d="M190 154l34-44 28 30 22-18 38 32z" fill="url(#${p}v)"/>
-  <rect x="22" y="170" width="92" height="52" rx="10" fill="#f7f4ff" stroke="#ece8fc"/><rect x="120" y="170" width="92" height="52" rx="10" fill="#f7f4ff" stroke="#ece8fc"/><rect x="218" y="170" width="92" height="52" rx="10" fill="#f7f4ff" stroke="#ece8fc"/>
-  ${mini(30, 178, 30, 24, "#e9e3ff", "#9b82ff")}${mini(128, 178, 30, 24, "#fde6f1", "#f472b6")}${mini(226, 178, 30, 24, "#def5ea", "#34d399")}
-  <rect x="66" y="184" width="40" height="5" rx="2.5" fill="#d9d1fa"/><rect x="164" y="184" width="40" height="5" rx="2.5" fill="#d9d1fa"/><rect x="262" y="184" width="40" height="5" rx="2.5" fill="#d9d1fa"/>
-  <rect x="30" y="208" width="66" height="5" rx="2.5" fill="#ece8fc"/><rect x="128" y="208" width="66" height="5" rx="2.5" fill="#ece8fc"/><rect x="226" y="208" width="66" height="5" rx="2.5" fill="#ece8fc"/></g></g>
- <g transform="translate(34 288)"><g class="fl3" filter="url(#${p}sh)">
-  <path d="M0 22a10 10 0 0 1 10-10h40l12 14h66a10 10 0 0 1 10 10v70a10 10 0 0 1-10 10H10A10 10 0 0 1 0 106z" fill="#cdbfff"/>
-  <rect x="14" y="22" width="108" height="46" rx="6" fill="#fff" transform="rotate(-3 14 22)"/>
-  <rect x="0" y="40" width="148" height="76" rx="12" fill="url(#${p}v)"/><rect x="3" y="43" width="142" height="28" rx="10" fill="#fff" opacity=".13"/>
-  <text x="74" y="86" text-anchor="middle" font-family="${FONT}" font-weight="800" font-size="17" fill="#fff">Портфоліо</text></g></g>
- <g transform="translate(374 300) rotate(-5)"><g class="fl2" filter="url(#${p}ss)">
-  <rect width="150" height="88" rx="14" fill="#fff" stroke="#e8e3fb"/>${sw(30, "#6c47ff")}${sw(62, "#ec4899")}${sw(94, "#fbbf24")}${sw(126, "#34d399")}
-  <rect x="16" y="62" width="70" height="7" rx="3.5" fill="#d9d1fa"/><rect x="94" y="62" width="40" height="7" rx="3.5" fill="#ece8fc"/></g></g>
- <g transform="translate(556 292) rotate(28)"><g class="fl1" filter="url(#${p}ss)">
-  <rect x="-9" y="-78" width="18" height="12" rx="4" fill="#ff8aa0"/><rect x="-9" y="-68" width="18" height="96" fill="#fbbf24"/><rect x="-9" y="-68" width="6" height="96" fill="#fff" opacity=".3"/>
-  <path d="M-9 28h18l-9 26z" fill="#f5d6b3"/><path d="M-3.5 45h7L0 54z" fill="#3a2a22"/></g></g>
- <g transform="translate(330 232)"><g class="fl1"><path d="M0 0v30l8-7 6 14 6-3-6-14 10-1z" fill="#1b1747" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></g></g>
- ${pill(p, 112, 66, 132, 42, "Portfolio", -6, "fl3", 19)}${tile(p, 542, 70, 58, "code", 6, "fl2")}${star(p, 300, 40, 1.1, "fl3")}${star(p, 40, 120, .9, "fl1", "#fcd34d")}`);
+ ${base(p, 300, 410, 220)}
+ ${blob(p, 300, 225, 250)}${ring(300, 215, 195, ".35")}
+ ${dot(44, 330, 5, "#c9b9ff", "fl2")}${dot(556, 90, 6, "#b9a6ff", "fl3")}${dot(300, 20, 4, "#c9b9ff", "fl1")}
+ <g transform="translate(366 98) rotate(3)"><rect width="156" height="200" rx="16" fill="#d9cffb" stroke="#cbbff5"/><rect x="10" y="10" width="136" height="180" rx="9" fill="#e9e3ff"/>
+  <path d="M10 150l40-40 30 26 22-18 44 36v10a9 9 0 0 1-9 9H19a9 9 0 0 1-9-9z" fill="#cfc2fb"/><circle cx="106" cy="52" r="14" fill="#f4f0ff"/></g>
+ <g filter="url(#${p}sh)">${book(414, 346, 150, 0)}${book(424, 316, 136, -2)}</g>
+ <g transform="translate(138 48) rotate(-3)"><g class="fl1" filter="url(#${p}sh)">
+  <rect width="262" height="336" rx="16" fill="#fff" stroke="#e8e3fb"/>
+  <circle cx="66" cy="66" r="36" fill="#efeaff"/><circle cx="66" cy="58" r="13" fill="url(#${p}v)"/><path d="M42 96c0-17 10-26 24-26s24 9 24 26a36 36 0 0 1-48 0z" fill="url(#${p}v)"/>
+  <rect x="120" y="40" width="112" height="14" rx="7" fill="#8b6cff"/><rect x="120" y="64" width="104" height="9" rx="4.5" fill="#d9d1fa"/><rect x="120" y="82" width="72" height="9" rx="4.5" fill="#e4defb"/>
+  <path d="M22 118h218" stroke="#eee9fc" stroke-width="2"/>
+  ${row(138, '<rect x="-10" y="-6" width="20" height="14" rx="3"/><path d="M-4-6v-3h8v3M-10 1h20"/>')}
+  ${row(186, '<path d="M0-9-12-3 0 3 12-3z"/><path d="M-7 0v6c4 3 10 3 14 0V0"/>')}
+  ${row(234, '<polygon points="0,-10 3,-3 10,-3 4.5,2 6.5,9 0,5 -6.5,9 -4.5,2 -10,-3 -3,-3"/>')}
+  ${row(282, '<path d="M0 9C-13 0-12-10-6-10c3 0 5 2 6 4 1-2 3-4 6-4 6 0 7 10-6 19z"/>')}
+  <rect x="178" y="136" width="58" height="166" rx="10" fill="#efeaff"/>
+  <rect x="188" y="150" width="38" height="9" rx="4.5" fill="#d3c8fb"/><rect x="188" y="170" width="38" height="7" rx="3.5" fill="#d9d1fa"/><rect x="188" y="186" width="26" height="7" rx="3.5" fill="#e4defb"/><rect x="188" y="206" width="38" height="7" rx="3.5" fill="#d9d1fa"/><rect x="188" y="226" width="32" height="7" rx="3.5" fill="#e4defb"/><rect x="188" y="252" width="38" height="7" rx="3.5" fill="#d9d1fa"/>
+  </g></g>
+ <g transform="translate(318 386) rotate(16)"><g class="fl3" filter="url(#${p}ss)">
+  <rect x="-62" y="-6" width="112" height="12" rx="6" fill="url(#${p}vd)"/><rect x="-62" y="-6" width="30" height="12" rx="6" fill="#4b2fd0"/><rect x="-26" y="-6" width="5" height="12" fill="#c9bdfa"/>
+  <path d="M50-6l18 6-18 6z" fill="#f2ead9"/><path d="M62-2l6 2-6 2z" fill="#3a2a22"/></g></g>
+ ${plant(p, 62, 392, .9, false)}
+ ${tile(p, 70, 74, 62, "cap", -6, "fl2")}${tile(p, 548, 196, 60, "code", 6, "fl1")}`);
 }
 
 export const ART = { a: home, b: res, home, disc, disc_web: disc, disc_it: discIt, res, cert, pub, stud, awards, news, lessons, me };

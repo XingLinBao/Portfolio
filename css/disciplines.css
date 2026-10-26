@@ -3,7 +3,7 @@
 /* ---------- меню: довші назви, більше пунктів ---------- */
 .help{margin-top:0}
 .help .cta{white-space:nowrap}
-.dd-m.disc{min-width:360px}
+.dd-m.disc,.dd-m.prac{min-width:360px}
 .side .dd-m .mi{white-space:normal;line-height:1.3}
 @media(max-width:1280px){
  .hd-in{gap:16px}
@@ -256,3 +256,12 @@ button.dd-th:hover .dd-zoom,button.dd-th:focus-visible .dd-zoom{opacity:1}
 .dd-card.fx{animation:ddIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 60ms)}
 .ds-card{scroll-margin-top:90px}
 @media(prefers-reduced-motion:reduce){.dd-grid{transition:none}.dd-card.fx{animation:none}}
+
+/* ---------- картка посилання (як картка відео, зображення горизонтальне) ---------- */
+.rs-linkth{text-decoration:none;cursor:pointer}
+.rs-lk{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px;color:#fff;text-align:center}
+.rs-lki{display:grid;place-items:center;width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.18);font-size:26px}
+.rs-lk b{max-width:100%;font:800 15px/1.2 var(--font);letter-spacing:.01em;overflow-wrap:anywhere;opacity:.95}
+.rs-go{position:absolute;right:8px;bottom:8px;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--v);font-size:14px;transition:scale .2s}
+.rs-linkth:hover .rs-go{scale:1.1}
+.rs-linkth:hover .rs-lk{filter:brightness(1.08)}

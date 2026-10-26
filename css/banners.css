@@ -170,3 +170,21 @@
 
 /* PDF вписується в ширину вікна, а прокручується все вікно оголошення разом із ним */
 .an-mb{min-height:0;grid-auto-rows:max-content;align-content:start}
+
+/* ---------- навігація: уміщується в контейнер ---------- */
+.hd-in{gap:12px}
+.menu{min-width:0;gap:0;flex:1 1 auto}
+.side .mi{padding:10px 5px;font-size:13px}
+.help{flex:none;margin-left:auto}.help .cta{white-space:nowrap;padding:8px 14px;font-size:13px}
+.brand-t{font-size:18px}
+@media(max-width:1360px){
+ .hd-in{padding:0 18px;gap:12px;flex-wrap:wrap;height:auto;min-height:64px}
+ .burger{display:grid}
+ .menu,.help{display:none;flex:1 1 100%;margin:0}
+ .nav-open .menu{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:4px 0 10px}
+ .nav-open .help{display:block;padding-bottom:16px}
+ .side .mi{padding:12px 6px;font-size:14px}.side .mi[aria-current=page]:after,.side .dd-b.on:after{display:none}
+ .dd-m{position:static;display:grid;margin:0 0 6px 6px;padding:0 0 0 8px;border:0;border-left:2px solid var(--line);border-radius:0;box-shadow:none;min-width:0!important}
+ .dd-m:before{display:none}.dd-b .ic{display:none}
+ .dd:not(.open) .dd-m{display:none}.dd:hover .dd-m{display:grid}
+}

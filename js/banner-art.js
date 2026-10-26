@@ -351,7 +351,76 @@ function me() {
  ${tile(p, 70, 74, 62, "cap", -6, "fl2")}${tile(p, 548, 196, 60, "code", 6, "fl1")}`);
 }
 
-export const ART = { a: home, b: res, home, disc, disc_web: disc, disc_it: discIt, res, cert, pub, stud, awards, news, lessons, me };
+/* дисципліна «Веб-технології та веб-дизайн»: ноутбук із редактором дизайну, палітра, блокнот, ручки й мітки HTML / CSS / JS */
+function discWeb() {
+  const p = "w" + (++uid);
+  const row = (x, y, w, c = "#ece8fc") => `<rect x="${x}" y="${y}" width="${w}" height="5" rx="2.5" fill="${c}"/>`;
+  const card = (x, c) => `<rect x="${x}" y="150" width="62" height="40" rx="7" fill="#fff" stroke="#ece8fc"/><rect x="${x + 8}" y="158" width="14" height="14" rx="4" fill="${c}"/>${row(x + 8, 178, 40, "#e4defb")}`;
+  const pen = (x, y, r, c) => `<g transform="translate(${x} ${y}) rotate(${r})"><rect x="-5" y="-52" width="10" height="52" rx="3" fill="${c}"/><path d="M-5-52l5-14 5 14z" fill="#3a2a22" opacity=".85"/></g>`;
+  return svg(p, `
+ ${base(p, 300, 412, 235)}
+ ${blob(p, 300, 215, 255)}${ring(300, 215, 200, ".35")}
+ ${dot(30, 120, 5, "#c9b9ff", "fl2")}${dot(580, 250, 5, "#b9a6ff", "fl3")}${dot(330, 20, 4, "#c9b9ff", "fl1")}${dot(250, 430, 3.5, "#c9b9ff", "fl2")}
+ <g transform="translate(100 56) scale(1.12)"><g filter="url(#${p}sh)">
+  <rect width="346" height="226" rx="14" fill="#a99bf0" stroke="#8b7be0"/>
+  <rect x="9" y="9" width="328" height="206" rx="7" fill="#fff"/>
+  <path d="M9 16a7 7 0 0 1 7-7h314a7 7 0 0 1 7 7v20H9z" fill="#2b2857"/>
+  <circle cx="22" cy="23" r="3" fill="#ff8aa0"/><circle cx="33" cy="23" r="3" fill="#ffd166"/><circle cx="44" cy="23" r="3" fill="#6ee7a8"/>
+  <rect x="104" y="14" width="26" height="18" rx="3" fill="#3b82f6"/><path d="M113 19l8 4-8 4z" fill="#fff"/>
+  <rect x="140" y="19" width="10" height="9" rx="2" fill="none" stroke="#a9a3d8" stroke-width="1.6"/><rect x="160" y="19" width="10" height="9" rx="2" fill="none" stroke="#a9a3d8" stroke-width="1.6"/><rect x="180" y="19" width="10" height="9" rx="2" fill="none" stroke="#a9a3d8" stroke-width="1.6"/>
+  <rect x="278" y="16" width="44" height="14" rx="7" fill="#8b6cff"/>
+  <path d="M82 36v179M262 36v179" stroke="#eee9fc"/>
+  ${row(18, 48, 26, "#d9d1fa")}${row(52, 48, 22)}<rect x="16" y="64" width="58" height="11" rx="4" fill="#efeaff"/>${row(22, 66, 30, "#8b6cff")}${row(22, 88, 34)}${row(22, 102, 40)}${row(22, 116, 28)}${row(22, 140, 44)}${row(22, 154, 36)}${row(22, 168, 30)}
+  <rect x="94" y="46" width="156" height="26" rx="8" fill="#fff" stroke="#ece8fc"/><circle cx="108" cy="59" r="6" fill="#8b6cff"/><rect x="170" y="56" width="22" height="5" rx="2.5" fill="#e4defb"/><rect x="198" y="56" width="22" height="5" rx="2.5" fill="#e4defb"/><rect x="226" y="52" width="16" height="12" rx="6" fill="#8b6cff"/>
+  <rect x="104" y="86" width="64" height="8" rx="4" fill="#1b1747"/><rect x="104" y="100" width="80" height="8" rx="4" fill="#1b1747"/><rect x="104" y="116" width="70" height="5" rx="2.5" fill="#d9d1fa"/><rect x="104" y="127" width="50" height="5" rx="2.5" fill="#e4defb"/>
+  <rect x="104" y="138" width="40" height="12" rx="6" fill="url(#${p}v)"/>
+  <g transform="translate(180 86)"><rect width="62" height="40" rx="5" fill="#cfc4fb"/><rect x="5" y="5" width="52" height="30" rx="3" fill="#e9e3ff"/><path d="M5 35l16-14 12 9 10-8 14 13z" fill="#9b82ff"/><rect x="44" y="18" width="22" height="34" rx="5" fill="#fff" stroke="#b9a6ff" stroke-width="2"/></g>
+  ${card(94, "#8b6cff")}${card(160, "#c9b9ff")}
+  <path d="M262 52h75M262 76h75" stroke="#f1edff"/>${row(272, 46, 28, "#d9d1fa")}${row(272, 64, 30)}${row(272, 82, 24)}${row(272, 98, 30)}${row(272, 124, 34)}<rect x="272" y="134" width="14" height="14" rx="3" fill="#8b6cff"/><rect x="292" y="139" width="28" height="5" rx="2.5" fill="#d9d1fa"/>${row(272, 160, 30)}${row(272, 182, 30)}
+  </g>
+  <path d="M-18 232h382c0 12-10 20-22 20H4c-12 0-22-8-22-20z" fill="url(#${p}bs)" stroke="#e4defb"/><rect x="144" y="232" width="58" height="7" rx="3.5" fill="#cbc2f3"/></g>
+ <g transform="translate(20 144) rotate(-8)"><g class="fl2" filter="url(#${p}ss)">
+  <rect width="170" height="118" rx="14" fill="#fff" stroke="#e8e3fb"/>
+  <circle cx="32" cy="32" r="14" fill="#6c47ff"/><circle cx="62" cy="30" r="14" fill="#8b6cff"/><circle cx="92" cy="28" r="14" fill="#a892ff"/><circle cx="122" cy="26" r="14" fill="#c4b5ff"/>
+  <text x="18" y="96" font-family="${FONT}" font-weight="800" font-size="40" fill="#1b1747">Aa</text>${row(76, 70, 70, "#d9d1fa")}${row(76, 84, 52)}${row(18, 106, 130, "#e4defb")}</g></g>
+ <g transform="translate(70 62) rotate(-8)"><g class="fl3" filter="url(#${p}ss)">
+  <rect x="-30" y="-30" width="60" height="60" rx="16" fill="#2b2857"/>
+  <circle cx="-9" cy="-9" r="9" fill="#ff7a59"/><rect x="0" y="-18" width="18" height="18" rx="9" fill="#a259ff"/><circle cx="9" cy="9" r="9" fill="#1abcfe"/><rect x="-18" y="0" width="18" height="18" rx="9" fill="#0acf83"/></g></g>
+ <g class="fl1" stroke="#a78bfa" stroke-width="4" stroke-linecap="round" opacity=".85"><path d="M118 38l-18 6M112 62l-18-2M122 82l-14-12"/></g>
+ <g transform="translate(10 332) rotate(-13)"><g class="fl1" filter="url(#${p}sh)">
+  <rect width="200" height="96" rx="10" fill="#fff" stroke="#e4defb"/>
+  <rect x="26" y="12" width="70" height="46" rx="5" fill="none" stroke="#cfc4fb" stroke-width="2"/><path d="M26 12l70 46M96 12L26 58" stroke="#e4defb" stroke-width="2"/>
+  ${row(110, 14, 70, "#d9d1fa")}${row(110, 26, 60)}${row(110, 38, 70)}<rect x="110" y="52" width="40" height="22" rx="4" fill="none" stroke="#cfc4fb" stroke-width="2"/>${row(26, 72, 60)}${row(26, 84, 80)}
+  ${Array.from({length: 7}, (_, i) => `<circle cx="2" cy="${10 + i * 12}" r="4" fill="none" stroke="#6c47ff" stroke-width="2.5"/>`).join("")}</g></g>
+ <g transform="translate(150 428) rotate(-10)"><g class="fl3" filter="url(#${p}ss)"><rect x="-4" y="-5" width="104" height="10" rx="5" fill="url(#${p}vd)"/><rect x="-4" y="-5" width="26" height="10" rx="5" fill="#4b2fd0"/><path d="M100-5l16 5-16 5z" fill="#3a2a22"/></g></g>
+ ${pill(p, 532, 44, 100, 40, "HTML", 7, "fl1", 19)}${pill(p, 548, 104, 84, 38, "CSS", -4, "fl3", 18)}${pill(p, 534, 164, 70, 36, "JS", 4, "fl2", 18)}
+ ${plant(p, 500, 408, .8, false)}
+ ${pen(558, 392, -10, "#4b2fd0")}${pen(572, 392, 8, "#6c47ff")}
+ <path d="M538 392h46l-4 28c-1 4-4 6-8 6h-22c-4 0-7-2-8-6z" fill="#fff" stroke="#e4defb"/>`);
+}
+
+/* навчальна практика: аркуш із завданнями, відкрите вікно, мітки та рослина */
+function practice() {
+  const p = "p" + (++uid);
+  const task = (y, done, w) => `<circle cx="30" cy="${y}" r="11" fill="${done ? `url(#${p}lf)` : "#fff"}" stroke="${done ? "#2f8f5b" : "#cfc4fb"}" stroke-width="2"/>${done ? `<path d="M24 ${y}l5 5 8-10" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>` : ""}<rect x="54" y="${y - 7}" width="${w}" height="8" rx="4" fill="#c9bdfa"/><rect x="54" y="${y + 6}" width="${w * .6}" height="6" rx="3" fill="#e4defb"/>`;
+  return svg(p, `
+ ${base(p, 300, 412, 215)}
+ ${blob(p, 300, 225, 250)}${ring(300, 220, 195, ".35")}${ring(310, 230, 145, ".22")}
+ ${dot(40, 110, 5, "#c9b9ff", "fl2")}${dot(566, 330, 6, "#b9a6ff", "fl3")}${dot(300, 20, 4, "#c9b9ff", "fl1")}
+ ${win(p, 300, 120, 250, 170, 4, "fl2", true, true)}
+ <g transform="translate(90 50) rotate(-4)"><g class="fl1" filter="url(#${p}sh)">
+  <rect width="230" height="330" rx="16" fill="#fff" stroke="#e8e3fb"/>
+  <rect x="70" y="-12" width="90" height="30" rx="10" fill="url(#${p}vd)"/><rect x="95" y="-20" width="40" height="16" rx="8" fill="#d9d1fa" stroke="#fff" stroke-width="3"/>
+  <rect x="24" y="40" width="140" height="13" rx="6.5" fill="#1b1747"/><rect x="24" y="62" width="90" height="8" rx="4" fill="#8b6cff"/>
+  <path d="M24 86h182" stroke="#eee9fc" stroke-width="2"/>
+  ${task(116, true, 120)}${task(164, true, 100)}${task(212, false, 124)}${task(260, false, 90)}
+  <rect x="24" y="296" width="96" height="22" rx="11" fill="url(#${p}v)"/><rect x="42" y="304" width="60" height="6" rx="3" fill="#fff" opacity=".85"/></g></g>
+ ${plant(p, 548, 396, .75, true)}
+ <g transform="translate(300 392) rotate(-6)"><g class="fl3" filter="url(#${p}ss)"><rect x="-40" y="-16" width="80" height="32" rx="12" fill="url(#${p}v)"/><text x="0" y="6" text-anchor="middle" font-family="${FONT}" font-weight="800" font-size="15" fill="#fff">Практика</text></g></g>
+ ${pill(p, 520, 80, 104, 40, "Завдання", 6, "fl3", 17)}${tile(p, 70, 330, 58, "code", -6, "fl2")}${star(p, 556, 224, 1.1, "fl1")}`);
+}
+
+export const ART = { a: home, b: res, home, disc, disc_web: discWeb, disc_pit: practice, disc_pweb: practice, disc_it: discIt, res, cert, pub, stud, awards, news, lessons, me };
 export function bannerArt(name) {
   const e = document.createElement("div");
   e.className = "bn-art bn-svgwrap";

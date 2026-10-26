@@ -14,11 +14,27 @@ export const DISC = {
   }
 };
 
+/* Навчальна практика: окремі сторінки для двох дисциплін; матеріали зберігаються в тій самій колекції materials */
+DISC.pit = {
+  title: "Навчальна практика з дисципліни «Інтернет-технології в інформаційній діяльності»",
+  head: ["Навчальна практика", "Інтернет-технології в інформаційній діяльності"],
+  lead: "Програма, завдання, методичні матеріали та документи з навчальної практики — усе необхідне в одному місці.",
+  kinds: ["task", "report", "info"], eyebrow: "Навчальна практика"
+};
+DISC.pweb = {
+  title: "Навчальна практика з дисципліни «Веб-технології та веб-дизайн»",
+  head: ["Навчальна практика", "Веб-технології та веб-дизайн"],
+  lead: "Програма, завдання, методичні матеріали та документи з навчальної практики — усе необхідне в одному місці.",
+  kinds: ["task", "report", "info"], eyebrow: "Навчальна практика"
+};
+
 export const KINDS = [
   {k: "lecture", n: "Лекція", t: "Лекції", i: "book", w: ["лекція", "лекції", "лекцій"], d: "Теоретичні матеріали, які допомагають краще зрозуміти основи дисципліни.", add: "Додати лекцію", none: "Лекції ще не додано."},
   {k: "present", n: "Презентація", t: "Презентації", i: "layout", w: ["презентація", "презентації", "презентацій"], d: "Слайди до занять: перегляньте онлайн або завантажте на свій пристрій.", add: "Додати презентацію", none: "Презентації ще не додано."},
   {k: "practice", n: "Практична робота", t: "Практичні роботи", i: "code", w: ["практична", "практичні", "практичних"], d: "Завдання для практичних занять та методичні вказівки до їх виконання.", add: "Додати практичну", none: "Практичні роботи ще не додано."},
   {k: "self", n: "Матеріал", t: "Самостійне вивчення", i: "file", w: ["матеріал", "матеріали", "матеріалів"], d: "Матеріали, які варто опрацювати самостійно поза аудиторією.", add: "Додати матеріал", none: "Матеріали для самостійного вивчення ще не додано."},
+  {k: "task", n: "Завдання", t: "Завдання та матеріали", i: "code", w: ["матеріал", "матеріали", "матеріалів"], d: "Програма практики, завдання та методичні вказівки до їх виконання.", add: "Додати матеріал", none: "Матеріалів практики ще не додано."},
+  {k: "report", n: "", t: "Звіти та документи", i: "file", w: ["документ", "документи", "документів"], d: "Зразки звітів, щоденники, критерії оцінювання та інші документи.", add: "Додати документ", none: "Документів ще не додано."},
   {k: "info", n: "", t: "Додаткова інформація", i: "info", w: ["матеріал", "матеріали", "матеріалів"], d: "Програма, критерії оцінювання та інші довідкові документи.", add: "Додати матеріал", none: "Додаткової інформації ще немає."}
 ];
 
@@ -29,7 +45,7 @@ export const pl = (n, w) => {
 const ordKey = r => r.ord ?? r.createdAt ?? 0;
 export const byOrd = a => [...(a || [])].sort((x, y) => ordKey(x) - ordKey(y));
 const norm = s => String(s || "").toLowerCase();
-const DT = {it: "lecture", web: "lecture"};
+const DT = {it: "lecture", web: "lecture", pit: "task", pweb: "task"};
 const PER = 8, DPG = {};
 
 /* ============================================================ ДИСЦИПЛІНА */
@@ -38,7 +54,7 @@ export function buildDiscipline(ctx, id) {
   const D = DISC[id], info = (st.profile && st.profile.discs && st.profile.discs[id]) || {};
   const mats = (st.materials || []).filter(m => m.disc === id);
 
-  const hero = bn("disc_" + id, {eyebrow: "Навчальний матеріал", title: D.head, desc: info.desc || D.lead}, "disc_" + id);
+  const hero = bn("disc_" + id, {eyebrow: D.eyebrow || "Навчальний матеріал", title: D.head, desc: info.desc || D.lead}, "disc_" + id);
 
   const box = h("div", {class: "ds-body"});
 
@@ -102,7 +118,7 @@ export function buildDiscipline(ctx, id) {
   function paint() {
     const kind = KINDS.find(k => k.k === DT[id]) || KINDS[0];
     const list = byOrd(mats.filter(m => m.kind === kind.k));
-    const tabs = h("div", {class: "ds-tabs", role: "tablist", "aria-label": "Види матеріалів"}, KINDS.map(k =>
+    const tabs = h("div", {class: "ds-tabs", role: "tablist", "aria-label": "Види матеріалів"}, KINDS.filter(k => D.kinds ? D.kinds.includes(k.k) : !["task", "report"].includes(k.k)).map(k =>
       h("button", {role: "tab", type: "button", class: "ds-tab" + (k.k === kind.k ? " on" : ""), "aria-selected": String(k.k === kind.k), onclick: () => {DT[id] = k.k; paint();}}, ic(k.i), k.t)));
     const head = h("div", {class: "ds-ch"},
       h("span", {class: "ds-ci"}, ic(kind.i)),
@@ -264,6 +280,18 @@ export function buildResources(ctx) {
         h("div", {class: "rs-vf"}, r.author ? h("span", {class: "rs-au"}, h("span", {class: "rs-av"}, (r.author.trim()[0] || "•").toUpperCase()), r.author) : h("span"), r.tag ? h("span", {class: "chip"}, r.tag) : null),
         ab("resources", r)));
   }
+  /* Посилання та інструменти — така сама картка, як у відео: горизонтальне зображення 16:9 */
+  function linkCard(r) {
+    const ok = okUrl(r.link), t = resType(r), c = COVERS[hash(r.title) % COVERS.length].split(",");
+    const art = r.photo ? h("img", {src: r.photo, alt: "", loading: "lazy"})
+      : h("span", {class: "rs-lk", style: `background:linear-gradient(150deg,${c[0]},${c[1]})`}, h("span", {class: "rs-lki"}, ic(t === "tool" ? "tool" : "link")), h("b", {}, ok ? hostOf(r.link) : (r.title || "").slice(0, 30)));
+    const th = ok ? h("a", {class: "rs-thumb rs-linkth", href: r.link, target: "_blank", rel: "noopener noreferrer", "aria-label": "Відкрити: " + r.title}, art, h("span", {class: "rs-go", "aria-hidden": "true"}, ic("ext")))
+      : h("div", {class: "rs-thumb rs-linkth"}, art);
+    return h("article", {class: "rs-card rs-vid rs-lkc"}, th,
+      h("div", {class: "rs-info"}, h("h3", {}, r.title), r.desc ? h("p", {class: "mu"}, r.desc) : null,
+        h("div", {class: "rs-vf"}, r.author ? h("span", {class: "rs-au"}, h("span", {class: "rs-av"}, (r.author.trim()[0] || "•").toUpperCase()), r.author) : (ok ? h("span", {class: "chip"}, ic("ext"), hostOf(r.link)) : h("span")), r.tag ? h("span", {class: "chip"}, r.tag) : null),
+        ab("resources", r)));
+  }
 
   /* --- розділ --- */
   function section(s, i) {
@@ -276,10 +304,10 @@ export function buildResources(ctx) {
       let f = items.filter(r => (!tg || (r.tag || "").trim() === tg) && (!q || norm([r.title, r.desc, r.author, r.tag].join(" ")).includes(q)));
       f = sort === "name" ? [...f].sort((a, b) => String(a.title).localeCompare(String(b.title), "uk")) : [...f].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       const lim = RS.lim[s.id] || (focus ? 12 : 6), shown = f.slice(0, lim);
-      const files = shown.filter(r => !isVid(r)), vids = shown.filter(isVid);
+      const files = shown.filter(r => !isVid(r) && resType(r) === "book"), vids = shown.filter(r => isVid(r) || resType(r) !== "book");
       grid.replaceChildren(...[
         files.length ? h("div", {class: "rs-grid f"}, files.map(fileCard)) : null,
-        vids.length ? h("div", {class: "rs-grid v"}, vids.map(videoCard)) : null,
+        vids.length ? h("div", {class: "rs-grid v"}, vids.map(r => isVid(r) ? videoCard(r) : linkCard(r))) : null,
         !f.length ? (items.length ? h("div", {class: "empty"}, ic("search"), h("p", {}, "За вашим запитом нічого не знайдено.")) : (A ? empty("resources", "Додати матеріал", {section: s.id}) : null)) : null].filter(Boolean));
       more.replaceChildren(...(f.length > lim ? [focus
         ? h("button", {class: "btn", type: "button", onclick: () => {RS.lim[s.id] = lim + 12; paintGrid();}}, "Показати ще (" + (f.length - lim) + ")")

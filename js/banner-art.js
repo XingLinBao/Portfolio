@@ -359,6 +359,7 @@ function discWeb() {
   const pen = (x, y, r, c) => `<g transform="translate(${x} ${y}) rotate(${r})"><rect x="-5" y="-52" width="10" height="52" rx="3" fill="${c}"/><path d="M-5-52l5-14 5 14z" fill="#3a2a22" opacity=".85"/></g>`;
   return svg(p, `
  ${base(p, 300, 412, 235)}
+ <g transform="translate(36 26) scale(.88)">
  ${blob(p, 300, 215, 255)}${ring(300, 215, 200, ".35")}
  ${dot(30, 120, 5, "#c9b9ff", "fl2")}${dot(580, 250, 5, "#b9a6ff", "fl3")}${dot(330, 20, 4, "#c9b9ff", "fl1")}${dot(250, 430, 3.5, "#c9b9ff", "fl2")}
  <g transform="translate(100 56) scale(1.12)"><g filter="url(#${p}sh)">
@@ -396,7 +397,7 @@ function discWeb() {
  ${pill(p, 532, 44, 100, 40, "HTML", 7, "fl1", 19)}${pill(p, 548, 104, 84, 38, "CSS", -4, "fl3", 18)}${pill(p, 534, 164, 70, 36, "JS", 4, "fl2", 18)}
  ${plant(p, 500, 408, .8, false)}
  ${pen(558, 392, -10, "#4b2fd0")}${pen(572, 392, 8, "#6c47ff")}
- <path d="M538 392h46l-4 28c-1 4-4 6-8 6h-22c-4 0-7-2-8-6z" fill="#fff" stroke="#e4defb"/>`);
+ <path d="M538 392h46l-4 28c-1 4-4 6-8 6h-22c-4 0-7-2-8-6z" fill="#fff" stroke="#e4defb"/></g>`);
 }
 
 /* навчальна практика: аркуш із завданнями, відкрите вікно, мітки та рослина */

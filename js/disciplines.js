@@ -18,14 +18,14 @@ export const DISC = {
 DISC.pit = {
   title: "Навчальна практика з дисципліни «Інтернет-технології в інформаційній діяльності»",
   head: ["Навчальна практика", "Інтернет-технології в інформаційній діяльності"],
-  lead: "Програма, завдання, методичні матеріали та документи з навчальної практики — усе необхідне в одному місці.",
-  kinds: ["task", "report", "info"], eyebrow: "Навчальна практика"
+  lead: "Практичні роботи, матеріали для самостійного вивчення, звіти та документи з навчальної практики — усе в одному місці.",
+  kinds: ["practice", "self", "report"], eyebrow: "Навчальна практика"
 };
 DISC.pweb = {
   title: "Навчальна практика з дисципліни «Веб-технології та веб-дизайн»",
   head: ["Навчальна практика", "Веб-технології та веб-дизайн"],
-  lead: "Програма, завдання, методичні матеріали та документи з навчальної практики — усе необхідне в одному місці.",
-  kinds: ["task", "report", "info"], eyebrow: "Навчальна практика"
+  lead: "Практичні роботи, матеріали для самостійного вивчення, звіти та документи з навчальної практики — усе в одному місці.",
+  kinds: ["practice", "self", "report"], eyebrow: "Навчальна практика"
 };
 
 export const KINDS = [
@@ -33,7 +33,6 @@ export const KINDS = [
   {k: "present", n: "Презентація", t: "Презентації", i: "layout", w: ["презентація", "презентації", "презентацій"], d: "Слайди до занять: перегляньте онлайн або завантажте на свій пристрій.", add: "Додати презентацію", none: "Презентації ще не додано."},
   {k: "practice", n: "Практична робота", t: "Практичні роботи", i: "code", w: ["практична", "практичні", "практичних"], d: "Завдання для практичних занять та методичні вказівки до їх виконання.", add: "Додати практичну", none: "Практичні роботи ще не додано."},
   {k: "self", n: "Матеріал", t: "Самостійне вивчення", i: "file", w: ["матеріал", "матеріали", "матеріалів"], d: "Матеріали, які варто опрацювати самостійно поза аудиторією.", add: "Додати матеріал", none: "Матеріали для самостійного вивчення ще не додано."},
-  {k: "task", n: "Завдання", t: "Завдання та матеріали", i: "code", w: ["матеріал", "матеріали", "матеріалів"], d: "Програма практики, завдання та методичні вказівки до їх виконання.", add: "Додати матеріал", none: "Матеріалів практики ще не додано."},
   {k: "report", n: "", t: "Звіти та документи", i: "file", w: ["документ", "документи", "документів"], d: "Зразки звітів, щоденники, критерії оцінювання та інші документи.", add: "Додати документ", none: "Документів ще не додано."},
   {k: "info", n: "", t: "Додаткова інформація", i: "info", w: ["матеріал", "матеріали", "матеріалів"], d: "Програма, критерії оцінювання та інші довідкові документи.", add: "Додати матеріал", none: "Додаткової інформації ще немає."}
 ];
@@ -45,7 +44,10 @@ export const pl = (n, w) => {
 const ordKey = r => r.ord ?? r.createdAt ?? 0;
 export const byOrd = a => [...(a || [])].sort((x, y) => ordKey(x) - ordKey(y));
 const norm = s => String(s || "").toLowerCase();
-const DT = {it: "lecture", web: "lecture", pit: "task", pweb: "task"};
+const DT = {it: "lecture", web: "lecture", pit: "practice", pweb: "practice"};
+/* Навчальний рік для звітів: «2026-2027» → «2026–2027 н.р.» */
+export const acLabel = y => y ? String(y).replace("-", "–") + " н.р." : "Без зазначення року";
+export const acYears = () => {const n = new Date(), b = n.getMonth() >= 8 ? n.getFullYear() : n.getFullYear() - 1; return Array.from({length: 9}, (_, i) => {const y = b + 1 - i; return y + "-" + (y + 1);});};
 const PER = 8, DPG = {};
 
 /* ============================================================ ДИСЦИПЛІНА */
@@ -60,7 +62,7 @@ export function buildDiscipline(ctx, id) {
 
   const isLand = (r, kind) => kind.k === "present" || /docs\.google\.com\/presentation\/|\.pptx?(\?|#|$)/i.test(r.link || "");
   function thumb(r, i, kind, view, card) {
-    const num = kind.k === "info" ? ic("info") : String(i + 1).padStart(2, "0");
+    const num = kind.k === "info" ? ic("info") : kind.k === "report" ? ic("file") : String(i + 1).padStart(2, "0");
     const ph = h("span", {class: "dd-ph", "aria-hidden": "true"},
       h("i", {class: "dd-l1"}), h("b", {class: "dd-n"}, num), h("i", {class: "dd-l2"}), h("i", {class: "dd-l3"}), h("i", {class: "dd-l2"}), h("i", {class: "dd-l3"}));
     const box = h(view ? "button" : "div", view ? {type: "button", class: "dd-th", "aria-label": "Переглянути: " + r.title, title: "Переглянути", onclick: () => openDoc(h, ic, r)} : {class: "dd-th"}, ph);
@@ -117,8 +119,9 @@ export function buildDiscipline(ctx, id) {
   /* Не більше PER карток на сторінці; решта — через перемикач сторінок */
   function paint() {
     const kind = KINDS.find(k => k.k === DT[id]) || KINDS[0];
-    const list = byOrd(mats.filter(m => m.kind === kind.k));
-    const tabs = h("div", {class: "ds-tabs", role: "tablist", "aria-label": "Види матеріалів"}, KINDS.filter(k => D.kinds ? D.kinds.includes(k.k) : !["task", "report"].includes(k.k)).map(k =>
+    let list = byOrd(mats.filter(m => m.kind === kind.k));
+    if (kind.k === "report") list = [...list].sort((a, b) => (b.acYear || "").localeCompare(a.acYear || ""));
+    const tabs = h("div", {class: "ds-tabs", role: "tablist", "aria-label": "Види матеріалів"}, KINDS.filter(k => D.kinds ? D.kinds.includes(k.k) : k.k !== "report").map(k =>
       h("button", {role: "tab", type: "button", class: "ds-tab" + (k.k === kind.k ? " on" : ""), "aria-selected": String(k.k === kind.k), onclick: () => {DT[id] = k.k; paint();}}, ic(k.i), k.t)));
     const head = h("div", {class: "ds-ch"},
       h("span", {class: "ds-ci"}, ic(kind.i)),
@@ -132,11 +135,18 @@ export function buildDiscipline(ctx, id) {
     const page = () => (DPG[key] = Math.min(Math.max(1, DPG[key] || 1), pages));
     function fill(anim) {
       const p = page(), start = (p - 1) * PER;
-      grid.replaceChildren(...list.slice(start, start + PER).map((r, j) => {
+      const out = []; let prev;
+      list.slice(start, start + PER).forEach((r, j) => {
+        if (kind.k === "report" && (j === 0 || (r.acYear || "") !== prev)) {
+          prev = r.acYear || "";
+          const n = list.filter(x => (x.acYear || "") === prev).length;
+          out.push(h("h3", {class: "dd-yr"}, h("span", {}, ic("cal"), acLabel(prev)), h("small", {}, `${n} ${pl(n, kind.w)}`)));
+        }
         const c = row(r, start + j, list, kind);
         if (anim) {c.classList.add("fx"); c.style.setProperty("--i", j);}
-        return c;
-      }));
+        out.push(c);
+      });
+      grid.replaceChildren(...out);
       const nums = [];
       for (let i = 1; i <= pages; i++) if (pages <= 7 || i === 1 || i === pages || Math.abs(i - p) <= 1) nums.push(i);
       const mid = [];

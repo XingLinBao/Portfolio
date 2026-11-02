@@ -123,7 +123,7 @@ function saveFlow({title,form,save,onSaved,again}){
   ok.onclick=()=>go(true);if(more)more.onclick=()=>go("again");
  });
 }
-function mkForm(S,rec){const f=buildForm(typeof S.f==="function"?S.f():S.f,rec||{});if(S.check){const v0=f.validate;f.validate=()=>v0()||S.check(f.get());}return f;}
+function mkForm(S,rec){const f=buildForm(typeof S.f==="function"?S.f(rec||{}):S.f,rec||{});if(S.check){const v0=f.validate;f.validate=()=>v0()||S.check(f.get());}return f;}
 export async function recordModal(col,rec,onSaved){
  const S=SCHEMA[col],isNew=!(rec&&rec.id),ONE={materials:"Зберегти й додати ще",resources:"Зберегти й додати ще"},again=isNew&&col==="studentArticles"?"Зберегти й додати ще одну групу":(isNew&&col==="studentWorks"?"Зберегти й додати ще одну роботу":(isNew&&ONE[col])||null);
  let r;

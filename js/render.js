@@ -34,10 +34,10 @@ link:'<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7M14 11a5 5 0 0 0
 arr:'<path d="M7 17 17 7M8 7h9v9"/>',
 	tool:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/>'};
 export const ic=n=>{const s=h("span",{class:"ic","aria-hidden":"true"});s.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${P[n]||""}</svg>`;return s;};
-const GROUPS={me:"Про мене",disc:"Дисципліни",prac:"Практика"};
+const GROUPS={me:"Про мене",disc:"Дисципліни"};
 const SEC={about:{t:"Головна",i:"home"},
 disc_it:{t:"Інтернет-технології в інформаційній діяльності",i:"globe",g:"disc"},disc_web:{t:"Веб-дизайн та веб-технології",i:"layout",g:"disc"},
-prac_it:{t:"Інтернет-технології в інформаційній діяльності",i:"globe",g:"prac"},prac_web:{t:"Веб-технології та веб-дизайн",i:"layout",g:"prac"},
+prac_it:{t:"Навчальна практика: Інтернет-технології в інформаційній діяльності",i:"code",g:"disc"},prac_web:{t:"Навчальна практика: Веб-технології та веб-дизайн",i:"code",g:"disc"},
 lessons:{t:"Інтерактивні заняття",i:"code"},news:{t:"Оголошення",i:"bell"},
 works:{t:"Студентські роботи",i:"layout",cols:["studentWorks"]},me:{t:"Про викладача",i:"user",g:"me"},
 cert:{t:"Підвищення кваліфікації",i:"award",g:"me",cols:["certificates"]},pub:{t:"Інноваційна робота",i:"bulb",g:"me",cols:["publications"]},

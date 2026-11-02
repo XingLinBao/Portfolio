@@ -1,7 +1,7 @@
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {getFirestore,doc,getDoc,setDoc,collection,getDocs,addDoc,updateDoc,deleteDoc} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {firebaseConfig} from "./config.js";
-import {DISC,byOrd} from "./disciplines.js";
+import {DISC,byOrd,KINDS,acYears,acLabel} from "./disciplines.js";
 export const app=initializeApp(firebaseConfig);
 export const db=getFirestore(app);
 export const MONTHS=["Січень","Лютий","Березень","Квітень","Травень","Червень","Липень","Серпень","Вересень","Жовтень","Листопад","Грудень"];
@@ -27,16 +27,18 @@ export const SCHEMA={
   {k:"year",l:"Рік",t:"year"},
   {k:"link",l:"Посилання на сайт",t:"url",req:1,hint:"Адреса опублікованого сайту (наприклад, GitHub Pages). Лише https://"},
   {k:"photo",l:"Скриншот сайту",t:"photo",hint:"Знімок головної сторінки, бажано з пропорціями 16:10."}]},
- materials:{label:"матеріал дисципліни",f:()=>[
-  {k:"disc",l:"Дисципліна",t:"select",opts:Object.entries(DISC).map(([k,d])=>[k,d.title]),req:1},
-  {k:"kind",l:"Вид матеріалу",t:"select",opts:[["lecture","Лекція"],["present","Презентація"],["practice","Практична робота"],["self","Самостійне вивчення"],["task","Практика: завдання та матеріали"],["report","Практика: звіти та документи"],["info","Додаткова інформація"]],req:1},
+ materials:{label:"матеріал дисципліни",f:(rec={})=>{const D=rec.disc&&DISC[rec.disc],kinds=KINDS.filter(k=>D&&D.kinds?D.kinds.includes(k.k):k.k!=="report"),prac=!!(D&&D.kinds);return [
+  {k:"disc",l:"Дисципліна",t:"select",opts:(rec.disc&&DISC[rec.disc]?[rec.disc]:Object.keys(DISC)).map(k=>[k,DISC[k].title]),req:1},
+  {k:"kind",l:"Вид матеріалу",t:"select",opts:kinds.map(k=>[k.k,k.k==="lecture"?"Лекція":k.k==="present"?"Презентація":k.k==="practice"?"Практична робота":k.k==="self"?"Самостійне вивчення":k.k==="report"?"Звіти та документи":"Додаткова інформація"]),req:1},
+  ...(prac?[{k:"acYear",l:"Навчальний рік",t:"select",opts:[...new Set([...(rec.acYear?[rec.acYear]:[]),...acYears()])].map(y=>[y,acLabel(y)]),blank:"— не вказано —",hint:"Обов’язково для «Звіти та документи»: за роком матеріали групуються на сторінці."}]:[]),
   {k:"title",l:"Назва",req:1,ph:"Вступ до веб-технологій"},
   {k:"desc",l:"Короткий опис",ph:"Основні поняття, принципи роботи інтернету, структура сайту."},
   {k:"link",l:"Посилання на файл",t:"url",req:1,hint:"Завантажте файл на Google Диск → «Доступ» → «Усі, хто має посилання» → «Читач» і вставте посилання. Для Диска кнопку «Завантажити» буде додано автоматично. Лише https://"},
   {k:"ftype",l:"Формат файлу",t:"select",opts:FT,blank:"Визначити автоматично",hint:"Показується біля назви. Зазвичай визначається за посиланням."},
   {k:"size",l:"Розмір файлу (необов’язково)",ph:"1,8 МБ"},
   {k:"photo",l:"Прев’ю-картинка (необов’язково)",t:"photo",hint:"Зображення першої сторінки. Якщо не додати, для файлів із Google Диска прев’ю підтягнеться саме, а для решти буде показано заставку."},
-  {k:"quick",l:"Показати у «Швидкому доступі» (збоку на сторінці дисципліни)",t:"check"}]},
+  {k:"quick",l:"Показати у «Швидкому доступі» (збоку на сторінці дисципліни)",t:"check"}];},
+  check:d=>d.kind==="report"&&!d.acYear?"Для звітів і документів вкажіть навчальний рік":null},
  resSections:{label:"розділ",f:[{k:"name",l:"Назва розділу",req:1,ph:"Підручники"},{k:"desc",l:"Короткий опис (необов’язково)",ph:"Книги та навчальні посібники для поглибленого вивчення тем."}]},
  resources:{label:"корисний матеріал",f:()=>{const secs=byOrd(cache.resSections);return[
   {k:"section",l:"Розділ",t:"select",opts:secs.map(x=>[x.id,x.name]),req:1,hint:secs.length?"":"Розділів ще немає — спершу натисніть «Додати розділ»."},

@@ -265,3 +265,9 @@ button.dd-th:hover .dd-zoom,button.dd-th:focus-visible .dd-zoom{opacity:1}
 .rs-go{position:absolute;right:8px;bottom:8px;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.92);color:var(--v);font-size:14px;transition:scale .2s}
 .rs-linkth:hover .rs-go{scale:1.1}
 .rs-linkth:hover .rs-lk{filter:brightness(1.08)}
+
+/* заголовки навчальних років у «Звіти та документи» */
+.dd-yr{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 -2px;padding:0 0 10px;border-bottom:1px solid var(--line);font:800 18px var(--fh);color:var(--ink)}
+.dd-yr:first-child{margin-top:0}
+.dd-yr span{display:inline-flex;align-items:center;gap:10px}.dd-yr .ic{color:var(--v)}
+.dd-yr small{font:600 13px var(--font);color:var(--mu)}

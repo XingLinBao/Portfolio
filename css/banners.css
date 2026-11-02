@@ -174,10 +174,10 @@
 /* ---------- навігація: уміщується в контейнер ---------- */
 .hd-in{gap:12px}
 .menu{min-width:0;gap:0;flex:1 1 auto}
-.side .mi{padding:10px 5px;font-size:13px}
+.side .mi{padding:10px 8px;font-size:13.5px}
 .help{flex:none;margin-left:auto}.help .cta{white-space:nowrap;padding:8px 14px;font-size:13px}
 .brand-t{font-size:18px}
-@media(max-width:1360px){
+@media(max-width:1290px){
  .hd-in{padding:0 18px;gap:12px;flex-wrap:wrap;height:auto;min-height:64px}
  .burger{display:grid}
  .menu,.help{display:none;flex:1 1 100%;margin:0}

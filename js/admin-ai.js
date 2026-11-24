@@ -3,7 +3,7 @@ import {h,ic} from "./render.js";
 import {openModal,toast} from "./modal.js";
 import {saveRec,cache} from "./data.js";
 import {LANGS,QTYPES,QUIZ_MAX} from "./interactive.js";
-import {usesProxy,getKey,setKey,aiReady,generateQuiz,generateTasks,selfCheck,repairTask} from "./ai.js";
+import {usesProxy,getKey,setKey,aiReady,aiStatus,generateQuiz,generateTasks,selfCheck,repairTask} from "./ai.js";
 
 const fld=(label,ctl,hint)=>h("div",{class:"fld"},h("label",{},label),ctl,hint?h("small",{},hint):null);
 const sel=(opts,val,on)=>{const s=h("select",{onchange:e=>on&&on(e.target.value)},...Object.entries(opts).map(([k,l])=>h("option",{value:k},l)));s.value=val;return s;};
@@ -55,12 +55,13 @@ export function aiQuizModal(onSaved){
     const types=Object.keys(S.types).filter(k=>S.types[k]);
     if(!types.length){toast("Оберіть хоча б один тип запитань","err");return;}
     if(!aiReady()){form("Вкажіть ключ API.");return;}
-    go.disabled=true;body.replaceChildren(busy("ШІ складає запитання… Зазвичай до хвилини."));
+    go.disabled=true;const st=busy("ШІ складає запитання… Зазвичай до хвилини.");body.replaceChildren(st);
+    aiStatus.fn=t=>st.querySelector(".ai-bt").textContent=t;
     try{
       const qs=await generateQuiz({topic:S.topic,count:S.count,level:S.level,types,theme:S.theme.trim()});
       if(!qs.length)throw new Error("ШІ повернув некоректні запитання — спробуйте ще раз");
       preview(qs);
-    }catch(e){form(e.message||String(e));}
+    }catch(e){form(e.message||String(e));}finally{aiStatus.fn=null;}
   }
   function preview(qs){
     const on=qs.map(()=>true);
@@ -109,7 +110,7 @@ export function aiTasksModal({lang,topicTitle,room},onAdd){
     if(!aiReady()){form("Вкажіть ключ API.");return;}
     go.disabled=true;
     const status=busy("ШІ створює завдання… Це може тривати 1–2 хвилини.");body.replaceChildren(status,frame);
-    const say=t=>status.querySelector(".ai-bt").textContent=t;
+    const say=t=>status.querySelector(".ai-bt").textContent=t;aiStatus.fn=say;
     try{
       const r=await generateTasks({lang:S.lang,theme:S.theme.trim(),count:S.count,level:S.level});
       if(!r.tasks.length)throw new Error("ШІ не створив жодного завдання — спробуйте ще раз");
@@ -125,7 +126,7 @@ export function aiTasksModal({lang,topicTitle,room},onAdd){
         out.push({t,problem});
       }
       preview(r,out);
-    }catch(e){form(e.message||String(e));}
+    }catch(e){form(e.message||String(e));}finally{aiStatus.fn=null;}
   }
   function preview(r,out){
     const on=out.map(x=>!x.problem);

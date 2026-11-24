@@ -4,7 +4,7 @@
 //  2) AI_PROXY_URL порожній → ключ Gemini вводиться в кабінеті й зберігається лише в цьому браузері (localStorage).
 import {getAuth} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {app} from "./data.js";
-import {AI_PROXY_URL,AI_MODEL} from "./config.js";
+import {AI_PROXY_URL,AI_MODEL,AI_FALLBACK} from "./config.js";
 import {validateTask,checkProblem} from "./validator.js";
 
 const KEY="ai:geminiKey",API="https://generativelanguage.googleapis.com/v1beta/models/";
@@ -13,8 +13,10 @@ export const usesProxy=()=>!!AI_PROXY_URL;
 export const getKey=()=>{try{return tidy(localStorage.getItem(KEY));}catch(e){return "";}};
 export const setKey=k=>{k=tidy(k);try{k?localStorage.setItem(KEY,k):localStorage.removeItem(KEY);}catch(e){}};
 export const aiReady=()=>usesProxy()||!!getKey();
-const model=()=>AI_MODEL||"gemini-3.8-flash";
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+export const aiStatus={fn:null};            // admin-ai.js підставляє сюди функцію для показу ходу роботи
+const say=t=>{try{aiStatus.fn&&aiStatus.fn(t);}catch(e){}};
+const models=()=>[...new Set([AI_MODEL||"gemini-3.8-flash",...(AI_FALLBACK||[])])];
 
 // ---------- Транспорт ----------
 // Основний формат структурованої відповіді (REST: generationConfig.responseFormat). Якщо API його не прийме — запасний (responseJsonSchema).
@@ -24,37 +26,46 @@ function reqBody({system,user,schema,maxTokens},legacy){
   else gc.responseFormat={text:{mimeType:"APPLICATION_JSON",schema}};
   return {systemInstruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:user}]}],generationConfig:gc};
 }
-async function send(body){
-  if(usesProxy()){
-    const token=await getAuth(app).currentUser.getIdToken();
-    return fetch(AI_PROXY_URL,{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+token},body:JSON.stringify({model:model(),request:body})});
-  }
-  if(!getKey())throw new Error("Не вказано ключ Gemini API");
-  return fetch(API+encodeURIComponent(model())+":generateContent",{method:"POST",headers:{"content-type":"application/json","x-goog-api-key":getKey()},body:JSON.stringify(body)});
+async function send(mod,body){
+  const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),75000);   // ліміт очікування відповіді — 75 с
+  try{
+    if(usesProxy()){
+      const token=await getAuth(app).currentUser.getIdToken();
+      return await fetch(AI_PROXY_URL,{method:"POST",signal:ctl.signal,headers:{"content-type":"application/json",authorization:"Bearer "+token},body:JSON.stringify({model:mod,request:body})});
+    }
+    if(!getKey())throw new Error("Не вказано ключ Gemini API");
+    return await fetch(API+encodeURIComponent(mod)+":generateContent",{method:"POST",signal:ctl.signal,headers:{"content-type":"application/json","x-goog-api-key":getKey()},body:JSON.stringify(body)});
+  }finally{clearTimeout(tm);}
 }
-async function request(args,legacy){
-  let res,data;
+// Один запит до однієї моделі з одним повтором при 429/503/таймауті.
+async function request(args,legacy,mod){
   for(let n=0;;n++){
-    try{res=await send(reqBody(args,legacy));}catch(e){throw new Error("Немає зв’язку з ШІ: "+(e.message||e));}
-    data=await res.json().catch(()=>({}));
-    if((res.status===429||res.status===503)&&n<2){await sleep(res.status===429?20000:3000);continue;}
-    break;
+    let res,data={};
+    try{res=await send(mod,reqBody(args,legacy));data=await res.json().catch(()=>({}));}
+    catch(e){
+      if(e&&e.name==="AbortError"){res={ok:false,status:504};}
+      else if(e&&/ключ/i.test(e.message||""))throw e;
+      else throw new Error("Немає зв’язку з ШІ: "+(e.message||e));
+    }
+    if([429,503,504].includes(res.status)&&n<1){
+      const w=res.status===429?15:2;
+      say(res.status===504?`Модель ${mod} довго не відповідає — повторюємо запит…`:`Модель ${mod} зайнята — повтор через ${w} с…`);
+      await sleep(w*1000);continue;
+    }
+    return {res,data};
   }
-  return {res,data};
 }
-async function call({system,user,tool,maxTokens=8000}){
-  const args={system,user,schema:tool.input_schema,maxTokens};
-  let {res,data}=await request(args,false);
-  if(res.status===400&&!/API key|api_key/i.test(JSON.stringify(data)))({res,data}=await request(args,true));
-  if(!res.ok){
-    const m=(data.error&&(data.error.message||data.error))||res.statusText;
-    if(res.status===400&&/API key/i.test(m))throw new Error("Ключ Gemini API недійсний");
-    if(res.status===401||res.status===403){const k=getKey();throw new Error("Доступ заборонено ("+res.status+"). "+(usesProxy()?"":(k.length<40?"Ключ надто короткий — схоже, він скопійований не повністю. Скопіюйте його кнопкою «Copy key». ":"Перевірте, що ключ скопійовано повністю. "))+"Відповідь Google: "+String(m).slice(0,200));}
-    if(res.status===429)throw new Error("Вичерпано ліміт безкоштовного тарифу (хвилинний або добовий). Зачекайте або спробуйте пізніше");
-    if(res.status===503)throw new Error("Сервери Gemini перевантажені — спробуйте за кілька хвилин");
-    if(res.status===404)throw new Error("Модель «"+model()+"» недоступна. Змініть AI_MODEL у js/config.js");
-    throw new Error("Помилка ШІ ("+res.status+"): "+m);
-  }
+function fail({res,data},mod){
+  const m=(data.error&&(data.error.message||data.error))||res.statusText||"";
+  if(res.status===400&&/API key/i.test(m))return new Error("Ключ Gemini API недійсний");
+  if(res.status===401||res.status===403){const k=getKey();return new Error("Доступ заборонено ("+res.status+"). "+(usesProxy()?"":(k.length<40?"Ключ надто короткий — схоже, він скопійований не повністю. Скопіюйте його кнопкою «Copy key». ":"Перевірте, що ключ скопійовано повністю. "))+"Відповідь Google: "+String(m).slice(0,200));}
+  if(res.status===429)return new Error("Вичерпано ліміт безкоштовного тарифу (хвилинний або добовий). Зачекайте або спробуйте пізніше");
+  if(res.status===503)return new Error("Сервери Gemini перевантажені — спробуйте за кілька хвилин");
+  if(res.status===504)return new Error("Gemini не відповів за 75 секунд — спробуйте ще раз або зменште кількість елементів");
+  if(res.status===404)return new Error("Модель «"+mod+"» недоступна. Змініть AI_MODEL у js/config.js");
+  return new Error("Помилка ШІ ("+res.status+"): "+String(m).slice(0,200));
+}
+function parse(data){
   if(data.promptFeedback&&data.promptFeedback.blockReason)throw new Error("Запит заблоковано фільтром безпеки — переформулюйте тему");
   const cand=(data.candidates||[])[0];
   if(!cand)throw new Error("ШІ не повернув результат — спробуйте ще раз");
@@ -62,6 +73,19 @@ async function call({system,user,tool,maxTokens=8000}){
   const text=((cand.content&&cand.content.parts)||[]).filter(p=>!p.thought&&typeof p.text==="string").map(p=>p.text).join("").trim();
   try{return JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g,""));}
   catch(e){throw new Error("ШІ повернув некоректну відповідь — спробуйте ще раз");}
+}
+// Пробує основну модель, а якщо вона перевантажена / недоступна — запасні з AI_FALLBACK.
+async function call({system,user,tool,maxTokens=8000}){
+  const args={system,user,schema:tool.input_schema,maxTokens},list=models();let last;
+  for(const [i,mod] of list.entries()){
+    if(i)say(`Пробуємо запасну модель ${mod}…`);
+    let r=await request(args,false,mod);
+    if(r.res.status===400&&!/API key|api_key/i.test(JSON.stringify(r.data)))r=await request(args,true,mod);
+    if(r.res.ok)return parse(r.data);
+    last={...r,mod};
+    if(![404,429,503,504].includes(r.res.status))break;     // 403/401/400 — проблема не моделі, далі не пробуємо
+  }
+  throw fail(last,last.mod);
 }
 
 // ---------- Схеми ----------

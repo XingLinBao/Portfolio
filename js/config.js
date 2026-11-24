@@ -13,3 +13,5 @@ export const OWNER_UID = "x3HxqzCj41cdDOy2aTF2MUaBeGH2";
 export const AI_PROXY_URL = "";
 // Модель. Якщо вичерпується ліміт — спробуйте "gemini-3.5-flash-lite". Актуальні назви: aistudio.google.com
 export const AI_MODEL = "gemini-3.8-flash";
+// Запасні моделі: якщо основна перевантажена або вичерпала ліміт, програма автоматично пробує наступну.
+export const AI_FALLBACK = ["gemini-3.5-flash-lite", "gemini-3.6-flash"];

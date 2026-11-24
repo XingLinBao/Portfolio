@@ -78,6 +78,7 @@ function quizView(ctx,quiz){
     return h("section",{class:"card pad iq-adm"},
       h("div",{class:"sch"},h("span",{class:"si big c-blue"},ic("edit")),h("h2",{},`Запитання тесту · ${quiz.length} із ${QUIZ_MAX}`),
         h("button",{class:"btn sm",onclick:A.quizMeta},ic("edit"),"Назва тесту"),
+        h("button",{class:"btn sm ai-btn",disabled:full,onclick:A.aiQuiz},ic("star"),"Тест від ШІ"),
         h("button",{class:"btn primary sm",disabled:full,title:full?"Досягнуто максимум — видаліть одне із запитань":null,onclick:()=>A.add("quiz")},ic("plus"),"Додати запитання")),
       quiz.length?h("ol",{class:"iq-list"},quiz.map((q,i)=>h("li",{},
         h("div",{class:"iq-li-t"},h("div",{class:"iq-li-m"},lg(q.topic),h("span",{class:"chip"},QTYPES[q.type]||q.type)),h("div",{class:"iq-li-q"},q.title)),

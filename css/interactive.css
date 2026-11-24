@@ -287,3 +287,18 @@ textarea.mono{font:500 13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,mono
 .ws-main>:nth-child(2){animation-delay:.08s}.ws-main>:nth-child(3){animation-delay:.16s}
 .ws-res:not([hidden]){animation:ilIn .4s cubic-bezier(.2,.8,.2,1) backwards}
 @media(prefers-reduced-motion:reduce){.il-box>*,.ip-grid>*,.ws-main>*,.ws-res{animation:none!important}}
+
+/* ---------- ШІ-генерація ---------- */
+.btn.ai-btn{border-color:#c4b5fd;color:#6d28d9;background:#f5f3ff}
+.btn.ai-btn:hover:not(:disabled){background:#ede9fe}
+.ai-busy{display:flex;gap:12px;align-items:center;padding:20px 4px}
+.ai-spin{width:20px;height:20px;border-radius:50%;border:3px solid #ddd6fe;border-top-color:#7c3aed;animation:ai-rot .8s linear infinite;flex:none}
+@keyframes ai-rot{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.ai-spin{animation-duration:2.4s}}
+.ai-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:12px}
+.ai-item{border:1px solid var(--bd);border-radius:14px;padding:12px 14px;display:grid;gap:8px}
+.ai-pick{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.ai-pick input{margin-top:4px;flex:none}
+.ai-desc{margin:0;white-space:pre-line;color:var(--mu,#475569);font-size:14px}
+.ai-types{display:flex;gap:6px 16px;flex-wrap:wrap;padding-top:6px}
+.ai-item details summary{cursor:pointer;font-weight:600;font-size:14px;margin-bottom:8px}

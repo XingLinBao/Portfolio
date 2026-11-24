@@ -7,3 +7,9 @@ export const firebaseConfig = {
 };
 // UID власниці (Authentication → Users → колонка «User UID»)
 export const OWNER_UID = "x3HxqzCj41cdDOy2aTF2MUaBeGH2";
+
+// ---- ШІ (Google Gemini, лише для кабінету) ----
+// Адреса вашого проксі (Cloudflare Worker, див. worker/ai-proxy.js та ШІ.md). Якщо порожньо — ключ вводиться в кабінеті.
+export const AI_PROXY_URL = "";
+// Модель. Якщо вичерпується ліміт — спробуйте "gemini-3.5-flash-lite". Актуальні назви: aistudio.google.com
+export const AI_MODEL = "gemini-3.8-flash";

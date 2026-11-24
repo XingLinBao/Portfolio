@@ -3,6 +3,7 @@ import {h,ic} from "./render.js";
 import {openModal,toast,confirmBox} from "./modal.js";
 import {saveRec,saveProfile,delRec,cache} from "./data.js";
 import {LANGS,QTYPES,QUIZ_MAX} from "./interactive.js";
+import {aiTasksModal} from "./admin-ai.js";
 import {CHECK_TYPES,checkProblem,validateTask} from "./validator.js";
 
 export const isInteractive=c=>c==="quiz"||c==="practice";
@@ -113,11 +114,14 @@ export function topicModal(rec,onSaved){
         h("button",{type:"button",class:"btn sm danger",onclick:async()=>{if(await confirmBox(`Видалити завдання «${t.title}»?`,"Видалити",true)){S.tasks.splice(i,1);paint();}}},ic("trash"))))):[h("p",{class:"mu s"},"Завдань ще немає.")]));
   }
   paint();
+  const titleInp=inp(S.title,x=>S.title=x,"Форматування тексту",200),descArea=area(S.desc,x=>S.desc=x,2);
   const content=h("div",{class:"form"},
-    h("div",{class:"row2e"},fld("Назва теми",inp(S.title,x=>S.title=x,"Форматування тексту",200),null,1),fld("Мова",sel(LANGS,S.lang,x=>S.lang=x),null,1)),
-    fld("Короткий опис (необов’язково)",area(S.desc,x=>S.desc=x,2)),
+    h("div",{class:"row2e"},fld("Назва теми",titleInp,null,1),fld("Мова",sel(LANGS,S.lang,x=>S.lang=x),null,1)),
+    fld("Короткий опис (необов’язково)",descArea),
     h("div",{class:"fld"},h("label",{},"Завдання теми"),list,
-      h("div",{class:"ab"},h("button",{type:"button",class:"btn sm",onclick:()=>taskModal(null,S.lang,nt=>{S.tasks.push(nt);paint();})},ic("plus"),"Додати завдання")),
+      h("div",{class:"ab"},h("button",{type:"button",class:"btn sm",onclick:()=>taskModal(null,S.lang,nt=>{S.tasks.push(nt);paint();})},ic("plus"),"Додати завдання"),
+        h("button",{type:"button",class:"btn sm ai-btn",onclick:()=>{const room=40-S.tasks.length;if(room<=0){toast("У темі вже 40 завдань","err");return;}
+          aiTasksModal({lang:S.lang,topicTitle:S.title,room},(tasks,meta)=>{S.tasks.push(...tasks.slice(0,room));if(!S.title.trim()&&meta.title){S.title=meta.title;titleInp.value=meta.title;}if(!S.desc.trim()&&meta.desc){S.desc=meta.desc;descArea.value=meta.desc;}paint();});}},ic("star"),"Створити завдання з ШІ")),
       h("small",{},"Спочатку збережіть завдання, а потім натисніть «Зберегти» внизу — лише тоді тема оновиться на сайті.")));
   saveModal({title:rec?"Змінити тему":"Нова тема",content,xl:true,onSaved,
     snap:()=>JSON.stringify(S),

@@ -8,9 +8,10 @@ import {AI_PROXY_URL,AI_MODEL} from "./config.js";
 import {validateTask,checkProblem} from "./validator.js";
 
 const KEY="ai:geminiKey",API="https://generativelanguage.googleapis.com/v1beta/models/";
+const tidy=k=>String(k||"").replace(/[\s"'`]/g,"");
 export const usesProxy=()=>!!AI_PROXY_URL;
-export const getKey=()=>{try{return localStorage.getItem(KEY)||"";}catch(e){return "";}};
-export const setKey=k=>{try{k&&k.trim()?localStorage.setItem(KEY,k.trim()):localStorage.removeItem(KEY);}catch(e){}};
+export const getKey=()=>{try{return tidy(localStorage.getItem(KEY));}catch(e){return "";}};
+export const setKey=k=>{k=tidy(k);try{k?localStorage.setItem(KEY,k):localStorage.removeItem(KEY);}catch(e){}};
 export const aiReady=()=>usesProxy()||!!getKey();
 const model=()=>AI_MODEL||"gemini-3.8-flash";
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -48,7 +49,7 @@ async function call({system,user,tool,maxTokens=8000}){
   if(!res.ok){
     const m=(data.error&&(data.error.message||data.error))||res.statusText;
     if(res.status===400&&/API key/i.test(m))throw new Error("Ключ Gemini API недійсний");
-    if(res.status===401||res.status===403)throw new Error("Доступ заборонено: перевірте ключ Gemini API");
+    if(res.status===401||res.status===403){const k=getKey();throw new Error("Доступ заборонено ("+res.status+"). "+(usesProxy()?"":(k.length<40?"Ключ надто короткий — схоже, він скопійований не повністю. Скопіюйте його кнопкою «Copy key». ":"Перевірте, що ключ скопійовано повністю. "))+"Відповідь Google: "+String(m).slice(0,200));}
     if(res.status===429)throw new Error("Вичерпано ліміт безкоштовного тарифу (хвилинний або добовий). Зачекайте або спробуйте пізніше");
     if(res.status===503)throw new Error("Сервери Gemini перевантажені — спробуйте за кілька хвилин");
     if(res.status===404)throw new Error("Модель «"+model()+"» недоступна. Змініть AI_MODEL у js/config.js");

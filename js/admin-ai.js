@@ -15,7 +15,7 @@ const LEVELS={"початковий":"Початковий","середній":"
 // Блок ключа API (потрібен лише без проксі)
 function keyBlock(onChange){
   if(usesProxy())return null;
-  const i=h("input",{type:"password",autocomplete:"off",placeholder:"AIza…"});i.value=getKey();
+  const i=h("input",{type:"password",autocomplete:"off",placeholder:"AQ.… (або AIza…)"});i.value=getKey();
   i.addEventListener("change",()=>{setKey(i.value);onChange&&onChange();});
   return fld("Ключ Gemini API",i,"Безкоштовно: aistudio.google.com/apikey. Зберігається лише в цьому браузері й передається тільки до Google. Для безпечнішої роботи налаштуйте проксі (див. ШІ.md).");
 }
